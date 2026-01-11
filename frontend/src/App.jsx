@@ -4,7 +4,7 @@ function App() {
       <h1>Brixo</h1>
       <p>Control simple de tu inventario, vs1</p>
 
-      <p>Frontend activo.{{}}</p>
+      <p>Frontend activo.</p>
     </div>
   );
 }
