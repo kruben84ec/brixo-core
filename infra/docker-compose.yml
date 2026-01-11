@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: brixo-postgres
+    restart: unless-stopped
+    env_file:
+      - ./env/db.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ..
+      dockerfile: infra/docker/backend/Dockerfile
+    container_name: brixo-backend
+    restart: unless-stopped
+    env_file:
+      - ./env/backend.env
+    depends_on:
+      - postgres
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: infra/docker/frontend/Dockerfile
+    container_name: brixo-frontend
+    restart: unless-stopped
+    env_file:
+      - ./env/frontend.env
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres_data:
