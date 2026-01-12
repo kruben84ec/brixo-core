@@ -6,7 +6,7 @@ from typing import Any
 
 from backend.domain.contracts import Tenat
 
-@dataclass(frozen=True)
+
 class DomainEvent:
     tenant_id: UUID
     ocurred_at: datetime
@@ -19,8 +19,19 @@ class InventoryChanged(DomainEvent):
 
 @dataclass(frozen=True)
 class RoleAssigned(DomainEvent):
+    tenant_id: UUID
     user_id: UUID
     role_id: UUID
+    role_code: str
+    occurred_at: datetime
+
+
+@dataclass(frozen=True)
+class RoleRevoked(DomainEvent):
+    tenant_id: UUID
+    user_id: UUID
+    role_id: UUID
+    role_code: str
     occurred_at: datetime
 
 @dataclass(frozen=True)
