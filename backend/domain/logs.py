@@ -35,3 +35,11 @@ class LogEntry:
     action: str              # CREATED, UPDATED, DELETED, SYNCED
     payload: dict            # Qué cambió
     occurred_at: datetime
+
+SYSTEM_USER_ID = UUID("00000000-0000-0000-0000-000000000000")
+
+SYSTEM_ACTOR = Actor(
+    user_id=SYSTEM_USER_ID,
+    tenant_id=SYSTEM_USER_ID,
+    ip=None
+)

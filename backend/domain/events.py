@@ -15,13 +15,16 @@ class DomainEvent:
 class InventoryChanged(DomainEvent):
     product_id: UUID
     delta:int
+    occurred_at: datetime
 
 @dataclass(frozen=True)
 class RoleAssigned(DomainEvent):
-    user_uuid: UUID
+    user_id: UUID
     role_id: UUID
+    occurred_at: datetime
 
 @dataclass(frozen=True)
 class SaleRegistered(DomainEvent):
     sale_id: UUID
-    total_amount: float
+    total: float
+    occurred_at: datetime
