@@ -1,10 +1,15 @@
 from backend.infrastructure.redis_client import get_redis
 from backend.domain.events import RoleAssigned, RoleRevoked
+from backend.infrastructure.logging import get_logger
+logger = get_logger()
 
 
 async def on_role_assigned(event: RoleAssigned):
     redis = await get_redis()
     key = f"user:{event.tenant_id}:{event.user_id}:roles"
+    logger.info("Assigning role",
+                extra={"user_id": event.user_id, "role_code": event.role_code})
+    
     await redis.sadd(key, event.role_code)  # type: ignore
 
 
