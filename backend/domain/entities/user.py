@@ -1,4 +1,3 @@
-# backend/domain/entities/user.py
 
 from dataclasses import dataclass
 
