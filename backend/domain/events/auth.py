@@ -23,3 +23,10 @@ class UserLoggedOut(DomainEvent):
     tenant_id: UUID
     user_id: UUID
     occurred_at: datetime
+    
+    
+@dataclass(frozen=True)
+class UserAuthenticated(DomainEvent):
+    tenant_id: UUID
+    user_id: UUID
+    occurred_at: datetime

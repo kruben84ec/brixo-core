@@ -1,60 +1,61 @@
-# backend/infrastructure/security/jwt_middleware.py
-
-from fastapi import Request, HTTPException
+from fastapi import Request, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from starlette.middleware.base import BaseHTTPMiddleware
-from typing import Optional
-from backend.infrastructure.env.settings import get_settings
+from uuid import UUID
+from datetime import datetime, timezone
+
 from backend.infrastructure.security.jwt_service import JWTService
+from backend.application.event_bus import EventBus
+from backend.domain.events.auth import UserAuthenticated
+from backend.infrastructure.env.settings import get_settings
 from backend.infrastructure.logging import get_logger
 
-settings = get_settings()
-SECRET = settings.jwt.private_key
-
-TTL = settings.jwt.access_token_exp_minutes
 logger = get_logger()
-security = HTTPBearer(auto_error=False)
+security = HTTPBearer()
+settings = get_settings()
 
 
-class JWTAuthMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        # Rutas públicas (login, health, etc.)
-        if request.url.path in ["/auth/login", "/health"]:
-            return await call_next(request)
-
-        credentials: Optional[HTTPAuthorizationCredentials] = await security(request)
-
-        if not credentials:
-            raise HTTPException(status_code=401, detail="Missing authorization token")
-
-        settings = get_settings()
-        jwt_service = JWTService(
-            secret=SECRET,
-            ttl_minutes=TTL,
+class JWTAuthMiddleware:
+    def __init__(self, event_bus: EventBus):
+        self.jwt_service = JWTService(
+            secret=settings.jwt.private_key,
+            ttl_minutes=settings.jwt.access_token_exp_minutes,
         )
+        self.event_bus = event_bus
+
+    async def __call__(self, request: Request):
+        credentials: HTTPAuthorizationCredentials | None = await security(request)
+
+        if credentials is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Authorization token missing",
+            )
 
         try:
-            payload = jwt_service.decode(credentials.credentials)
-        except Exception as e:
-            logger.warning(
-                "Invalid JWT token",
-                extra={"error": str(e)},
+            payload = self.jwt_service.decode(credentials.credentials)
+
+            user_id = UUID(payload["sub"])
+            tenant_id = UUID(payload["tenant"])
+
+            # 🔥 Evento de dominio
+            self.event_bus.publish(
+                UserAuthenticated(
+                    tenant_id=tenant_id,
+                    user_id=user_id,
+                    occurred_at=datetime.now(timezone.utc),
+                )
             )
-            raise HTTPException(status_code=401, detail="Invalid or expired token")
 
-        request.state.user_id = payload.get("sub")
-        request.state.tenant_id = payload.get("tenant_id")
+            # Contexto para handlers / endpoints
+            request.state.user_id = user_id
+            request.state.tenant_id = tenant_id
 
-        if not request.state.user_id or not request.state.tenant_id:
-            raise HTTPException(status_code=401, detail="Invalid token payload")
-
-        logger.debug(
-            "Authenticated request",
-            extra={
-                "user_id": request.state.user_id,
-                "tenant_id": request.state.tenant_id,
-                "path": request.url.path,
-            },
-        )
-
-        return await call_next(request)
+        except Exception as exc:
+            logger.warning(
+                "JWT authentication failed",
+                extra={"error": str(exc)},
+            )
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid or expired token",
+            )
