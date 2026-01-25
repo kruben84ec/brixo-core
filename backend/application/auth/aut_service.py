@@ -1,7 +1,7 @@
 from jose import jwt
 from datetime import datetime, timedelta, timezone
 from backend.infrastructure.redis_client import get_redis
-from backend.domain.auth import UserLoggedIn
+from backend.domain.events.auth import UserLoggedIn
 from backend.infrastructure.logging import get_logger
 logger = get_logger()
 
