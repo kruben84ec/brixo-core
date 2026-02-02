@@ -1,11 +1,27 @@
 from db_wait import wait_for_db
 from fastapi import FastAPI
 from backend.infrastructure.security.jwt_middleware import JWTAuthMiddleware
+from backend.infrastructure.api.routes.auth import get_auth_router
+from backend.application.event_bus import EventBus
+from backend.application.handlers import register_handlers
 
-wait_for_db()
+# Levantar FastAPI
+app = FastAPI(title="Brixo Core API", version="0.0.1")
 
-# levantar FastAPI / Flask
+def init_app():
+    """Inicializa la aplicación con EventBus y routers"""
+    wait_for_db()
+    
+    # Inicializar Event Bus
+    event_bus = EventBus()
+    register_handlers(event_bus)
+    
+    # Agregar middleware con event_bus inyectado
+    app.add_middleware(JWTAuthMiddleware, event_bus=event_bus)
+    
+    # Incluir routers (inyectar event_bus)
+    auth_router = get_auth_router(event_bus)
+    app.include_router(auth_router, prefix="/auth", tags=["auth"])
 
-app = FastAPI()
-
-app.add_middleware(JWTAuthMiddleware)
+# Inicializar al importar el módulo (para Uvicorn)
+init_app()

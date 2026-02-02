@@ -1,5 +1,5 @@
 from fastapi import Request, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from starlette.middleware.base import BaseHTTPMiddleware
 from uuid import UUID
 from datetime import datetime, timezone
 
@@ -10,29 +10,39 @@ from backend.infrastructure.env.settings import get_settings
 from backend.infrastructure.logging import get_logger
 
 logger = get_logger()
-security = HTTPBearer()
 settings = get_settings()
 
 
-class JWTAuthMiddleware:
-    def __init__(self, event_bus: EventBus):
+class JWTAuthMiddleware(BaseHTTPMiddleware):
+    def __init__(self, app, event_bus: EventBus):
+        super().__init__(app)
         self.jwt_service = JWTService(
             secret=settings.jwt.private_key,
             ttl_minutes=settings.jwt.access_token_exp_minutes,
         )
         self.event_bus = event_bus
 
-    async def __call__(self, request: Request):
-        credentials: HTTPAuthorizationCredentials | None = await security(request)
-
-        if credentials is None:
+    async def dispatch(self, request: Request, call_next):
+        # Skip auth para endpoint de login
+        if request.url.path == "/auth/login":
+            return await call_next(request)
+        
+        # Extraer token del header Authorization
+        auth_header = request.headers.get("authorization")
+        
+        if not auth_header:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Authorization token missing",
             )
-
+        
         try:
-            payload = self.jwt_service.decode(credentials.credentials)
+            # Esperado formato: "Bearer <token>"
+            scheme, credentials = auth_header.split()
+            if scheme.lower() != "bearer":
+                raise ValueError("Invalid authentication scheme")
+
+            payload = self.jwt_service.decode(credentials)
 
             user_id = UUID(payload["sub"])
             tenant_id = UUID(payload["tenant"])
@@ -50,12 +60,14 @@ class JWTAuthMiddleware:
             request.state.user_id = user_id
             request.state.tenant_id = tenant_id
 
-        except Exception as exc:
+        except ValueError as e:
             logger.warning(
                 "JWT authentication failed",
-                extra={"error": str(exc)},
+                extra={"error": str(e)},
             )
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid or expired token",
             )
+        
+        return await call_next(request)
