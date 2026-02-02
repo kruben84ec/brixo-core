@@ -1,9 +1,9 @@
 from db_wait import wait_for_db
 from fastapi import FastAPI
-from backend.infrastructure.security.jwt_middleware import JWTAuthMiddleware
-from backend.infrastructure.api.routes.auth import get_auth_router
-from backend.application.event_bus import EventBus
-from backend.application.handlers import register_handlers
+from infrastructure.security.jwt_middleware import JWTAuthMiddleware
+from infrastructure.api.routes.auth import get_auth_router
+from application.event_bus import EventBus
+from application.handlers import register_handlers
 
 # Levantar FastAPI
 app = FastAPI(title="Brixo Core API", version="0.0.1")

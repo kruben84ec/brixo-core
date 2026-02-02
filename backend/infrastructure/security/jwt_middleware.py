@@ -3,11 +3,11 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from uuid import UUID
 from datetime import datetime, timezone
 
-from backend.infrastructure.security.jwt_service import JWTService
-from backend.application.event_bus import EventBus
-from backend.domain.events.auth import UserAuthenticated
-from backend.infrastructure.env.settings import get_settings
-from backend.infrastructure.logging import get_logger
+from infrastructure.security.jwt_service import JWTService
+from application.event_bus import EventBus
+from domain.events.auth import UserAuthenticated
+from infrastructure.env.settings import get_settings
+from infrastructure.logging import get_logger
 
 logger = get_logger()
 settings = get_settings()

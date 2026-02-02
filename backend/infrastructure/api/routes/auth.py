@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException
-from backend.infrastructure.env.settings import get_settings
-from backend.infrastructure.security.jwt_service import JWTService
-from backend.application.services.auth.login_user import LoginUser
-from backend.infrastructure.persistence.auth_repository_sql import AuthRepositorySQL
-from backend.application.event_bus import EventBus
+from infrastructure.env.settings import get_settings
+from infrastructure.security.jwt_service import JWTService
+from application.services.auth.login_user import LoginUser
+from infrastructure.persistence.auth_repository_sql import AuthRepositorySQL
+from application.event_bus import EventBus
 
 settings = get_settings()
 auth_repository = AuthRepositorySQL()

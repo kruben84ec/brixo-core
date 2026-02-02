@@ -1,10 +1,10 @@
 # backend/application/services/auth/login_user.py
 
 from datetime import datetime, timezone
-from backend.application.event_bus import EventBus
-from backend.application.ports.auth_repository import AuthRepository
-from backend.domain.events.auth import UserLoggedIn, UserLoginFailed
-from backend.infrastructure.security.passwords import verify_password
+from application.event_bus import EventBus
+from application.ports.auth_repository import AuthRepository
+from domain.events.auth import UserLoggedIn, UserLoginFailed
+from infrastructure.security.passwords import verify_password
 
 
 class LoginUser:

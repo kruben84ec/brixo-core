@@ -1,9 +1,9 @@
 from uuid import uuid4, UUID
 from datetime import datetime, timezone
-from backend.domain.events.auth import UserLoggedIn, UserLoginFailed
-from backend.application.event_bus import EventBus
-from backend.domain.logs import LogEntry, LogEventType, Actor, SYSTEM_ACTOR
-from backend.infrastructure.logging import get_logger
+from domain.events.auth import UserLoggedIn, UserLoginFailed
+from application.event_bus import EventBus
+from domain.logs import LogEntry, LogEventType, Actor, SYSTEM_ACTOR
+from infrastructure.logging import get_logger
 
 logger = get_logger()
 

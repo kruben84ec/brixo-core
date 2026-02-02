@@ -1,9 +1,9 @@
 # backend/infrastructure/persistence/auth_repository_sql.py
 
 from uuid import UUID
-from backend.application.ports.auth_repository import AuthRepository
-from backend.domain.entities.user import User
-from backend.infrastructure.logging import get_logger
+from application.ports.auth_repository import AuthRepository
+from domain.entities.user import User
+from infrastructure.logging import get_logger
 
 logger = get_logger()
 
