@@ -30,11 +30,13 @@ class AuthService:
         
         await redis.set(f"auth:token:{token}", str(user_id), ex=TTL)
         
-        await self.event_bus.publish(UserLoggedIn(
-            tenant_id=tenant_id,
-            user_id=user_id,
-            ocurred_at = datetime.now(timezone.utc)
-        ))
+        await self.event_bus.publish(
+            UserLoggedIn(
+                tenant_id=tenant_id,
+                user_id=user_id,
+                occurred_at=datetime.now(timezone.utc)
+            )
+        )
         
         return token
             

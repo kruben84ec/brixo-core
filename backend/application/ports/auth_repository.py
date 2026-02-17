@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from domain.auth.user import User
+from domain.entities.user import User
 
 
 class AuthRepository(ABC):
