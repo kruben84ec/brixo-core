@@ -4,7 +4,7 @@ from datetime import datetime
 from uuid import UUID
 from typing import Any
 
-from backend.domain.contracts import Tenat
+from domain.contracts import Tenat
 
 
 class DomainEvent:

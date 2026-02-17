@@ -2,8 +2,8 @@
 
 from collections import defaultdict
 from typing import Type, Callable, Dict, List
-from backend.domain.events.base import DomainEvent
-from backend.infrastructure.logging import get_logger
+from domain.events.base import DomainEvent
+from infrastructure.logging import get_logger
 
 logger = get_logger()
 

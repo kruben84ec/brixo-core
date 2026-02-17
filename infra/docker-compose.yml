@@ -19,12 +19,17 @@ services:
       dockerfile: infra/docker/backend/Dockerfile
     container_name: brixo-backend
     restart: unless-stopped
+    environment:
+      - ENV_DIR=/app/env  # la ruta real dentro del contenedor
     env_file:
       - ./env/backend.env
     depends_on:
       - postgres
     ports:
       - "8000:8000"
+    volumes:
+      - ../backend:/app   # ajusta la ruta según tu estructura
+    # command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload  ← activa hot reload
 
   frontend:
     build:
@@ -38,6 +43,9 @@ services:
       - backend
     ports:
       - "3000:3000"
+    volumes:
+      - ../frontend:/app        # ajusta la ruta según tu estructura
+      - /app/node_modules       # evita que el bind mount pise los node_modules del contenedor
 
 volumes:
   postgres_data:

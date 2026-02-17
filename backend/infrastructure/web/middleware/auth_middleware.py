@@ -1,8 +1,8 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
-from backend.infrastructure.env.settings import get_settings
-from backend.infrastructure.redis_client import get_redis
+from infrastructure.env.settings import get_settings
+from infrastructure.redis_client import get_redis
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 settings = get_settings()

@@ -1,11 +1,11 @@
 from jose import jwt
 from datetime import datetime, timedelta, timezone
-from backend.infrastructure.redis_client import get_redis
-from backend.domain.events.auth import UserLoggedIn
-from backend.infrastructure.logging import get_logger
+from infrastructure.redis_client import get_redis
+from domain.events.auth import UserLoggedIn
+from infrastructure.logging import get_logger
 logger = get_logger()
 
-from backend.infrastructure.env.settings import get_settings
+from infrastructure.env.settings import get_settings
 settings = get_settings()
 
 SECRET = settings.jwt.private_key

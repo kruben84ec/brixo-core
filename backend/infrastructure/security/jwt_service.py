@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Dict, Any
 import jwt
 
-from backend.infrastructure.env.settings import get_settings
+from infrastructure.env.settings import get_settings
 
 settings = get_settings()
 ALGORITHM = settings.jwt.algorithm
