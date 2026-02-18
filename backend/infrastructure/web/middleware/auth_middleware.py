@@ -1,6 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import jwt, JWTError
+
+import jwt
 from infrastructure.env.settings import get_settings
 from infrastructure.redis_client import get_redis
 
@@ -34,5 +35,5 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
             "tenant_id": tenant_id,
         }
 
-    except JWTError:
+    except Exception:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")

@@ -23,6 +23,7 @@ services:
       - ENV_DIR=/app/env  # la ruta real dentro del contenedor
     env_file:
       - ./env/backend.env
+      - ./env/jwt.env
     depends_on:
       - postgres
     ports:

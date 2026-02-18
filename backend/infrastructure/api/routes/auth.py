@@ -22,7 +22,8 @@ def get_auth_router(event_bus: EventBus) -> APIRouter:
             )
 
             jwt_service = JWTService(
-                secret=settings.jwt.private_key,
+                private_key=settings.jwt.private_key,
+                public_key=settings.jwt.public_key,
                 ttl_minutes=settings.jwt.access_token_exp_minutes
             )
 

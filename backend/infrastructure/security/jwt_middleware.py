@@ -17,7 +17,8 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
     def __init__(self, app, event_bus: EventBus):
         super().__init__(app)
         self.jwt_service = JWTService(
-            secret=settings.jwt.private_key,
+            private_key=settings.jwt.private_key,
+            public_key=settings.jwt.public_key,
             ttl_minutes=settings.jwt.access_token_exp_minutes,
         )
         self.event_bus = event_bus
@@ -44,8 +45,8 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
 
             payload = self.jwt_service.decode(credentials)
 
-            user_id = UUID(payload["sub"])
-            tenant_id = UUID(payload["tenant"])
+            user_id = str(UUID(payload["sub"]))
+            tenant_id = str(UUID(payload["tenant"]))
 
             # 🔥 Evento de dominio
             self.event_bus.publish(

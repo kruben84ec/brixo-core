@@ -1,4 +1,4 @@
-from jose import jwt
+import jwt
 from datetime import datetime, timedelta, timezone
 from infrastructure.redis_client import get_redis
 from domain.events.auth import UserLoggedIn
