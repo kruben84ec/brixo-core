@@ -12,6 +12,7 @@ from application.event_bus import EventBus
 logger = get_logger()
 
 
+
 class UserAccessProjection:
     """
     Mantiene snapshot de acceso rápido por usuario.
