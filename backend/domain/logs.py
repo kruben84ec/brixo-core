@@ -13,8 +13,8 @@ class LogEventType(Enum):
 
 @dataclass(frozen=True)
 class Actor:
-    user_id: UUID
-    tenant_id: UUID
+    user_id: str
+    tenant_id: str
     ip: str | None 
 
 @dataclass(frozen=True)
@@ -26,17 +26,17 @@ class LogEntry:
         # 4. Logs siempre usan tenant_id
         # 5. Logs sobreviven incluso si la sincronización falla
     """
-    id: UUID
-    tenant_id: UUID
+    id: str
+    tenant_id: str
     actor: Actor
     event_type: LogEventType
     entity: str              # INVENTORY, USER, SALE, ROLE
-    entity_id: UUID | None
+    entity_id: str | None
     action: str              # CREATED, UPDATED, DELETED, SYNCED
     payload: dict            # Qué cambió
     occurred_at: datetime
 
-SYSTEM_USER_ID = UUID("00000000-0000-0000-0000-000000000000")
+SYSTEM_USER_ID = str(UUID("00000000-0000-0000-0000-000000000000"))
 
 SYSTEM_ACTOR = Actor(
     user_id=SYSTEM_USER_ID,

@@ -18,18 +18,18 @@ def handle_user_logged_in(event: UserLoggedIn):
     )
     
     actor = Actor(
-        user_id=event.user_id,
-        tenant_id=event.tenant_id,
+        user_id=str(event.user_id),
+        tenant_id=str(event.tenant_id),
         ip=None
     )
     
     domain_log = LogEntry(
-        id=uuid4(),
-        tenant_id=event.tenant_id,
+        id=str(uuid4()),
+        tenant_id=str(event.tenant_id),
         actor=actor,
         event_type=LogEventType.AUTH,
         entity="USER",
-        entity_id=event.user_id,
+        entity_id=str(event.user_id),
         action="LOGIN",
         payload={"user_id": str(event.user_id)},
         occurred_at=event.occurred_at
