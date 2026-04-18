@@ -6,6 +6,8 @@ from infrastructure.database import close_connection_pool, initialize_connection
 from infrastructure.security.jwt_middleware import JWTAuthMiddleware
 from infrastructure.api.routes.auth import get_auth_router
 from infrastructure.api.routes.products import create_product_router
+from infrastructure.api.routes.users import create_user_router
+from infrastructure.api.routes.audit import create_audit_router
 from application.event_bus import EventBus
 from application.handlers import register_handlers
 from infrastructure.projections.user_access_projection import UserAccessProjection
@@ -50,6 +52,8 @@ def init_app():
     app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
     app.include_router(access_router, tags=["access"])
     app.include_router(create_product_router(event_bus), prefix="/api")
+    app.include_router(create_user_router(event_bus), prefix="/api")
+    app.include_router(create_audit_router(), prefix="/api")
 
 
 init_app()

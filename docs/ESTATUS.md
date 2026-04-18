@@ -2,7 +2,7 @@
 
 **Fecha**: 18 de abril de 2026
 **Rama activa**: `feature/auth-core`
-**Estado general**: 🟡 **Backend 75% — Frontend pendiente — MVP al 58%**
+**Estado general**: 🟡 **Backend 88% — Frontend pendiente — MVP al 68%**
 
 > Análisis basado en comparación directa entre ROADMAP.md y código fuente real.
 
@@ -14,11 +14,11 @@
 FASE 1  Infraestructura        █████████░   90%
 FASE 2  Data Access Layer      ██████████  100%
 FASE 3  Casos de uso           ██████████  100%
-FASE 4  Controladores / Rutas  █████░░░░░   55%
+FASE 4  Controladores / Rutas  █████████░   90%
 FASE 5  Frontend               █░░░░░░░░░    5%
 FASE 6  QA e Integración       ░░░░░░░░░░    0%
 ────────────────────────────────────────────────
-TOTAL MVP                      █████░░░░░   58%
+TOTAL MVP                      ██████░░░░   68%
 ```
 
 ---
@@ -33,13 +33,15 @@ TOTAL MVP                      █████░░░░░   58%
 | Completar script SQL (8 tablas + seed) | ✅ |
 | Completar settings.py (Pydantic BaseSettings) | ✅ |
 | Completar main.py con lifespan, routers, pool | ✅ |
+| Volumen postgres externo (bind mount `./data/postgres`) | ✅ |
+| Env files montados en backend (`./env:/app/env:ro`) | ✅ |
 
 ### Pendiente
 
 | Tarea | Bloqueante | Por qué importa |
 | --- | --- | --- |
-| `class Tenat` → `Tenant` en `domain/contracts.py` | No | Cualquier `from domain.contracts import Tenant` falla con `ImportError` en el futuro |
-| Validación `curl http://localhost:8000/health` | No | El endpoint `/health` no existe y JWT middleware lo bloquearía si existiera — imposible verificar que el stack levanta sin un token |
+| `class Tenat` → `Tenant` en `domain/contracts.py` | No | `ImportError` al usar la entidad en código nuevo |
+| Validación `curl http://localhost:8000/health` | No | El endpoint `/health` no existe — imposible verificar que el stack levanta |
 
 ---
 
@@ -62,8 +64,6 @@ Todos los repositorios implementados con puerto ABC + adaptador SQL.
 
 ## FASE 3 — Casos de uso ✅ 100% (7 de 7)
 
-### Use cases completados
-
 | Use Case | Archivo |
 | --- | --- |
 | `LoginUser` | `application/services/auth/login_user.py` |
@@ -74,38 +74,29 @@ Todos los repositorios implementados con puerto ABC + adaptador SQL.
 | `AssignRoleToUserUseCase` | `application/use_cases/assign_role_to_user.py` |
 | `GetAuditLogByTenantUseCase` | `application/use_cases/get_audit_log_by_tenant.py` |
 
-### Cambios de esta sesión
-
-- `CreateUserUseCase`: valida email único por tenant, hashea contraseña con bcrypt, publica `UserCreated`
-- `AssignRoleToUserUseCase`: valida que usuario y rol pertenecen al mismo tenant, publica `RoleAssigned` (evento ya existía en `domain/events/base.py`)
-- `GetAuditLogByTenantUseCase`: query read-only, límite configurable entre 1 y 1000
-- `domain/events/user.py`: nuevo archivo con `UserCreated`
-- `application/handlers.py`: `handle_user_logged_in` ahora persiste el `LogEntry` en BD vía `AuditLogRepository` (se usó patrón closure para inyectar el repo)
-- `main.py`: inyecta `AuditLogRepositorySQL`, `UserRepositorySQL`, `RoleRepositorySQL`; pasa `audit_log_repo` a `register_handlers`
-
 ---
 
-## FASE 4 — Controladores y Rutas 🔴 55%
+## FASE 4 — Controladores y Rutas 🟡 90%
 
-### Rutas completadas
+### Rutas activas
 
-| Componente | Rutas activas |
+| Componente | Rutas |
 | --- | --- |
-| ProductController | `GET /api/products/`, `POST /api/products/`, `GET /api/products/{id}` |
-| InventoryController | `POST /api/products/{id}/movements`, `GET /api/products/{id}/movements` |
-| AuthController (parcial) | `POST /api/auth/login` |
-| AccessController | `GET /me/access` |
-| Audit log en handlers | `handle_user_logged_in` persiste en BD ✅ |
+| `AuthController` | `POST /api/auth/login` — `LoginRequest(email, password)` con Pydantic |
+| `ProductController` | `GET /api/products/`, `POST /api/products/`, `GET /api/products/{id}` |
+| `InventoryController` | `POST /api/products/{id}/movements`, `GET /api/products/{id}/movements` |
+| `UserController` | `GET /api/users/`, `POST /api/users/` |
+| `AuditController` | `GET /api/audit/?limit=100` |
+| `AccessController` | `GET /me/access` |
+| `PUBLIC_PATHS` middleware | `/docs`, `/redoc`, `/openapi.json`, `/health`, `/api/auth/login` |
+| Audit log en handlers | `handle_user_logged_in` persiste `LogEntry` en BD |
 
-### Pendiente y por qué importa
+### Rutas pendientes
 
-| Tarea | Por qué es crítico |
+| Tarea | Por qué importa |
 | --- | --- |
-| `LoginRequest(BaseModel)` con `email: EmailStr` y `password: str` | Hoy `payload["email"]` lanza `KeyError` → HTTP 500 si el cliente omite cualquier campo |
-| `PUBLIC_PATHS` en `jwt_middleware.py` | Swagger UI (`/docs`), `/redoc` y `/openapi.json` exigen token actualmente |
-| `UserController` (`GET /api/users/`, `POST /api/users/`) | Sin él no se puede crear usuarios desde la API. Depende de `CreateUserUseCase` |
-| `AuditController` (`GET /api/audit/`) | Sin él el historial es inaccesible aunque está en BD. Depende de `GetAuditLogByTenantUseCase` |
-| `AuthController` completo (registro, refresh) | Hoy solo existe login |
+| `AuthController` completo (registro, refresh token) | Hoy crear usuario requiere endpoint `/api/users/` pero sin rol asignado el acceso es limitado |
+| `AssignRoleController` (`POST /api/users/{id}/roles`) | `AssignRoleToUserUseCase` existe pero no tiene endpoint HTTP |
 
 ---
 
@@ -124,19 +115,17 @@ Solo existe `<h1>Brixo</h1>` en `frontend/src/App.jsx`. No hay dependencias inst
 | Instalar `axios`, `react-router-dom`, `zustand` | Sin estas librerías no se puede construir ningún componente funcional |
 | `src/services/api.js` — cliente axios con interceptor JWT | Es el puente entre frontend y backend |
 | `authStore` (Zustand) — token, usuario, logout | Estado global de sesión |
-| `LoginPage` | Puerta de entrada. Sin login, el usuario no puede acceder a nada |
+| `LoginPage` | Puerta de entrada |
 | `ProductListPage` | Vista principal del MVP |
 | `ProductFormModal` | Sin él no se pueden crear productos desde la UI |
 | `MovementFormModal` | Sin él no se pueden registrar entradas/salidas |
 | `DashboardPage` | Resumen de stock con alertas de mínimo |
 | `AuditLogPage` | Historial de cambios |
-| Routing y layout | Sin `react-router-dom` configurado, no hay navegación entre páginas |
+| Routing y layout | Sin `react-router-dom` configurado, no hay navegación |
 
 ---
 
 ## FASE 6 — QA e Integración ⛔ 0% — BLOQUEADA POR FASE 5
-
-No se puede iniciar hasta tener frontend funcional. Las tareas del ROADMAP son:
 
 | Tarea | Tiempo estimado |
 | --- | --- |
@@ -153,27 +142,24 @@ No se puede iniciar hasta tener frontend funcional. Las tareas del ROADMAP son:
 | --- | --- | --- | --- |
 | 1 | `class Tenat` → `Tenant` | `domain/contracts.py:8` | `ImportError` al usar la entidad en código nuevo |
 | 2 | `ocurred_at` → `occurred_at` | `domain/events/base.py` | Inconsistencia con eventos hermanos |
-| 3 | Directorio `acccess/` (triple c) | `application/services/` | Confusión al navegar o referenciar el módulo |
-| 4 | `asssign_role.py` vacío (triple s) | `application/services/` | Dead code, genera ruido en la base de código |
+| 3 | Directorio `acccess/` (triple c) | `application/services/` | Confusión al navegar |
+| 4 | `asssign_role.py` vacío (triple s) | `application/services/` | Dead code |
 | 5 | `aut_service.py` huérfano | `application/auth/` | Diseño paralelo abandonado |
-| 6 | `domain/events.py` duplicado del paquete `domain/events/` | `domain/` | Ambigüedad en `from domain.events import ...` |
+| 6 | `domain/events.py` duplicado del paquete `domain/events/` | `domain/` | Ambigüedad en imports |
 
 ---
 
 ## ORDEN DE EJECUCIÓN RECOMENDADO
 
 ```text
-PRÓXIMO (Fase 4 restante)
-├─ LoginRequest Pydantic en auth router (15 min) — evita crashes en producción
-├─ PUBLIC_PATHS en middleware (20 min) — desbloquea Swagger para desarrollo
-├─ UserController (GET /api/users/, POST /api/users/) (1.5 h)
-├─ AuditController (GET /api/audit/) (45 min)
-└─ AuthController completo (registro, refresh) (1 h)
+PRÓXIMO (completar Fase 4)
+├─ POST /api/users/{id}/roles — expone AssignRoleToUserUseCase (30 min)
+└─ GET /health — endpoint sin autenticación para healthcheck (10 min)
 
 PRÓXIMAS 2 SEMANAS (Fase 5)
-├─ Setup + LoginPage + api.js + authStore (1 día)
-├─ ProductListPage + MovementFormModal (2 días)
-├─ DashboardPage + AuditLogPage + routing (2 días)
+├─ npm install axios react-router-dom zustand + api.js + authStore (1 día)
+├─ LoginPage + ProductListPage + MovementFormModal (2 días)
+└─ DashboardPage + AuditLogPage + routing (2 días)
 
 CIERRE (Fase 6)
 └─ Testing manual + fixes + documentación (1 día)
@@ -182,4 +168,4 @@ CIERRE (Fase 6)
 ---
 
 **Documento actualizado**: 18 de abril de 2026
-**Próxima revisión**: Al completar las correcciones de Fase 4
+**Próxima revisión**: Al iniciar Fase 5 (Frontend)

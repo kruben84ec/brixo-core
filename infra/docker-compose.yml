@@ -8,7 +8,7 @@ services:
     env_file:
       - ./env/db.env
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./data/postgres:/var/lib/postgresql/data
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
@@ -34,13 +34,15 @@ services:
       - ./env/backend.env
       - ./env/jwt.env
       - ./env/redis.env
+      - ./env/logging.env
     depends_on:
       - postgres
-      - redis        # ← agrega esta dependencia
+      - redis
     ports:
       - "8000:8000"
     volumes:
       - ../backend:/app
+      - ./env:/app/env:ro
 
   frontend:
     build:
@@ -59,5 +61,4 @@ services:
       - /app/node_modules
 
 volumes:
-  postgres_data:
-  redis_data:        # ← agrega este volumen
+  redis_data:
