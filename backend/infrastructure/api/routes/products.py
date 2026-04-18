@@ -10,6 +10,7 @@ from application.use_cases.register_inventory_movement import (
     RegisterInventoryMovementUseCase,
 )
 from application.event_bus import EventBus
+from infrastructure.security.permissions import require_permission
 
 
 # ─── DTOs ────────────────────────────────────────────────────────────────────
@@ -58,13 +59,13 @@ def create_product_router(event_bus: EventBus) -> APIRouter:
     get_stock_uc = GetProductStockUseCase(product_repo)
     register_movement_uc = RegisterInventoryMovementUseCase(product_repo, movement_repo, event_bus)
 
-    @router.get("/", response_model=list[ProductResponse])
+    @router.get("/", response_model=list[ProductResponse], dependencies=[require_permission("INVENTORY_READ")])
     async def list_products(request: Request):
         tenant_id: str = request.state.tenant_id
         products = product_repo.list_active_products_by_tenant(tenant_id)
         return [ProductResponse(**p.__dict__) for p in products]
 
-    @router.post("/", response_model=ProductResponse, status_code=status.HTTP_201_CREATED)
+    @router.post("/", response_model=ProductResponse, status_code=status.HTTP_201_CREATED, dependencies=[require_permission("INVENTORY_WRITE")])
     async def create_product(payload: CreateProductRequest, request: Request):
         tenant_id: str = request.state.tenant_id
         try:
@@ -90,7 +91,7 @@ def create_product_router(event_bus: EventBus) -> APIRouter:
         except ValueError as e:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
-    @router.post("/{product_id}/movements", response_model=MovementResponse, status_code=status.HTTP_201_CREATED)
+    @router.post("/{product_id}/movements", response_model=MovementResponse, status_code=status.HTTP_201_CREATED, dependencies=[require_permission("INVENTORY_WRITE")])
     async def register_inventory_movement(
         product_id: str, payload: RegisterMovementRequest, request: Request
     ):

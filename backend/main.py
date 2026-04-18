@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 
 from db_wait import wait_for_db
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from infrastructure.database import close_connection_pool, initialize_connection_pool
 from infrastructure.security.jwt_middleware import JWTAuthMiddleware
 from infrastructure.api.routes.auth import get_auth_router
@@ -48,6 +49,13 @@ def init_app():
     user_access_projection.register()
 
     app.add_middleware(JWTAuthMiddleware, event_bus=event_bus)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["http://localhost:3000"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     app.include_router(health_router)
 

@@ -6,6 +6,7 @@ from adapters.repositories.user_repository_sql import UserRepositorySQL
 from application.event_bus import EventBus
 from application.use_cases.assign_role_to_user import AssignRoleCommand, AssignRoleToUserUseCase
 from application.use_cases.create_user import CreateUserCommand, CreateUserUseCase
+from infrastructure.security.permissions import require_permission
 
 VALID_AUTHORITY_LEVELS = {"OWNER", "ADMIN", "MANAGER", "OPERATOR"}
 
@@ -50,7 +51,7 @@ def create_user_router(event_bus: EventBus) -> APIRouter:
     create_user_uc = CreateUserUseCase(user_repo, event_bus)
     assign_role_uc = AssignRoleToUserUseCase(user_repo, role_repo, event_bus)
 
-    @router.get("/", response_model=list[UserResponse])
+    @router.get("/", response_model=list[UserResponse], dependencies=[require_permission("USERS_READ")])
     async def list_users(request: Request):
         tenant_id: str = request.state.tenant_id
         users = user_repo.list_users_by_tenant(tenant_id)
@@ -66,7 +67,7 @@ def create_user_router(event_bus: EventBus) -> APIRouter:
             for u in users
         ]
 
-    @router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+    @router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED, dependencies=[require_permission("USERS_WRITE")])
     async def create_user(payload: CreateUserRequest, request: Request):
         tenant_id: str = request.state.tenant_id
         try:
@@ -92,7 +93,7 @@ def create_user_router(event_bus: EventBus) -> APIRouter:
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(e)
             )
 
-    @router.post("/{user_id}/roles", response_model=AssignRoleResponse, status_code=status.HTTP_201_CREATED)
+    @router.post("/{user_id}/roles", response_model=AssignRoleResponse, status_code=status.HTTP_201_CREATED, dependencies=[require_permission("ROLES_WRITE")])
     async def assign_role(user_id: str, payload: AssignRoleRequest, request: Request):
         tenant_id: str = request.state.tenant_id
         actor_user_id: str = request.state.user_id

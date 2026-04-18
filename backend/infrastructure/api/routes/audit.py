@@ -8,6 +8,7 @@ from application.use_cases.get_audit_log_by_tenant import (
     GetAuditLogByTenantUseCase,
     GetAuditLogQuery,
 )
+from infrastructure.security.permissions import require_permission
 
 
 # ─── DTOs ────────────────────────────────────────────────────────────────────
@@ -37,7 +38,7 @@ def create_audit_router() -> APIRouter:
     audit_log_repo = AuditLogRepositorySQL()
     get_audit_log_uc = GetAuditLogByTenantUseCase(audit_log_repo)
 
-    @router.get("/", response_model=list[AuditLogEntryResponse])
+    @router.get("/", response_model=list[AuditLogEntryResponse], dependencies=[require_permission("AUDIT_READ")])
     async def list_audit_log(
         request: Request,
         limit: int = Query(default=100, ge=1, le=1000),
