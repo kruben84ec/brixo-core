@@ -9,12 +9,12 @@ from infrastructure.api.routes.products import create_product_router
 from application.event_bus import EventBus
 from application.handlers import register_handlers
 from infrastructure.projections.user_access_projection import UserAccessProjection
-from infrastructure.persistence.access_repository_impl import AccessRepositoryImpl
+from adapters.repositories.access_repository_sql import AccessRepositorySQL
 from application.services.acccess.access_service import AccessService
 
 from infrastructure.api.routes.access import router as access_router
 
-access_repository = AccessRepositoryImpl()
+access_repository = AccessRepositorySQL()
 access_service = AccessService(access_repository)
 
 

@@ -189,3 +189,4 @@ start http://localhost:3000
 
 Consulta `docs/PRIMEROS_PASOS.md` para los pasos 1-7 con código listo para copiar.  
 Consulta `docs/CHECKLIST.md` para el estado de tareas por fase.
+Consulta `docs/ESTATUS.md` para revisar el último realizado.
