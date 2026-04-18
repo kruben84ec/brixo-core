@@ -1,341 +1,199 @@
-# 📊 ESTATUS DEL PROYECTO BRIXO - MVP
+# ESTATUS DEL PROYECTO BRIXO — MVP
 
-**Fecha**: 24 de enero de 2026  
-**Rama Activa**: dev  
-**Versión**: 4.5.0  
-**Estado General**: 🟡 **En desarrollo - Arquitectura base lista, implementación pendiente**
+**Fecha**: 18 de abril de 2026
+**Rama activa**: `feature/auth-core`
+**Estado general**: 🟡 **Backend core funcional — Frontend pendiente**
 
----
-
-## 📋 RESUMEN EJECUTIVO
-
-Brixo es un **sistema de control de inventario simple** para pequeños negocios y pymes. El proyecto tiene una **arquitectura bien definida** (hexagonal/ports-adapters) con muchas estructuras de dominio definidas, pero la **implementación funcional es aún incompleta**.
-
-### Objetivos MVP (según README.md)
-✅ Gestión de productos  
-✅ Registro de movimientos (entradas/salidas)  
-✅ Correcciones de stock  
-✅ Historial/auditoría  
-✅ Dashboard visual  
-✅ Alertas básicas de stock bajo  
+> Historial: el ESTATUS anterior (24-ene-2026) estaba completamente desactualizado.
+> Este documento refleja el estado real del código fuente al 18-04-2026.
 
 ---
 
-## ✅ QUÉ ESTÁ IMPLEMENTADO
+## RESUMEN EJECUTIVO
 
-### 1. **Infraestructura Base** 
-- ✅ Docker & Docker Compose configurado
-- ✅ PostgreSQL 15 (contenedor listo)
-- ✅ Redis 7.1.0 (en requirements.txt, NO en docker-compose)
-- ✅ FastAPI 0.128.0 (framework)
-- ✅ Pydantic 2.12.5 (validación)
-- ✅ Variables de entorno configuradas
-
-### 2. **Arquitectura & Estructura de Dominio**
-- ✅ Arquitectura hexagonal definida (Domain → Application → Infrastructure → Adapters)
-- ✅ Modelos de dominio básicos:
-  - `Tenant` (Empresa/Negocio)
-  - `User` (Usuario)
-  - `AuthorityLevel` (OWNER, ADMIN, MANAGER, OPERATOR)
-  - `Role` (Rol de usuario)
-  - `Permission` (Permisos)
-  - `LogEntry` (Auditoría)
-  - `Actor` (Quién realiza acciones)
-
-### 3. **Sistema de Eventos**
-- ✅ Event Bus implementado (`application/event_bus.py`)
-- ✅ Eventos de dominio definidos:
-  - `InventoryChanged` (cambio de stock)
-  - `RoleAssigned` (asignación de rol)
-  - `RoleRevoked` (revocación de rol)
-  - `SaleRegistered` (venta registrada)
-  - `UserLoggedIn` (usuario inició sesión)
-- ✅ Handlers básicos para eventos
-- ✅ Sistema de logging estructurado (JSON)
-
-### 4. **Autenticación (Parcial)**
-- ✅ JWT RS256 configurado
-- ✅ `AuthService` con método `login()`
-- ✅ Middleware OAuth2 (`auth_middleware.py`)
-- ✅ Validación de tokens JWT
-- ✅ Integración con Redis para sesiones
-
-### 5. **Base de Datos**
-- ✅ PostgreSQL 15 en Docker
-- ✅ Script SQL inicial (`init.sql`) con tabla de productos
-- ✅ Estructura preparada para múltiples tablas (tenant, user, role, etc.)
-
-### 6. **Logging**
-- ✅ Sistema de logging estructurado en JSON
-- ✅ Logger centralizado (`infrastructure/logging.py`)
-- ✅ Soporte para JSON logs en producción
+El backend tiene el núcleo funcional. La autenticación JWT RS256 está operativa, el
+schema SQL completo con 8 tablas fue creado, los repositorios reales reemplazaron los
+stubs hardcodeados, y los endpoints de productos e inventario están implementados y
+conectados a la app. El bloqueante principal para el MVP es el frontend.
 
 ---
 
-## ❌ QUÉ FALTA PARA EL MVP
+## LO QUE ESTÁ IMPLEMENTADO Y FUNCIONA
 
-### 🔴 **CRÍTICO - Sin esto, el MVP no funciona**
+### Infraestructura
 
-#### 1. **FastAPI App NO está levantada**
-- `backend/main.py` está vacío (solo espera DB)
-- No hay `FastAPI()` app instanciada
-- No hay rutas definidas (`@app.get()`, `@app.post()`)
-- **Impacto**: El backend **NO inicia correctamente**
+| Componente | Estado | Notas |
+| --- | --- | --- |
+| Docker Compose | ✅ | PostgreSQL 15 + Redis 7 + Backend + Frontend |
+| PostgreSQL 15 | ✅ | Schema completo con 8 tablas, seed data incluido |
+| Redis 7 | ✅ | Configurado en Docker, usado para snapshots de sesión |
+| Pool de conexiones | ✅ | `infrastructure/database.py` — psycopg2 ThreadedConnectionPool |
+| Variables de entorno | ✅ | Pydantic BaseSettings, JWT config, Redis, logging |
+| Startup/shutdown | ✅ | `lifespan` asynccontextmanager en main.py — pool init y cierre limpio |
 
-**Necesario**:
-```python
-# backend/main.py debe tener:
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from backend.infrastructure.web.middleware.auth_middleware import oauth2_scheme
+### Schema SQL (`infra/docker/postgres/init.sql`)
 
-app = FastAPI(title="Brixo API", version="4.5.0")
-# Agregar middlewares
-# Agregar rutas
+Todas las tablas del dominio están creadas con UUIDs, foreign keys, constraints e índices:
+
+| Tabla | Estado |
+| --- | --- |
+| `tenants` | ✅ |
+| `users` | ✅ |
+| `roles` | ✅ |
+| `user_roles` | ✅ |
+| `permissions` | ✅ |
+| `products` | ✅ (con `tenant_id`, UUID, `minimum_stock`) |
+| `inventory_movements` | ✅ |
+| `audit_logs` | ✅ (payload JSONB) |
+
+Seed data: tenant "Demo Store", usuario `admin@brixo.local`, 3 productos de ejemplo.
+
+### Autenticación y seguridad
+
+| Componente | Estado | Archivo |
+| --- | --- | --- |
+| JWT RS256 — generate | ✅ | `infrastructure/security/jwt_service.py` |
+| JWT RS256 — decode | ✅ | Bug de método truncado corregido, 4 excepciones manejadas |
+| JWTAuthMiddleware | ✅ | `infrastructure/security/jwt_middleware.py` |
+| Login endpoint | ✅ | `POST /api/auth/login` |
+| AuthRepositorySQL real | ✅ | `adapters/repositories/auth_repository_sql.py` — consulta tabla `users` |
+| Sesión Redis | ✅ | Snapshot de roles/permisos por usuario |
+
+### Domain y Application
+
+| Componente | Estado | Notas |
+| --- | --- | --- |
+| EventBus | ✅ | Bug async corregido — detecta coroutines con `inspect.isawaitable` |
+| Handlers | ✅ | `UserLoggedIn`, `UserLoginFailed`, `UserAuthenticated` |
+| LoginUser use case | ✅ | `application/services/auth/login_user.py` |
+| CreateProductUseCase | ✅ | `application/use_cases/create_product.py` |
+| RegisterInventoryMovementUseCase | ✅ | Maneja ENTRADA / SALIDA / AJUSTE con validación de stock |
+| GetProductStockUseCase | ✅ | `application/use_cases/get_product_stock.py` |
+| Domain entities | ✅ | Product, InventoryMovement, LogEntry, Actor, User, Tenant |
+| Port interfaces (ABC) | ✅ | ProductRepository, InventoryMovementRepository, AuditLogRepository, AuthRepository |
+
+### API REST — Endpoints activos
+
+| Método | Ruta | Estado |
+| --- | --- | --- |
+| POST | `/api/auth/login` | ✅ |
+| GET | `/me/access` | ✅ |
+| GET | `/api/products/` | ✅ |
+| POST | `/api/products/` | ✅ |
+| GET | `/api/products/{product_id}` | ✅ |
+| POST | `/api/products/{product_id}/movements` | ✅ |
+| GET | `/api/products/{product_id}/movements` | ✅ |
+
+### Repositorios reales (adapters/repositories/)
+
+| Repositorio | Estado | Reemplaza |
+| --- | --- | --- |
+| `AuthRepositorySQL` | ✅ | Stub hardcodeado en `infrastructure/persistence/` |
+| `ProductRepositorySQL` | ✅ | Vacío en `adapters/` |
+| `InventoryMovementRepositorySQL` | ✅ | No existía |
+| `AuditLogRepositorySQL` | ✅ | No existía |
+
+---
+
+## LO QUE ESTÁ PENDIENTE
+
+### Crítico para MVP funcional
+
+| # | Ítem | Impacto |
+| --- | --- | --- |
+| 1 | Frontend completo | Sin UI no hay producto |
+| 2 | `handle_user_logged_in` no persiste en BD | Auditoría de logins silenciosa |
+| 3 | LoginRequest sin modelo Pydantic | `KeyError` 500 si cliente omite campo |
+| 4 | JWT middleware sin rutas públicas | Swagger UI inaccesible sin token |
+
+### Deuda técnica (no bloquea arranque)
+
+| # | Ítem | Archivo |
+| --- | --- | --- |
+| 1 | `class Tenat` → `Tenant` | `domain/contracts.py:8` |
+| 2 | `ocurred_at` → `occurred_at` | `domain/events/base.py` |
+| 3 | Directorio `acccess/` → `access/` | `application/services/acccess/` |
+| 4 | Archivo `asssign_role.py` vacío | `application/services/` |
+| 5 | `aut_service.py` → `auth_service.py` (huérfano) | `application/auth/` |
+| 6 | `domain/events.py` duplicado del paquete `domain/events/` | `domain/` |
+| 7 | `access_repository.py` sin herencia ABC | `application/ports/` |
+| 8 | `AssignRoleToUserUseCase` no existe | `application/use_cases/` |
+
+---
+
+## PROGRESO POR COMPONENTE
+
+```text
+Schema SQL             ██████████  100%
+domain/                █████████░   95%  (typos menores)
+application/event_bus  ██████████  100%  (bug async resuelto)
+application/handlers   ██████░░░░   60%  (auditoría no persiste)
+application/use_cases  ████████░░   80%  (assign_role faltante)
+application/ports/     █████████░   90%  (access_repository sin ABC)
+infrastructure/db      ██████████  100%
+infrastructure/jwt     ██████████  100%  (decode completo)
+infrastructure/mw      █████████░   90%  (falta lista rutas públicas)
+infrastructure/redis   ██████████  100%
+adapters/repositories  ██████████  100%
+infrastructure/routes  █████████░   90%  (falta LoginRequest Pydantic)
+main.py                ██████████  100%  (lifespan, routers, pool)
+frontend/src/          █░░░░░░░░░    5%  (solo placeholder)
 ```
 
-#### 2. **Rutas API Completamente Ausentes**
-No existen endpoints para:
-- ❌ Crear/listar/actualizar productos
-- ❌ Registrar movimientos de inventario
-- ❌ Login de usuarios
-- ❌ Gestión de roles
-- ❌ Historial/auditoría
-- ❌ Dashboard
+---
 
-**Necesario**: 
-- Crear `backend/adapters/` con controladores REST
-- Implementar DTOs para peticiones/respuestas
-- Endpoints siguiendo estructura REST
+## PLAN PARA CERRAR EL MVP
 
-#### 3. **Base de Datos Incompleta**
-- ✅ Tabla `products` existe
-- ❌ Tabla `tenants` - NO existe
-- ❌ Tabla `users` - NO existe  
-- ❌ Tabla `roles` - NO existe
-- ❌ Tabla `user_roles` - NO existe
-- ❌ Tabla `audit_logs` / `log_entries` - NO existe
-- ❌ Tabla `inventory_movements` - NO existe
-- ❌ Tabla `permissions` - NO existe
+### Fase 1 — Seguridad y validación (½ día)
 
-**Necesario**: Script SQL completo en `infra/docker/postgres/init.sql`
+1. Crear `LoginRequest(BaseModel)` con `email: EmailStr` y `password: str` en `routes/auth.py`
+2. Agregar lista `PUBLIC_PATHS` en `jwt_middleware.py` (`/docs`, `/redoc`, `/openapi.json`, `/health`)
+3. Inyectar `AuditLogRepositorySQL` en `handlers.py` para persistir logins
 
-#### 4. **Repositorios/Data Access Layer - NO existen**
-- ❌ Repositorio de productos
-- ❌ Repositorio de usuarios
-- ❌ Repositorio de movimientos
-- ❌ Repositorio de logs
-- ❌ Repositorio de roles
+### Fase 2 — Frontend mínimo (3-5 días)
 
-**Necesario**: 
-- Implementar interfaces de repositorio (puertos)
-- Implementar repositorios con PostgreSQL (adaptadores)
+1. Instalar dependencias: `axios`, `react-router-dom`, `zustand`
+2. Crear `src/services/api.js` — cliente axios con interceptor de token JWT
+3. Crear páginas: `LoginPage`, `ProductListPage`, `MovementFormModal`, `DashboardPage`, `AuditLogPage`
+4. Crear stores Zustand: `authStore`, `productStore`
 
-#### 5. **Casos de Uso Vacíos**
-- ❌ `use_cases/asssign_role.py` - VACÍO
-- ❌ Caso de uso: Crear producto
-- ❌ Caso de uso: Registrar entrada/salida
-- ❌ Caso de uso: Obtener stock
-- ❌ Caso de uso: Registrar usuario
+### Fase 3 — Cleanup (½ día)
 
-**Necesario**: Implementar lógica de negocio en cada caso de uso
+1. Corregir typos del dominio (`Tenat`, `ocurred_at`, `acccess/`, `asssign_role.py`)
+2. Eliminar `domain/events.py` plano (duplicado)
+3. Hacer `access_repository.py` heredar de ABC
+4. Renombrar `aut_service.py` → `auth_service.py` o eliminarlo (es huérfano)
 
-#### 6. **Mappers - NO implementados**
-- `backend/mappers/` existe pero está vacío
-- Se necesitan mappers Domain ↔ DTO
+### Fase 4 — Testing e integración (1 día)
 
-#### 7. **Redis NO está en Docker Compose**
-- Redis está en `requirements.txt`
-- **NO aparece en `docker-compose.yml`**
-- Se necesita agregar servicio Redis
-
-#### 8. **Frontend NO tiene componentes**
-- `frontend/src/App.jsx` - VACÍO
-- `frontend/src/main.jsx` - VACÍO
-- No hay formularios, dashboard, listados
-- Package.json existe pero sin componentes
+1. `docker compose up` — verificar flujo completo
+2. Crear producto → registrar movimiento → ver stock → ver historial
+3. Login con usuario real desde tabla `users`
 
 ---
 
-### 🟡 **IMPORTANTE - Mejorar antes de MVP**
+## ESTIMACIÓN PARA MVP
 
-#### 1. **Error: `Tenat` en lugar de `Tenant`**
-En `backend/domain/contracts.py`:
-```python
-class Tenat:  # ❌ Typo - debería ser "Tenant"
-```
-
-#### 2. **Use Cases Incompletos**
-- `aut_service.py` tiene método `login()` pero no maneja usuarios inexistentes
-- No hay validación de credenciales
-- No hay casos de uso para:
-  - Crear usuario
-  - Registrar producto
-  - Registrar movimiento
-
-#### 3. **Falta configuración de CORS**
-- No hay CORS middleware en FastAPI
-- Frontend en puerto 3000 no puede hablar con backend en 8000
-
-#### 4. **Falta configuración de settings completa**
-- `settings.py` parcial
-- No está cargando correctamente las variables de entorno
-- Falta Base de datos connection string
-
-#### 5. **Event Bus no integrado**
-- Event Bus existe pero no se instancia en la aplicación
-- No hay subscription de handlers al iniciar
+| Fase | Tiempo estimado |
+| --- | --- |
+| Fase 1 — Seguridad y validación | 4 horas |
+| Fase 2 — Frontend | 3-5 días |
+| Fase 3 — Cleanup | 4 horas |
+| Fase 4 — Testing e integración | 1 día |
+| **Total** | **~6-7 días** |
 
 ---
 
-## 🎯 PLAN PARA ALCANZAR MVP (Orden sugerido)
+## RIESGOS ACTUALES
 
-### **Fase 1: Infraestructura y BD (2-3 horas)**
-- [ ] 1. Agregar Redis a `docker-compose.yml`
-- [ ] 2. Completar script SQL con todas las tablas:
-  - tenants
-  - users
-  - roles
-  - user_roles
-  - products
-  - inventory_movements
-  - audit_logs
-  - permissions
-- [ ] 3. Arreglar typo: `Tenat` → `Tenant`
-- [ ] 4. Completar `settings.py` con database connection
-
-### **Fase 2: Data Access Layer (2 horas)**
-- [ ] 5. Implementar repositorios en `adapters/`:
-  - ProductRepository
-  - UserRepository
-  - TenantRepository
-  - RoleRepository
-  - AuditLogRepository
-  - InventoryMovementRepository
-
-### **Fase 3: Casos de Uso (2-3 horas)**
-- [ ] 6. Implementar casos de uso:
-  - CreateProduct
-  - RegisterMovement (entrada/salida)
-  - GetProductStock
-  - AssignRole (completar)
-  - CreateUser
-  - CreateTenant
-
-### **Fase 4: API REST (3-4 horas)**
-- [ ] 7. Crear controladores en `adapters/`:
-  - ProductController
-  - InventoryController
-  - AuthController
-  - UserController
-  - RoleController
-  - AuditController
-- [ ] 8. Implementar endpoints:
-  - POST `/api/auth/login`
-  - POST `/api/products` (crear)
-  - GET `/api/products` (listar)
-  - POST `/api/inventory/movement` (registrar)
-  - GET `/api/inventory/stock/{productId}`
-  - GET `/api/audit/logs`
-  - POST `/api/users/{userId}/roles` (asignar rol)
-
-### **Fase 5: Integración (2 horas)**
-- [ ] 9. Completar `main.py`:
-  - Instanciar FastAPI app
-  - Registrar middlewares (CORS, Auth, Logging)
-  - Registrar rutas de controladores
-  - Instanciar y conectar Event Bus
-  - Subscribir handlers a eventos
-- [ ] 10. Agregar CORS middleware
-- [ ] 11. Conectar Event Bus al lifecycle
-
-### **Fase 6: Frontend Mínimo (2-3 horas)**
-- [ ] 12. Crear componentes básicos:
-  - LoginForm
-  - ProductList
-  - ProductForm
-  - MovementForm
-  - Dashboard simple
-  - AuditLog viewer
-
-### **Fase 7: Testing e Integración (1-2 horas)**
-- [ ] 13. Testeo manual de flujo completo:
-  - Docker compose up
-  - Login
-  - Crear producto
-  - Registrar movimiento
-  - Ver stock
-  - Ver auditoría
+| Riesgo | Probabilidad | Impacto | Mitigación |
+| --- | --- | --- | --- |
+| Auditoría de logins silenciosa | Alta | Medio | Inyectar AuditLogRepository en handlers.py |
+| Swagger bloqueado por JWT | Alta | Bajo | Agregar PUBLIC_PATHS en middleware |
+| KeyError en /login sin campos | Media | Alto | Crear LoginRequest Pydantic |
+| Frontend subestimado en tiempo | Media | Alto | Priorizar flujo mínimo antes de UX |
 
 ---
 
-## 📊 TABLA DE PRIORIDADES
-
-| Item | Criticidad | Complejidad | Tiempo Est. | Estado |
-|------|-----------|-----------|----------|--------|
-| FastAPI app en main.py | 🔴 Crítico | Bajo | 30 min | ❌ |
-| Script SQL completo | 🔴 Crítico | Bajo | 1 hora | ❌ |
-| Repositorios | 🔴 Crítico | Medio | 2 horas | ❌ |
-| Controladores/Rutas | 🔴 Crítico | Medio | 3 horas | ❌ |
-| Casos de uso | 🔴 Crítico | Medio | 2 horas | ❌ |
-| Redis en docker-compose | 🟡 Importante | Bajo | 15 min | ❌ |
-| CORS middleware | 🟡 Importante | Bajo | 15 min | ❌ |
-| Event Bus integration | 🟡 Importante | Bajo | 30 min | ❌ |
-| Frontend componentes | 🟡 Importante | Alto | 3 horas | ❌ |
-| Testeo e2e | 🟡 Importante | Medio | 1 hora | ❌ |
-
----
-
-## 📈 ESTIMACIÓN TOTAL
-
-**Horas para MVP funcional**: 16-20 horas  
-**Equipo recomendado**: 1-2 desarrolladores (backend + frontend)  
-**Timeline**: 2-3 días de desarrollo intenso
-
----
-
-## ⚠️ RIESGOS IDENTIFICADOS
-
-1. **Base de datos sin tablas**: El MVP no funciona sin las tablas principales
-2. **FastAPI no levantada**: Sin esto, no hay servidor
-3. **Frontend vacío**: Los usuarios no pueden interactuar
-4. **Redis faltante en Docker**: Las sesiones pueden no persistir correctamente
-5. **Typo en dominio**: `Tenat` confundirá a desarrolladores
-
----
-
-## ✨ FORTALEZAS DEL PROYECTO
-
-- ✅ Arquitectura bien pensada (hexagonal)
-- ✅ Event sourcing desde el inicio
-- ✅ Logging estructurado
-- ✅ Autenticación JWT con RS256
-- ✅ RBAC (Role-Based Access Control) definido
-- ✅ Docker ya configurado
-- ✅ Estructura clara de carpetas
-
----
-
-## 🎓 PRÓXIMOS PASOS DESPUÉS DEL MVP
-
-1. Tests unitarios (pytest)
-2. Tests de integración
-3. CI/CD (GitHub Actions)
-4. Reportes y análisis de inventario
-5. Importación/exportación CSV
-6. Alertas automáticas de stock bajo
-7. API docs mejorada (Swagger/ReDoc)
-
----
-
-## 📝 NOTAS IMPORTANTES
-
-- **No modificar principios del MVP**: El proyecto está muy claro en no ser un ERP
-- **Control primero**: Todo debe enfocarse en dar control real del stock
-- **Simplicidad es la meta**: Si requiere explicación, está mal diseñado
-- **Auditoría completa**: Cada cambio debe ser traceable
-
----
-
-**Documento generado**: 24 de enero de 2026  
-**Próxima revisión recomendada**: Después de completar Fase 1
+**Documento generado**: 18 de abril de 2026
+**Próxima revisión**: Al completar Fase 1

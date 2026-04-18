@@ -1,5 +1,7 @@
 # backend/application/event_bus.py
 
+import asyncio
+import inspect
 from collections import defaultdict
 from typing import Type, Callable, Dict, List
 from domain.events.base import DomainEvent
@@ -34,7 +36,10 @@ class EventBus:
 
         for handler in handlers:
             try:
-                handler(event)
+                result = handler(event)
+                # Soporta handlers async sin requerir que el caller sea async
+                if inspect.isawaitable(result):
+                    asyncio.get_event_loop().run_until_complete(result)
             except Exception as e:
                 logger.error(
                     "Event handler failed",

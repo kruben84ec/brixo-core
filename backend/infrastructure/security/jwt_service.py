@@ -38,10 +38,7 @@ class JWTService:
         return jwt.encode(payload, self.private_key, algorithm=ALGORITHM)
 
     def decode(self, token: str) -> Dict[str, Any]:
-        
         try:
-            
-        
             return jwt.decode(
                 token,
                 self.public_key,
@@ -50,3 +47,9 @@ class JWTService:
             )
         except jwt.ExpiredSignatureError:
             raise ValueError("Token expired")
+        except jwt.InvalidSignatureError:
+            raise ValueError("Invalid token signature")
+        except jwt.DecodeError:
+            raise ValueError("Token decode failed")
+        except jwt.InvalidTokenError as e:
+            raise ValueError(f"Invalid token: {e}")

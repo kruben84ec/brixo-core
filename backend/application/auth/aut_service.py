@@ -23,14 +23,14 @@ class AuthService:
         payload = {
             "tenant": tenant_id,
             "sub": user_id,
-            "exp": datetime.now(timezone.utc) + timedelta(seconds=TTL)
+            "exp": datetime.now(timezone.utc) + timedelta(minutes=TTL)
         }
-        
+
         token = jwt.encode(payload, SECRET, algorithm=ALGORITHM)
-        
-        await redis.set(f"auth:token:{token}", str(user_id), ex=TTL)
-        
-        await self.event_bus.publish(
+
+        await redis.set(f"auth:token:{token}", str(user_id), ex=TTL * 60)
+
+        self.event_bus.publish(
             UserLoggedIn(
                 tenant_id=tenant_id,
                 user_id=user_id,

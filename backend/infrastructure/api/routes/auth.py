@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from infrastructure.env.settings import get_settings
 from infrastructure.security.jwt_service import JWTService
 from application.services.auth.login_user import LoginUser
-from infrastructure.persistence.auth_repository_sql import AuthRepositorySQL
+from adapters.repositories.auth_repository_sql import AuthRepositorySQL
 from application.event_bus import EventBus
 
 settings = get_settings()
