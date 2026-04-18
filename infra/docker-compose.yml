@@ -13,18 +13,34 @@ services:
     ports:
       - "5432:5432"
 
+  redis:
+    image: redis:7-alpine
+    container_name: brixo-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
   backend:
     build:
       context: ..
       dockerfile: infra/docker/backend/Dockerfile
     container_name: brixo-backend
     restart: unless-stopped
+    environment:
+      - ENV_DIR=/app/env
     env_file:
       - ./env/backend.env
+      - ./env/jwt.env
+      - ./env/redis.env
     depends_on:
       - postgres
+      - redis        # ← agrega esta dependencia
     ports:
       - "8000:8000"
+    volumes:
+      - ../backend:/app
 
   frontend:
     build:
@@ -38,6 +54,10 @@ services:
       - backend
     ports:
       - "3000:3000"
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
 
 volumes:
   postgres_data:
+  redis_data:        # ← agrega este volumen
