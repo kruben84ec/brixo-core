@@ -4,7 +4,7 @@ from datetime import datetime
 from uuid import UUID
 from typing import Any
 
-from domain.contracts import Tenat
+from domain.contracts import Tenant  # noqa: F401
 
 
 class DomainEvent:

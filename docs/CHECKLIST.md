@@ -27,8 +27,8 @@
 | `main.py` con lifespan + pool + routers | ✅ | |
 | Volumen postgres externo (`./data/postgres`) | ✅ | |
 | Env files montados (`./env:/app/env:ro`) | ✅ | |
-| Corregir typo `class Tenat` → `Tenant` | ⭕ | `domain/contracts.py:8` — bloqueante futuro |
-| `GET /health` sin autenticación | ⭕ | Docker healthcheck lo necesita |
+| Corregir typo `class Tenat` → `Tenant` | ✅ | `domain/contracts.py` |
+| `GET /health` sin autenticación | ✅ | `infrastructure/api/routes/health.py` |
 
 ---
 
@@ -73,7 +73,7 @@
 | `AccessController` + Redis snapshot | `GET /me/access` | ✅ |
 | `PUBLIC_PATHS` en `JWTAuthMiddleware` | `/docs /redoc /openapi.json /health /api/auth/login` | ✅ |
 | Audit trail en handlers — persiste login en BD | — | ✅ |
-| `POST /api/users/{id}/roles` | `POST /api/users/{id}/roles` | ⭕ |
+| `POST /api/users/{id}/roles` | `POST /api/users/{id}/roles` | ✅ |
 
 ---
 
@@ -85,7 +85,7 @@
 | Ítem | Archivo | Tiempo | Estado |
 |------|---------|--------|--------|
 | CORS en `main.py` | `backend/main.py` | 10 min | ⭕ |
-| `GET /health` sin auth (compartido con Fase 1) | `routes/health.py` | 10 min | ⭕ |
+| `GET /health` sin auth (compartido con Fase 1) | `routes/health.py` | 10 min | ✅ |
 | `require_permission(code)` FastAPI dependency | `infrastructure/security/permissions.py` | 45 min | ⭕ |
 | Aplicar `require_permission` en endpoints críticos | `routes/products.py`, `routes/users.py` | 30 min | ⭕ |
 | `POST /api/auth/refresh` | `infrastructure/api/routes/auth.py` | 45 min | ⭕ |
@@ -157,7 +157,7 @@
 | Criterio | Estado |
 |----------|--------|
 | `docker-compose up -d` levanta sin errores | ⭕ |
-| `GET /health` responde 200 | ⭕ |
+| `GET /health` responde 200 | ✅ |
 | `POST /api/auth/login` retorna JWT válido | ✅ |
 | `GET /docs` accesible sin token | ✅ |
 | Crear producto con permiso correcto | ⭕ (RBAC pendiente) |

@@ -1,8 +1,8 @@
 # ESTATUS DEL PROYECTO BRIXO — MVP
 
 **Fecha**: 18 de abril de 2026
-**Rama activa**: `feature/auth-core`
-**Estado general**: Backend 88% funcional — Fase 4B (seguridad aplicada) descubierta como brecha critica — MVP al 58%
+**Rama activa**: `dev`
+**Estado general**: Backend 95% funcional — Fases 1 y 4 cerradas — Fase 4B (RBAC) es el próximo paso — MVP al 63%
 
 > El porcentaje bajó de 68% a 58% porque el roadmap fue actualizado para incluir la Fase 4B
 > (RBAC enforcement, CORS, refresh token). El trabajo estaba pendiente antes, simplemente
@@ -13,15 +13,15 @@
 ## PROGRESO GENERAL
 
 ```text
-FASE 1   Infraestructura          █████████░   90%
-FASE 2   Data Access Layer        ██████████  100%
-FASE 3   Casos de uso             ██████████  100%
-FASE 4   Controladores / Rutas    █████████░   90%
-FASE 4B  Seguridad aplicada       ░░░░░░░░░░    0%
-FASE 5   Frontend                 █░░░░░░░░░    5%
-FASE 6   QA + Hardening           ░░░░░░░░░░    0%
+FASE 1   Infraestructura          ██████████  100%   ← cerrada
+FASE 2   Data Access Layer        ██████████  100%   ← cerrada
+FASE 3   Casos de uso             ██████████  100%   ← cerrada
+FASE 4   Controladores / Rutas    ██████████  100%   ← cerrada
+FASE 4B  Seguridad aplicada       ░░░░░░░░░░    0%   ← PROXIMA
+FASE 5   Frontend                 █░░░░░░░░░    5%   ← bloqueada por 4B
+FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← bloqueada por 5
 ────────────────────────────────────────────────────
-TOTAL MVP                         █████░░░░░   58%
+TOTAL MVP                         ██████░░░░   63%
 ```
 
 ---
@@ -29,18 +29,19 @@ TOTAL MVP                         █████░░░░░   58%
 ## PROXIMAS ACCIONES (orden de prioridad)
 
 ```text
-1. F1  Typo Tenat → Tenant en domain/contracts.py             10 min   ← evita ImportError futuro
-2. F1  GET /health sin autenticacion                          10 min   ← valida que el stack levanta
-3. F4  POST /api/users/{id}/roles                             30 min   ← expone AssignRoleToUserUseCase
-4. F4B CORS en main.py                                        10 min   ← frontend no puede llamar a la API sin esto
-5. F4B require_permission(code) dependency para FastAPI        45 min   ← RBAC real en endpoints
-6. F4B Aplicar require_permission en endpoints críticos        30 min   ← cierra la brecha de autorización
-7. F4B POST /api/auth/refresh                                 45 min   ← usuario no se desloguea a las 8h
+✅ F1  Typo Tenat → Tenant en domain/contracts.py
+✅ F1  GET /health sin autenticacion
+✅ F4  POST /api/users/{id}/roles
+
+1. F4B CORS en main.py                                        10 min   ← frontend no puede llamar a la API sin esto
+2. F4B require_permission(code) dependency para FastAPI        45 min   ← RBAC real en endpoints
+3. F4B Aplicar require_permission en endpoints críticos        30 min   ← cierra la brecha de autorización
+4. F4B POST /api/auth/refresh                                 45 min   ← usuario no se desloguea a las 8h
 --- después de completar Fase 4B arrancar Fase 5 ---
-8. F5  Setup React + api.js + authStore + LoginPage            1 día
-9. F5  ProductListPage + modales de producto y movimiento      2 días
-10. F5 DashboardPage + AuditLogPage + routing                  2 días
-11. F6 Testing manual + rate limiting + docs + deploy          1 día
+5. F5  Setup React + api.js + authStore + LoginPage            1 día
+6. F5  ProductListPage + modales de producto y movimiento      2 días
+7. F5  DashboardPage + AuditLogPage + routing                  2 días
+8. F6  Testing manual + rate limiting + docs + deploy          1 día
 ```
 
 ---

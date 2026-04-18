@@ -18,6 +18,7 @@ from adapters.repositories.user_repository_sql import UserRepositorySQL
 from application.services.acccess.access_service import AccessService
 
 from infrastructure.api.routes.access import router as access_router
+from infrastructure.api.routes.health import router as health_router
 
 access_repository = AccessRepositorySQL()
 access_service = AccessService(access_repository)
@@ -47,6 +48,8 @@ def init_app():
     user_access_projection.register()
 
     app.add_middleware(JWTAuthMiddleware, event_bus=event_bus)
+
+    app.include_router(health_router)
 
     auth_router = get_auth_router(event_bus)
     app.include_router(auth_router, prefix="/api/auth", tags=["auth"])

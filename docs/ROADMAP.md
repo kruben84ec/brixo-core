@@ -61,8 +61,8 @@ CIERRE — Fase 6 QA + Hardening
 | 4 | main.py con lifespan + pool + routers | 30 min | ✅ |
 | 5 | Volumen postgres externo (bind mount `./data/postgres`) | 10 min | ✅ |
 | 6 | Env files montados en contenedor (`./env:/app/env:ro`) | 10 min | ✅ |
-| 7 | Corregir typo `class Tenat` → `Tenant` en `domain/contracts.py` | 10 min | ⭕ |
-| 8 | `GET /health` — responde 200 sin token | 10 min | ⭕ |
+| 7 | Corregir typo `class Tenat` → `Tenant` en `domain/contracts.py` | 10 min | ✅ |
+| 8 | `GET /health` — responde 200 sin token | 10 min | ✅ |
 | **TOTAL** | | **2h 30min** | |
 
 **Validacion**: `curl http://localhost:8000/health` → `{"status": "ok"}`
@@ -120,7 +120,7 @@ CIERRE — Fase 6 QA + Hardening
 | 6 | `AccessController` + Redis snapshot | `GET /me/access` | ✅ |
 | 7 | `PUBLIC_PATHS` en `JWTAuthMiddleware` | `/docs /redoc /openapi.json /health /api/auth/login` | ✅ |
 | 8 | Audit trail en `handlers.py` — persiste login en BD | — | ✅ |
-| 9 | `POST /api/users/{id}/roles` — expone `AssignRoleToUserUseCase` | `POST /api/users/{id}/roles` | ⭕ |
+| 9 | `POST /api/users/{id}/roles` — expone `AssignRoleToUserUseCase` | `POST /api/users/{id}/roles` | ✅ |
 
 **Validacion**: Swagger muestra todos los endpoints, requests/responses funcionan con token válido
 
