@@ -1,11 +1,11 @@
-from jose import jwt
+import jwt
 from datetime import datetime, timedelta, timezone
-from backend.infrastructure.redis_client import get_redis
-from backend.domain.auth import UserLoggedIn
-from backend.infrastructure.logging import get_logger
+from infrastructure.redis_client import get_redis
+from domain.events.auth import UserLoggedIn
+from infrastructure.logging import get_logger
 logger = get_logger()
 
-from backend.infrastructure.env.settings import get_settings
+from infrastructure.env.settings import get_settings
 settings = get_settings()
 
 SECRET = settings.jwt.private_key
@@ -23,18 +23,20 @@ class AuthService:
         payload = {
             "tenant": tenant_id,
             "sub": user_id,
-            "exp": datetime.now(timezone.utc) + timedelta(seconds=TTL)
+            "exp": datetime.now(timezone.utc) + timedelta(minutes=TTL)
         }
-        
+
         token = jwt.encode(payload, SECRET, algorithm=ALGORITHM)
-        
-        await redis.set(f"auth:token:{token}", str(user_id), ex=TTL)
-        
-        await self.event_bus.publish(UserLoggedIn(
-            tenant_id=tenant_id,
-            user_id=user_id,
-            ocurred_at = datetime.now(timezone.utc)
-        ))
+
+        await redis.set(f"auth:token:{token}", str(user_id), ex=TTL * 60)
+
+        self.event_bus.publish(
+            UserLoggedIn(
+                tenant_id=tenant_id,
+                user_id=user_id,
+                occurred_at=datetime.now(timezone.utc)
+            )
+        )
         
         return token
             

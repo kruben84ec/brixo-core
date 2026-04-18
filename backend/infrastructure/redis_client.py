@@ -1,7 +1,7 @@
 import os
 from typing import Optional
 from redis.asyncio import Redis, ConnectionPool
-from backend.infrastructure.logging import get_logger
+from infrastructure.logging import get_logger
 
 logger = get_logger()
 

@@ -1,6 +1,8 @@
-from backend.infrastructure.redis_client import get_redis
-from backend.domain.events import RoleAssigned, RoleRevoked
-from backend.infrastructure.logging import get_logger
+from infrastructure.redis_client import get_redis
+from domain.events import RoleAssigned, RoleRevoked
+from infrastructure.logging import get_logger
+
+
 logger = get_logger()
 
 
