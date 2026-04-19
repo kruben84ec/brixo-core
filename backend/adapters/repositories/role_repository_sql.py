@@ -45,7 +45,7 @@ class RoleRepositorySQL(RoleRepository):
                 (tenant_id, name, description),
             )
             row = cursor.fetchone()
-        logger.info("Role created", extra={"tenant_id": tenant_id, "name": name})
+        logger.info("Role created", extra={"tenant_id": tenant_id, "role_name": name})
         return self._row_to_role(row)
 
     def assign_role_to_user(self, user_id: str, role_id: str, assigned_by: str) -> UserRoleData:

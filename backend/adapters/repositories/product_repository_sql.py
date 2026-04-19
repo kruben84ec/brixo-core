@@ -60,7 +60,7 @@ class ProductRepositorySQL(ProductRepository):
             )
             row = cursor.fetchone()
 
-        logger.info("Product created", extra={"tenant_id": tenant_id, "name": name})
+        logger.info("Product created", extra={"tenant_id": tenant_id, "product_name": name})
         return self._row_to_product(row)
 
     def update_product_stock(self, product_id: str, new_stock: int) -> None:

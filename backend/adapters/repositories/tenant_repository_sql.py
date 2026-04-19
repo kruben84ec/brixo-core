@@ -1,4 +1,7 @@
+import psycopg2.errors
+
 from application.ports.tenant_repository import TenantData, TenantRepository
+from domain.exceptions import ConflictError
 from infrastructure.database import get_db_cursor
 from infrastructure.logging import get_logger
 
@@ -21,17 +24,23 @@ class TenantRepositorySQL(TenantRepository):
         return self._row_to_tenant(row) if row else None
 
     def create_tenant(self, name: str) -> TenantData:
-        with get_db_cursor() as cursor:
-            cursor.execute(
-                """
-                INSERT INTO tenants (name)
-                VALUES (%s)
-                RETURNING id, name, is_active, created_at
-                """,
-                (name,),
+        try:
+            with get_db_cursor() as cursor:
+                cursor.execute(
+                    """
+                    INSERT INTO tenants (name)
+                    VALUES (%s)
+                    RETURNING id, name, is_active, created_at
+                    """,
+                    (name,),
+                )
+                row = cursor.fetchone()
+        except psycopg2.errors.UniqueViolation:
+            raise ConflictError(
+                message=f"Ya existe una empresa registrada con el nombre '{name}'",
+                detail=f"Tenant name duplicate on insert: {name}",
             )
-            row = cursor.fetchone()
-        logger.info("Tenant created", extra={"name": name})
+        logger.info("Tenant created", extra={"tenant_name": name})
         return self._row_to_tenant(row)
 
     def list_active_tenants(self) -> list[TenantData]:
