@@ -1,41 +1,41 @@
 # ESTATUS DEL PROYECTO BRIXO — MVP
 
-**Fecha**: 18 de abril de 2026  
+**Fecha**: 19 de abril de 2026  
 **Rama activa**: `dev`  
-**Estado general**: Backend 100% + Observabilidad + Deuda técnica resuelta — Próximo: Fase 5 Frontend — MVP al 80%
+**Estado general**: Backend 100% + SaaS Auth + Bugs críticos resueltos — Próximo: Fase 5 Frontend — MVP al 83%
 
 ---
 
-## Informe ejecutivo — Sesión 3 (18 abr 2026)
+## Informe ejecutivo — Sesión 4 (19 abr 2026)
 
 ### Qué se logró
 
-Se resolvió toda la deuda técnica acumulada y se incorporó una capa de observabilidad y manejo de excepciones completa:
+Se consolidó el backend con correcciones críticas de runtime y se completó el flujo de registro SaaS:
 
-**Deuda técnica — 6 ítems resueltos:**
+**Flujo de registro SaaS — nuevo:**
 
-- Typo `ocurred_at` corregido en la clase base `DomainEvent`
-- Directorio `acccess/` (triple c) renombrado a `access/`, con 2 imports actualizados
-- Archivo vacío `asssign_role.py` eliminado
-- Archivo huérfano `aut_service.py` eliminado
-- Módulo duplicado `domain/events.py` eliminado; import corregido a `domain.events.base`
-- Confirmado que `infra/env/*.env` no se versiona en git
+- `POST /api/auth/register` — endpoint público que crea tenant + usuario OWNER en una sola operación
+- `SignUpUseCase` — caso de uso dedicado que orquesta creación de tenant y usuario
+- El usuario recibe el JWT al registrarse — no necesita hacer login por separado
+- El formulario requiere solo 4 campos: empresa, nombre, email, contraseña
 
-**Observabilidad — Fase 4C completada:**
+**Bugs críticos de runtime — 5 resueltos:**
 
-- Logs JSON estructurados escritos a `backend/logs/app.log` con rotación automática y visibles desde Docker sin configuración adicional
-- `HTTPLoggingMiddleware` registra cada request con `method`, `path`, `status_code`, `duration_ms`, `user_id` y `tenant_id`
-- Jerarquía tipada de excepciones de dominio (`BrixoException` y subclases) que separa el mensaje al usuario del detalle técnico al log
-- Catch-all global: cualquier excepción no prevista retorna `500` genérico al cliente y registra el traceback completo en el log
+- `DATABASE_URL` ausente en `backend.env` → `psycopg2.connect(None)` fallaba en arranque
+- `JWT_ACCESS_TOKEN_EXP_MINUTES=480 # 8 hours` → comentario inline rompía parsing de Pydantic como int
+- `logging.env` vacío → nivel de log indeterminado (ahora `LOGGING_LEVEL=INFO`)
+- `email-validator` ausente en `requirements.txt` → `EmailStr` lanzaba `ModuleNotFoundError`
+- `"name"` como clave en `extra={}` del logger → `KeyError` en `LogRecord` (3 repositorios afectados: tenant, product, role)
 
-**Documentación — Actualización completa:**
+**Manejo de excepciones — refactorización:**
 
-- `README.md` reescrito con enfoque de producto y potencial de IA
-- `ARQUITECTURA.md`, `CHECKLIST.md`, `CHANGELOG.md`, `ROADMAP.md` y `OBSERVABILIDAD.md` actualizados al estado real
+- Login ahora lanza `UnauthorizedError` (BrixoException, 401) en lugar de `ValueError` — elimina dependencia del `try/except` en el route
+- `TenantRepositorySQL` captura `UniqueViolation` de psycopg2 y eleva `ConflictError` (409) con mensaje legible al usuario
+- `verify_password` ahora es seguro contra cualquier excepción de bcrypt — retorna `False` en lugar de propagar
 
 ### Qué se espera a continuación
 
-**Fase 5 — Frontend** (~6 horas). El backend está completamente listo: CORS activo, tokens renovables, RBAC funcional, errores con formato JSON consistente. El frontend puede arrancar ahora mismo con `npm install`.
+**Fase 5 — Frontend** (~6 horas). El backend está completamente funcional y validado. CORS activo, registro SaaS operativo, todos los errores retornan JSON consistente. El frontend puede arrancar ahora mismo.
 
 ---
 
@@ -48,10 +48,11 @@ FASE 3   Casos de uso             ██████████  100%   ← cer
 FASE 4   Controladores / Rutas    ██████████  100%   ← cerrada
 FASE 4B  Seguridad aplicada       ██████████  100%   ← cerrada
 FASE 4C  Observabilidad           ██████████  100%   ← cerrada
+FASE 4D  SaaS Auth + Bugs         ██████████  100%   ← cerrada (nueva)
 FASE 5   Frontend                 █░░░░░░░░░    5%   ← PROXIMA
 FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← bloqueada por 5
 ────────────────────────────────────────────────────
-TOTAL MVP                         ████████░░   80%
+TOTAL MVP                         ████████░░   83%
 ```
 
 ---
@@ -63,19 +64,20 @@ FASE 5 — Frontend (~6h total)
 1. F5  npm install axios react-router-dom zustand         15 min
 2. F5  src/services/api.js — cliente axios + interceptor  30 min
 3. F5  authStore Zustand — token, usuario, logout         30 min
-4. F5  LoginPage                                          50 min
-5. F5  ProductListPage + ProductFormModal                100 min
-6. F5  MovementFormModal                                  50 min
-7. F5  DashboardPage + AuditLogPage                       85 min
-8. F5  Routing + layout + rutas privadas                  35 min
-9. F5  Estilos básicos                                    40 min
+4. F5  RegisterPage — formulario SaaS (4 campos)          50 min
+5. F5  LoginPage                                          50 min
+6. F5  ProductListPage + ProductFormModal                100 min
+7. F5  MovementFormModal                                  50 min
+8. F5  DashboardPage + AuditLogPage                       85 min
+9. F5  Routing + layout + rutas privadas                  35 min
+10. F5 Estilos básicos                                    40 min
 
 FASE 6 — QA + Hardening (~4h 25min total)
-10. F6 Testing manual flujo completo                      45 min
-11. F6 Rate limiting POST /api/auth/login (Redis, 429)    30 min
-12. F6 Cabeceras de seguridad HTTP (middleware)           30 min
-13. F6 request_id en HTTPLoggingMiddleware                30 min
-14. F6 docker-compose.prod.yml + README final             60 min
+11. F6 Testing manual flujo completo                      45 min
+12. F6 Rate limiting POST /api/auth/login (Redis, 429)    30 min
+13. F6 Cabeceras de seguridad HTTP (middleware)           30 min
+14. F6 request_id en HTTPLoggingMiddleware                30 min
+15. F6 docker-compose.prod.yml + README final             60 min
 ```
 
 ---
@@ -117,6 +119,7 @@ FASE 6 — QA + Hardening (~4h 25min total)
 | Use Case | Archivo |
 |----------|---------|
 | `LoginUser` | `application/services/auth/login_user.py` |
+| `SignUpUseCase` | `application/use_cases/signup.py` |
 | `CreateProductUseCase` | `application/use_cases/create_product.py` |
 | `RegisterInventoryMovementUseCase` | `application/use_cases/register_inventory_movement.py` |
 | `GetProductStockUseCase` | `application/use_cases/get_product_stock.py` |
@@ -130,7 +133,7 @@ FASE 6 — QA + Hardening (~4h 25min total)
 
 | Componente | Rutas |
 |------------|-------|
-| `AuthController` | `POST /api/auth/login`, `POST /api/auth/refresh` |
+| `AuthController` | `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/register` |
 | `ProductController` | `GET /api/products/`, `POST /api/products/`, `GET /api/products/{id}` |
 | `InventoryController` | `POST /api/products/{id}/movements`, `GET /api/products/{id}/movements` |
 | `UserController` | `GET /api/users/`, `POST /api/users/`, `POST /api/users/{id}/roles` |
@@ -148,6 +151,7 @@ FASE 6 — QA + Hardening (~4h 25min total)
 | `require_permission(code)` — FastAPI dependency | `infrastructure/security/permissions.py` | ✅ |
 | RBAC aplicado en endpoints críticos | `routes/products.py`, `routes/users.py`, `routes/audit.py` | ✅ |
 | `POST /api/auth/refresh` — renueva token sin re-login | `infrastructure/api/routes/auth.py` | ✅ |
+| `PUBLIC_PATHS` — login y register sin token | `infrastructure/security/jwt_middleware.py` | ✅ |
 
 ---
 
@@ -167,12 +171,31 @@ FASE 6 — QA + Hardening (~4h 25min total)
 CORS → HTTPLogging → JWT → Handler → ExceptionHandlers → AuditLog
 ```
 
-### Logs en Docker
+---
 
-```text
-Contenedor: /app/logs/app.log
-Host:       backend/logs/app.log   ← sin docker exec, acceso directo
-```
+## Fase 4D — SaaS Auth + Correcciones de Runtime 100% ← NUEVA
+
+| Tarea | Archivo | Estado |
+|-------|---------|--------|
+| `POST /api/auth/register` — registro SaaS público (tenant + OWNER) | `routes/auth.py` | ✅ |
+| `SignUpUseCase` — crea tenant y usuario en secuencia | `use_cases/signup.py` | ✅ |
+| `DATABASE_URL` en `backend.env` | `infra/env/backend.env` | ✅ |
+| `JWT_ACCESS_TOKEN_EXP_MINUTES` sin comentario inline | `infra/env/jwt.env` | ✅ |
+| `LOGGING_LEVEL=INFO` en `logging.env` | `infra/env/logging.env` | ✅ |
+| `email-validator` en `requirements.txt` | `backend/requirements.txt` | ✅ |
+| `"name"` → `"tenant_name"/"product_name"/"role_name"` en `extra={}` | 3 repositorios SQL | ✅ |
+| Login usa `UnauthorizedError` (BrixoException 401) — no `ValueError` | `services/auth/login_user.py` | ✅ |
+| `TenantRepositorySQL` captura `UniqueViolation` → `ConflictError` 409 | `adapters/tenant_repository_sql.py` | ✅ |
+| `verify_password` seguro contra cualquier excepción de bcrypt | `infrastructure/security/passwords.py` | ✅ |
+
+### Endpoints públicos (sin token)
+
+| Endpoint | Descripción |
+|----------|-------------|
+| `POST /api/auth/login` | Autenticación con email + password |
+| `POST /api/auth/register` | Registro SaaS: crea empresa + usuario OWNER |
+| `GET /health` | Estado del servicio |
+| `GET /docs` | Swagger UI |
 
 ---
 
@@ -186,14 +209,17 @@ El backend está completamente listo — puede arrancar ahora.
 | `npm install axios react-router-dom zustand` | 15 min | ⭕ |
 | `src/services/api.js` — axios con interceptor JWT y refresh | 30 min | ⭕ |
 | `authStore` (Zustand) — token, usuario, logout | 30 min | ⭕ |
-| `LoginPage` | 50 min | ⭕ |
-| `ProductListPage` | 60 min | ⭕ |
-| `ProductFormModal` | 40 min | ⭕ |
-| `MovementFormModal` | 50 min | ⭕ |
-| `DashboardPage` | 45 min | ⭕ |
-| `AuditLogPage` | 40 min | ⭕ |
-| Routing + layout + rutas privadas | 35 min | ⭕ |
-| Estilos básicos | 40 min | ⭕ |
+| `RegisterPage` — formulario SaaS (empresa, nombre, email, contraseña) | 50 min | ⭕ |
+| `LoginPage` — form email+password, manejo de error 401 | 50 min | ⭕ |
+| `ProductListPage` — tabla con stock actual y alerta de mínimo | 60 min | ⭕ |
+| `ProductFormModal` — alta de producto con validación client-side | 40 min | ⭕ |
+| `MovementFormModal` — ENTRADA / SALIDA / AJUSTE con cantidad y motivo | 50 min | ⭕ |
+| `DashboardPage` — resumen de stock, alertas de stock bajo | 45 min | ⭕ |
+| `AuditLogPage` — historial paginado con filtros | 40 min | ⭕ |
+| Routing + layout base (sidebar, navbar, rutas privadas) | 35 min | ⭕ |
+| Estilos básicos (CSS o Tailwind) | 40 min | ⭕ |
+
+**Validación**: registro → login → ver productos → crear uno → registrar movimiento → ver auditoría
 
 ---
 
@@ -205,11 +231,11 @@ Bloqueada por Fase 5.
 |-------|------|--------|--------|
 | Testing manual flujo completo | QA | 45 min | ⭕ |
 | Fix de bugs encontrados | Dev | 60 min | ⭕ |
-| Rate limiting en `POST /api/auth/login` | Seguridad | 30 min | ⭕ |
-| Validar TTL Redis snapshot y expiración de token | Seguridad | 20 min | ⭕ |
-| Cabeceras de seguridad HTTP | Seguridad | 30 min | ⭕ |
-| `request_id` en `HTTPLoggingMiddleware` | Observabilidad | 30 min | ⭕ |
-| `docker-compose.prod.yml` | Infra | 30 min | ⭕ |
+| Rate limiting en `POST /api/auth/login` — máx. 5 intentos / 60s por IP | Seguridad | 30 min | ⭕ |
+| Validar TTL Redis snapshot y expiración del token | Seguridad | 20 min | ⭕ |
+| Cabeceras de seguridad HTTP (`X-Content-Type-Options`, `X-Frame-Options`) | Seguridad | 30 min | ⭕ |
+| `request_id` en `HTTPLoggingMiddleware` + header `X-Request-ID` | Observabilidad | 30 min | ⭕ |
+| `docker-compose.prod.yml` con variables de entorno seguras | Infra | 30 min | ⭕ |
 
 ---
 
@@ -223,8 +249,14 @@ Bloqueada por Fase 5.
 | 4 | `aut_service.py` huérfano | Eliminado con `git rm` |
 | 5 | `domain/events.py` duplicado | Eliminado; import corregido a `domain.events.base` |
 | 6 | `OPENAI_API_KEY` en `backend.env` | `infra/env/*.env` excluido de git en `.gitignore` |
+| 7 | `DATABASE_URL` ausente | Agregada en `infra/env/backend.env` con hostname Docker |
+| 8 | `email-validator` ausente | Agregado en `requirements.txt` |
+| 9 | Comentario inline en `jwt.env` | Eliminado — Pydantic parseaba int como string |
+| 10 | `"name"` en `extra={}` del logger | Renombrado a `tenant_name`, `product_name`, `role_name` |
+| 11 | `ValueError` en login → 500 | Reemplazado por `UnauthorizedError` (BrixoException 401) |
+| 12 | `UniqueViolation` de tenant → 500 | Capturado en repo → `ConflictError` 409 con mensaje claro |
 
 ---
 
-**Documento actualizado**: 18 de abril de 2026 (sesión 3)  
+**Documento actualizado**: 19 de abril de 2026 (sesión 4)  
 **Próxima revisión**: Al completar Fase 5 Frontend
