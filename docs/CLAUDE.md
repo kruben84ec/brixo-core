@@ -9,38 +9,38 @@
 **Brixo** — Sistema de control de inventario simple para pequeños negocios y pymes.  
 **No es** un ERP ni sistema contable. **Es** control de stock: entradas, salidas, historial.
 
-**Versión**: 4.5.0 | **Branch activo**: dev | **Estado**: MVP en desarrollo (~10%)
+**Branch activo**: dev | **Estado**: Backend 100% — MVP al 77% — Próximo: Fase 5 Frontend
 
 ---
 
 ## Stack
 
 | Capa | Tecnología |
-|------|-----------|
+| ---- | ---------- |
 | Backend | Python 3.12, FastAPI 0.128+, Pydantic v2, psycopg2, PyJWT RS256 |
 | Frontend | React 18, Vite 5, JavaScript (JSX) |
 | Infra | Docker Compose, PostgreSQL 15, Redis 7-alpine |
+| Auth | JWT RS256, RBAC por permisos (snapshots Redis) |
 | OS dev | Windows — usar PowerShell o Git Bash |
 
 ---
 
 ## Estructura del repositorio
 
-```
+```text
 brixo-core/
 ├── backend/
 │   ├── domain/          # Entidades, eventos, contratos — SIN dependencias externas
 │   ├── application/     # Casos de uso, event bus, handlers
-│   ├── infrastructure/  # BD, Redis, JWT, logging, settings
-│   ├── adapters/        # Controladores HTTP, repositorios SQL, middlewares
-│   ├── mappers/         # Domain ↔ DTO
+│   ├── infrastructure/  # BD, Redis, JWT, logging, settings, rutas HTTP
+│   ├── adapters/        # Repositorios SQL
 │   └── main.py          # Punto de entrada FastAPI
 ├── frontend/
-│   └── src/             # React SPA (actualmente vacío)
+│   └── src/             # React SPA — solo placeholder, Fase 5 pendiente
 ├── infra/
 │   ├── docker-compose.yml
 │   ├── docker/postgres/init.sql
-│   └── env/             # Variables de entorno por servicio
+│   └── env/             # Variables de entorno por servicio (no versionadas)
 └── docs/                # Toda la documentación del proyecto
 ```
 
@@ -50,14 +50,14 @@ brixo-core/
 
 **Flujo de dependencias siempre hacia adentro:**
 
-```
+```text
 Adapters → Application → Domain
                ↑
          Infrastructure
 ```
 
 | Capa | Puede importar de |
-|------|-------------------|
+| ---- | ----------------- |
 | Domain | Nadie |
 | Application | Solo Domain |
 | Infrastructure | Domain + Application |
@@ -111,7 +111,7 @@ class Product:
 ### Routers FastAPI — factory functions
 
 ```python
-def create_product_router(product_use_cases: ProductUseCases) -> APIRouter: ...
+def create_product_router(event_bus: EventBus) -> APIRouter: ...
 ```
 
 ---
@@ -140,37 +140,78 @@ start http://localhost:3000
 
 ---
 
-## Estado actual — branch `feature/auth-core`
+## Estado actual (18 de abril de 2026)
 
-### ✅ Implementado y funcional
+### ✅ Backend 100% completo
 
-- `domain/` — contracts, events, logs, auth (95%)
-- `application/event_bus.py` — pub/sub con manejo de errores
-- `application/handlers.py` — UserLoggedIn, UserLoginFailed, UserAuthenticated
-- `application/services/auth/login_user.py` — LoginUser use case completo
-- `infrastructure/env/settings.py` — Pydantic BaseSettings completo (JWT, Redis, Logging)
-- `infrastructure/security/jwt_service.py` — JWTService RS256 (generate + decode)
-- `infrastructure/security/jwt_middleware.py` — JWTAuthMiddleware completo
-- `infrastructure/projections/user_access_projection.py` — snapshot de acceso en Redis
-- `infrastructure/api/routes/auth.py` — POST /auth/login
-- `infrastructure/api/routes/access.py` — GET /me/access
-- `main.py` — FastAPI app instanciada, middleware, routers, EventBus integrado
-- Docker Compose — PostgreSQL + Redis + Backend + Frontend configurados
+**Infraestructura Docker** (Fase 1):
 
-### ⚠️ Stubs (arquitectura lista, sin BD real)
+- `docker-compose.yml` con healthchecks en postgres y redis
+- Bind mounts con hot reload en backend (uvicorn --reload + watchfiles) y frontend (Vite HMR)
+- `WATCHFILES_FORCE_POLLING=1` para Windows Docker
 
-- `infrastructure/persistence/auth_repository_sql.py` — mock hardcodeado, solo acepta `admin@brixo.local`
-- `infrastructure/persistence/access_repository_impl.py` — roles/permisos hardcodeados
+**Data Access Layer** (Fase 2 — 8 repositorios):
 
-### ❌ Pendiente (en orden de prioridad)
+- Todos los repositorios con puerto ABC + adaptador SQL real
+- `AuthRepositorySQL`, `ProductRepositorySQL`, `InventoryMovementRepositorySQL`, `AuditLogRepositorySQL`, `UserRepositorySQL`, `TenantRepositorySQL`, `RoleRepositorySQL`, `AccessRepositorySQL`
 
-1. Script SQL completo — solo existe tabla `products`, faltan: `tenants`, `users`, `roles`, `user_roles`, `inventory_movements`, `audit_logs`, `permissions`
-2. Repositorios reales con psycopg2 — reemplazar los stubs
-3. Endpoints de productos: `GET/POST /api/products`, `GET /api/products/{id}`
-4. Endpoints de inventario: `POST /api/inventory/movements`, `GET /api/inventory/stock/{id}`
-5. Endpoints de usuarios y auditoría
-6. Frontend — solo placeholder (`<h1>Brixo</h1>`)
-7. Typo: `class Tenat` → `class Tenant` en `domain/contracts.py`
+**Casos de uso** (Fase 3 — 7 de 7):
+
+- `LoginUser`, `CreateProductUseCase`, `RegisterInventoryMovementUseCase`, `GetProductStockUseCase`, `CreateUserUseCase`, `AssignRoleToUserUseCase`, `GetAuditLogByTenantUseCase`
+
+**Controladores y rutas** (Fase 4 — 100%):
+
+- Todos los endpoints activos: auth, products, inventory, users, audit, access, health
+- Swagger con metadata completa en `/docs`
+
+**Seguridad aplicada** (Fase 4B — 100%):
+
+- CORS habilitado para `localhost:3000`
+- `require_permission(code)` — FastAPI dependency que lee snapshot Redis
+- RBAC activo en todos los endpoints protegidos
+- `POST /api/auth/refresh` — renueva token sin re-login
+
+### ⭕ Frontend (Fase 5 — 5%)
+
+Solo existe `<h1>Brixo</h1>` en `frontend/src/App.jsx`. No hay dependencias instaladas.  
+El CORS ya está activo — puede arrancar ahora.
+
+Próximos pasos en orden:
+
+1. `npm install axios react-router-dom zustand`
+2. `src/services/api.js` — axios con interceptor JWT y refresh automático
+3. `authStore` (Zustand) — token, usuario, logout, localStorage
+4. `LoginPage`
+5. `ProductListPage` + `ProductFormModal` + `MovementFormModal`
+6. `DashboardPage` + `AuditLogPage`
+7. Routing + layout + rutas privadas + estilos básicos
+
+---
+
+## Flujo de seguridad (activo)
+
+```text
+REQUEST
+  │
+  ▼
+CORSMiddleware               ← capa exterior — preflight OPTIONS sin auth
+  │
+  ▼
+JWTAuthMiddleware            ← valida RS256, inyecta user_id + tenant_id
+  │                             publica UserAuthenticated en EventBus
+  ▼
+UserAccessProjection         ← escucha UserAuthenticated
+  │                             consulta roles + permisos en BD
+  │                             guarda snapshot en Redis: user_access:{tenant}:{user}
+  ▼
+require_permission(code)     ← lee snapshot de Redis
+  │                             lanza 403 si el código no está en permissions[]
+  ▼
+Handler / Use Case
+  │
+  ▼
+AuditLogRepository           ← persiste cada acción relevante
+```
 
 ---
 
@@ -185,7 +226,10 @@ start http://localhost:3000
 
 ---
 
-## Para la próxima sesión
+## Documentación de referencia
 
-Consulta `docs/PRIMEROS_PASOS.md` para los pasos 1-7 con código listo para copiar.  
-Consulta `docs/CHECKLIST.md` para el estado de tareas por fase.
+- `docs/ROADMAP.md` — fuente de verdad del avance por fase
+- `docs/ESTATUS.md` — estado detallado actual con Docker e infraestructura
+- `docs/CHECKLIST.md` — estado de tareas por fase
+- `docs/ARQUITECTURA.md` — diagramas de arquitectura y módulos
+- `docs/CHANGELOG.md` — historial de cambios desde el inicio

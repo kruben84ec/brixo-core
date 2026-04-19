@@ -1,5 +1,5 @@
 from infrastructure.redis_client import get_redis
-from domain.events import RoleAssigned, RoleRevoked
+from domain.events.base import RoleAssigned, RoleRevoked
 from infrastructure.logging import get_logger
 
 

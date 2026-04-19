@@ -143,6 +143,17 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+infra/env/*.env
+
+# Docker generated data
+infra/data/
+
+# Node
+node_modules/
+frontend/dist/
+
+# Backend logs
+backend/logs/
 
 # Spyder project settings
 .spyderproject

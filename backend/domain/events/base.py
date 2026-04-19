@@ -4,12 +4,12 @@ from datetime import datetime
 from uuid import UUID
 from typing import Any
 
-from domain.contracts import Tenat
+from domain.contracts import Tenant  # noqa: F401
 
 
 class DomainEvent:
     tenant_id: UUID
-    ocurred_at: datetime
+    occurred_at: datetime
 
 @dataclass(frozen=True)
 class InventoryChanged(DomainEvent):

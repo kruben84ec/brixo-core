@@ -12,6 +12,15 @@ from infrastructure.logging import get_logger
 logger = get_logger()
 settings = get_settings()
 
+PUBLIC_PATHS = {
+    "/api/auth/login",
+    "/api/auth/register",
+    "/docs",
+    "/redoc",
+    "/openapi.json",
+    "/health",
+}
+
 
 class JWTAuthMiddleware(BaseHTTPMiddleware):
     def __init__(self, app, event_bus: EventBus):
@@ -24,21 +33,18 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
         self.event_bus = event_bus
 
     async def dispatch(self, request: Request, call_next):
-        # Skip auth para endpoint de login
-        if request.url.path == "/auth/login":
+        if request.url.path in PUBLIC_PATHS:
             return await call_next(request)
-        
-        # Extraer token del header Authorization
+
         auth_header = request.headers.get("authorization")
-        
+
         if not auth_header:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Authorization token missing",
             )
-        
+
         try:
-            # Esperado formato: "Bearer <token>"
             scheme, credentials = auth_header.split()
             if scheme.lower() != "bearer":
                 raise ValueError("Invalid authentication scheme")
@@ -48,7 +54,6 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
             user_id = str(UUID(payload["sub"]))
             tenant_id = str(UUID(payload["tenant"]))
 
-            # 🔥 Evento de dominio
             self.event_bus.publish(
                 UserAuthenticated(
                     tenant_id=tenant_id,
@@ -57,18 +62,14 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
                 )
             )
 
-            # Contexto para handlers / endpoints
             request.state.user_id = user_id
             request.state.tenant_id = tenant_id
 
         except ValueError as e:
-            logger.warning(
-                "JWT authentication failed",
-                extra={"error": str(e)},
-            )
+            logger.warning("JWT authentication failed", extra={"error": str(e)})
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid or expired token",
             )
-        
+
         return await call_next(request)

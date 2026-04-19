@@ -6,8 +6,10 @@ fastapi==0.128.0
 idna==3.11
 psycopg2==2.9.11
 pydantic==2.12.5
+pydantic[email]==2.12.5
 pydantic-settings==2.12.0
 pydantic_core==2.41.5
+email-validator==2.2.0
 PyJWT==2.10.1
 python-dotenv==1.2.1
 redis==7.1.0
@@ -15,4 +17,5 @@ starlette==0.50.0
 typing-inspection==0.4.2
 typing_extensions==4.15.0
 uvicorn==0.30.0
+watchfiles==0.21.0
 cryptography==41.0.3

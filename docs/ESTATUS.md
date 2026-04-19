@@ -1,199 +1,230 @@
 # ESTATUS DEL PROYECTO BRIXO — MVP
 
-**Fecha**: 18 de abril de 2026
-**Rama activa**: `feature/auth-core`
-**Estado general**: 🟡 **Backend core funcional — Frontend pendiente**
-
-> Historial: el ESTATUS anterior (24-ene-2026) estaba completamente desactualizado.
-> Este documento refleja el estado real del código fuente al 18-04-2026.
+**Fecha**: 18 de abril de 2026  
+**Rama activa**: `dev`  
+**Estado general**: Backend 100% + Observabilidad + Deuda técnica resuelta — Próximo: Fase 5 Frontend — MVP al 80%
 
 ---
 
-## RESUMEN EJECUTIVO
+## Informe ejecutivo — Sesión 3 (18 abr 2026)
 
-El backend tiene el núcleo funcional. La autenticación JWT RS256 está operativa, el
-schema SQL completo con 8 tablas fue creado, los repositorios reales reemplazaron los
-stubs hardcodeados, y los endpoints de productos e inventario están implementados y
-conectados a la app. El bloqueante principal para el MVP es el frontend.
+### Qué se logró
 
----
+Se resolvió toda la deuda técnica acumulada y se incorporó una capa de observabilidad y manejo de excepciones completa:
 
-## LO QUE ESTÁ IMPLEMENTADO Y FUNCIONA
+**Deuda técnica — 6 ítems resueltos:**
 
-### Infraestructura
+- Typo `ocurred_at` corregido en la clase base `DomainEvent`
+- Directorio `acccess/` (triple c) renombrado a `access/`, con 2 imports actualizados
+- Archivo vacío `asssign_role.py` eliminado
+- Archivo huérfano `aut_service.py` eliminado
+- Módulo duplicado `domain/events.py` eliminado; import corregido a `domain.events.base`
+- Confirmado que `infra/env/*.env` no se versiona en git
 
-| Componente | Estado | Notas |
-| --- | --- | --- |
-| Docker Compose | ✅ | PostgreSQL 15 + Redis 7 + Backend + Frontend |
-| PostgreSQL 15 | ✅ | Schema completo con 8 tablas, seed data incluido |
-| Redis 7 | ✅ | Configurado en Docker, usado para snapshots de sesión |
-| Pool de conexiones | ✅ | `infrastructure/database.py` — psycopg2 ThreadedConnectionPool |
-| Variables de entorno | ✅ | Pydantic BaseSettings, JWT config, Redis, logging |
-| Startup/shutdown | ✅ | `lifespan` asynccontextmanager en main.py — pool init y cierre limpio |
+**Observabilidad — Fase 4C completada:**
 
-### Schema SQL (`infra/docker/postgres/init.sql`)
+- Logs JSON estructurados escritos a `backend/logs/app.log` con rotación automática y visibles desde Docker sin configuración adicional
+- `HTTPLoggingMiddleware` registra cada request con `method`, `path`, `status_code`, `duration_ms`, `user_id` y `tenant_id`
+- Jerarquía tipada de excepciones de dominio (`BrixoException` y subclases) que separa el mensaje al usuario del detalle técnico al log
+- Catch-all global: cualquier excepción no prevista retorna `500` genérico al cliente y registra el traceback completo en el log
 
-Todas las tablas del dominio están creadas con UUIDs, foreign keys, constraints e índices:
+**Documentación — Actualización completa:**
 
-| Tabla | Estado |
-| --- | --- |
-| `tenants` | ✅ |
-| `users` | ✅ |
-| `roles` | ✅ |
-| `user_roles` | ✅ |
-| `permissions` | ✅ |
-| `products` | ✅ (con `tenant_id`, UUID, `minimum_stock`) |
-| `inventory_movements` | ✅ |
-| `audit_logs` | ✅ (payload JSONB) |
+- `README.md` reescrito con enfoque de producto y potencial de IA
+- `ARQUITECTURA.md`, `CHECKLIST.md`, `CHANGELOG.md`, `ROADMAP.md` y `OBSERVABILIDAD.md` actualizados al estado real
 
-Seed data: tenant "Demo Store", usuario `admin@brixo.local`, 3 productos de ejemplo.
+### Qué se espera a continuación
 
-### Autenticación y seguridad
-
-| Componente | Estado | Archivo |
-| --- | --- | --- |
-| JWT RS256 — generate | ✅ | `infrastructure/security/jwt_service.py` |
-| JWT RS256 — decode | ✅ | Bug de método truncado corregido, 4 excepciones manejadas |
-| JWTAuthMiddleware | ✅ | `infrastructure/security/jwt_middleware.py` |
-| Login endpoint | ✅ | `POST /api/auth/login` |
-| AuthRepositorySQL real | ✅ | `adapters/repositories/auth_repository_sql.py` — consulta tabla `users` |
-| Sesión Redis | ✅ | Snapshot de roles/permisos por usuario |
-
-### Domain y Application
-
-| Componente | Estado | Notas |
-| --- | --- | --- |
-| EventBus | ✅ | Bug async corregido — detecta coroutines con `inspect.isawaitable` |
-| Handlers | ✅ | `UserLoggedIn`, `UserLoginFailed`, `UserAuthenticated` |
-| LoginUser use case | ✅ | `application/services/auth/login_user.py` |
-| CreateProductUseCase | ✅ | `application/use_cases/create_product.py` |
-| RegisterInventoryMovementUseCase | ✅ | Maneja ENTRADA / SALIDA / AJUSTE con validación de stock |
-| GetProductStockUseCase | ✅ | `application/use_cases/get_product_stock.py` |
-| Domain entities | ✅ | Product, InventoryMovement, LogEntry, Actor, User, Tenant |
-| Port interfaces (ABC) | ✅ | ProductRepository, InventoryMovementRepository, AuditLogRepository, AuthRepository |
-
-### API REST — Endpoints activos
-
-| Método | Ruta | Estado |
-| --- | --- | --- |
-| POST | `/api/auth/login` | ✅ |
-| GET | `/me/access` | ✅ |
-| GET | `/api/products/` | ✅ |
-| POST | `/api/products/` | ✅ |
-| GET | `/api/products/{product_id}` | ✅ |
-| POST | `/api/products/{product_id}/movements` | ✅ |
-| GET | `/api/products/{product_id}/movements` | ✅ |
-
-### Repositorios reales (adapters/repositories/)
-
-| Repositorio | Estado | Reemplaza |
-| --- | --- | --- |
-| `AuthRepositorySQL` | ✅ | Stub hardcodeado en `infrastructure/persistence/` |
-| `ProductRepositorySQL` | ✅ | Vacío en `adapters/` |
-| `InventoryMovementRepositorySQL` | ✅ | No existía |
-| `AuditLogRepositorySQL` | ✅ | No existía |
+**Fase 5 — Frontend** (~6 horas). El backend está completamente listo: CORS activo, tokens renovables, RBAC funcional, errores con formato JSON consistente. El frontend puede arrancar ahora mismo con `npm install`.
 
 ---
 
-## LO QUE ESTÁ PENDIENTE
-
-### Crítico para MVP funcional
-
-| # | Ítem | Impacto |
-| --- | --- | --- |
-| 1 | Frontend completo | Sin UI no hay producto |
-| 2 | `handle_user_logged_in` no persiste en BD | Auditoría de logins silenciosa |
-| 3 | LoginRequest sin modelo Pydantic | `KeyError` 500 si cliente omite campo |
-| 4 | JWT middleware sin rutas públicas | Swagger UI inaccesible sin token |
-
-### Deuda técnica (no bloquea arranque)
-
-| # | Ítem | Archivo |
-| --- | --- | --- |
-| 1 | `class Tenat` → `Tenant` | `domain/contracts.py:8` |
-| 2 | `ocurred_at` → `occurred_at` | `domain/events/base.py` |
-| 3 | Directorio `acccess/` → `access/` | `application/services/acccess/` |
-| 4 | Archivo `asssign_role.py` vacío | `application/services/` |
-| 5 | `aut_service.py` → `auth_service.py` (huérfano) | `application/auth/` |
-| 6 | `domain/events.py` duplicado del paquete `domain/events/` | `domain/` |
-| 7 | `access_repository.py` sin herencia ABC | `application/ports/` |
-| 8 | `AssignRoleToUserUseCase` no existe | `application/use_cases/` |
-
----
-
-## PROGRESO POR COMPONENTE
+## Progreso general
 
 ```text
-Schema SQL             ██████████  100%
-domain/                █████████░   95%  (typos menores)
-application/event_bus  ██████████  100%  (bug async resuelto)
-application/handlers   ██████░░░░   60%  (auditoría no persiste)
-application/use_cases  ████████░░   80%  (assign_role faltante)
-application/ports/     █████████░   90%  (access_repository sin ABC)
-infrastructure/db      ██████████  100%
-infrastructure/jwt     ██████████  100%  (decode completo)
-infrastructure/mw      █████████░   90%  (falta lista rutas públicas)
-infrastructure/redis   ██████████  100%
-adapters/repositories  ██████████  100%
-infrastructure/routes  █████████░   90%  (falta LoginRequest Pydantic)
-main.py                ██████████  100%  (lifespan, routers, pool)
-frontend/src/          █░░░░░░░░░    5%  (solo placeholder)
+FASE 1   Infraestructura          ██████████  100%   ← cerrada
+FASE 2   Data Access Layer        ██████████  100%   ← cerrada
+FASE 3   Casos de uso             ██████████  100%   ← cerrada
+FASE 4   Controladores / Rutas    ██████████  100%   ← cerrada
+FASE 4B  Seguridad aplicada       ██████████  100%   ← cerrada
+FASE 4C  Observabilidad           ██████████  100%   ← cerrada
+FASE 5   Frontend                 █░░░░░░░░░    5%   ← PROXIMA
+FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← bloqueada por 5
+────────────────────────────────────────────────────
+TOTAL MVP                         ████████░░   80%
 ```
 
 ---
 
-## PLAN PARA CERRAR EL MVP
+## Próximas acciones
 
-### Fase 1 — Seguridad y validación (½ día)
+```text
+FASE 5 — Frontend (~6h total)
+1. F5  npm install axios react-router-dom zustand         15 min
+2. F5  src/services/api.js — cliente axios + interceptor  30 min
+3. F5  authStore Zustand — token, usuario, logout         30 min
+4. F5  LoginPage                                          50 min
+5. F5  ProductListPage + ProductFormModal                100 min
+6. F5  MovementFormModal                                  50 min
+7. F5  DashboardPage + AuditLogPage                       85 min
+8. F5  Routing + layout + rutas privadas                  35 min
+9. F5  Estilos básicos                                    40 min
 
-1. Crear `LoginRequest(BaseModel)` con `email: EmailStr` y `password: str` en `routes/auth.py`
-2. Agregar lista `PUBLIC_PATHS` en `jwt_middleware.py` (`/docs`, `/redoc`, `/openapi.json`, `/health`)
-3. Inyectar `AuditLogRepositorySQL` en `handlers.py` para persistir logins
-
-### Fase 2 — Frontend mínimo (3-5 días)
-
-1. Instalar dependencias: `axios`, `react-router-dom`, `zustand`
-2. Crear `src/services/api.js` — cliente axios con interceptor de token JWT
-3. Crear páginas: `LoginPage`, `ProductListPage`, `MovementFormModal`, `DashboardPage`, `AuditLogPage`
-4. Crear stores Zustand: `authStore`, `productStore`
-
-### Fase 3 — Cleanup (½ día)
-
-1. Corregir typos del dominio (`Tenat`, `ocurred_at`, `acccess/`, `asssign_role.py`)
-2. Eliminar `domain/events.py` plano (duplicado)
-3. Hacer `access_repository.py` heredar de ABC
-4. Renombrar `aut_service.py` → `auth_service.py` o eliminarlo (es huérfano)
-
-### Fase 4 — Testing e integración (1 día)
-
-1. `docker compose up` — verificar flujo completo
-2. Crear producto → registrar movimiento → ver stock → ver historial
-3. Login con usuario real desde tabla `users`
+FASE 6 — QA + Hardening (~4h 25min total)
+10. F6 Testing manual flujo completo                      45 min
+11. F6 Rate limiting POST /api/auth/login (Redis, 429)    30 min
+12. F6 Cabeceras de seguridad HTTP (middleware)           30 min
+13. F6 request_id en HTTPLoggingMiddleware                30 min
+14. F6 docker-compose.prod.yml + README final             60 min
+```
 
 ---
 
-## ESTIMACIÓN PARA MVP
+## Fase 1 — Infraestructura 100%
 
-| Fase | Tiempo estimado |
-| --- | --- |
-| Fase 1 — Seguridad y validación | 4 horas |
-| Fase 2 — Frontend | 3-5 días |
-| Fase 3 — Cleanup | 4 horas |
-| Fase 4 — Testing e integración | 1 día |
-| **Total** | **~6-7 días** |
-
----
-
-## RIESGOS ACTUALES
-
-| Riesgo | Probabilidad | Impacto | Mitigación |
-| --- | --- | --- | --- |
-| Auditoría de logins silenciosa | Alta | Medio | Inyectar AuditLogRepository en handlers.py |
-| Swagger bloqueado por JWT | Alta | Bajo | Agregar PUBLIC_PATHS en middleware |
-| KeyError en /login sin campos | Media | Alto | Crear LoginRequest Pydantic |
-| Frontend subestimado en tiempo | Media | Alto | Priorizar flujo mínimo antes de UX |
+| Tarea | Estado |
+|-------|--------|
+| Redis en docker-compose | ✅ |
+| Script SQL completo (8 tablas + seed) | ✅ |
+| `settings.py` con Pydantic BaseSettings | ✅ |
+| `main.py` con lifespan, pool y routers | ✅ |
+| Volumen postgres externo — bind mount `./data/postgres` | ✅ |
+| Env files montados en contenedor — `./env:/app/env:ro` | ✅ |
+| `GET /health` — endpoint sin autenticación | ✅ |
+| Healthchecks en postgres y redis | ✅ |
+| Hot reload backend con watchfiles + bind mount | ✅ |
+| Hot reload frontend con Vite HMR + bind mount | ✅ |
 
 ---
 
-**Documento generado**: 18 de abril de 2026
-**Próxima revisión**: Al completar Fase 1
+## Fase 2 — Data Access Layer 100%
+
+| Repositorio | Puerto | Adaptador SQL |
+|-------------|--------|---------------|
+| Auth | `AuthRepository` | `AuthRepositorySQL` |
+| Product | `ProductRepository` | `ProductRepositorySQL` |
+| InventoryMovement | `InventoryMovementRepository` | `InventoryMovementRepositorySQL` |
+| AuditLog | `AuditLogRepository` | `AuditLogRepositorySQL` |
+| User | `UserRepository` | `UserRepositorySQL` |
+| Tenant | `TenantRepository` | `TenantRepositorySQL` |
+| Role | `RoleRepository` | `RoleRepositorySQL` |
+| Access | `AccessRepository` | `AccessRepositorySQL` |
+
+---
+
+## Fase 3 — Casos de uso 100%
+
+| Use Case | Archivo |
+|----------|---------|
+| `LoginUser` | `application/services/auth/login_user.py` |
+| `CreateProductUseCase` | `application/use_cases/create_product.py` |
+| `RegisterInventoryMovementUseCase` | `application/use_cases/register_inventory_movement.py` |
+| `GetProductStockUseCase` | `application/use_cases/get_product_stock.py` |
+| `CreateUserUseCase` | `application/use_cases/create_user.py` |
+| `AssignRoleToUserUseCase` | `application/use_cases/assign_role_to_user.py` |
+| `GetAuditLogByTenantUseCase` | `application/use_cases/get_audit_log_by_tenant.py` |
+
+---
+
+## Fase 4 — Controladores y Rutas 100%
+
+| Componente | Rutas |
+|------------|-------|
+| `AuthController` | `POST /api/auth/login`, `POST /api/auth/refresh` |
+| `ProductController` | `GET /api/products/`, `POST /api/products/`, `GET /api/products/{id}` |
+| `InventoryController` | `POST /api/products/{id}/movements`, `GET /api/products/{id}/movements` |
+| `UserController` | `GET /api/users/`, `POST /api/users/`, `POST /api/users/{id}/roles` |
+| `AuditController` | `GET /api/audit/?limit=N` |
+| `AccessController` | `GET /me/access` — lee snapshot de Redis |
+| `HealthController` | `GET /health` — sin autenticación |
+
+---
+
+## Fase 4B — Seguridad aplicada 100%
+
+| Tarea | Archivo | Estado |
+|-------|---------|--------|
+| CORS en `main.py` | `backend/main.py` | ✅ |
+| `require_permission(code)` — FastAPI dependency | `infrastructure/security/permissions.py` | ✅ |
+| RBAC aplicado en endpoints críticos | `routes/products.py`, `routes/users.py`, `routes/audit.py` | ✅ |
+| `POST /api/auth/refresh` — renueva token sin re-login | `infrastructure/api/routes/auth.py` | ✅ |
+
+---
+
+## Fase 4C — Observabilidad y Manejo de Excepciones 100%
+
+| Componente | Archivo | Estado |
+|------------|---------|--------|
+| Logger JSON con `RotatingFileHandler` | `infrastructure/logging.py` | ✅ |
+| `HTTPLoggingMiddleware` | `infrastructure/api/middleware/http_logging.py` | ✅ |
+| Jerarquía de excepciones de dominio | `domain/exceptions.py` | ✅ |
+| Exception handlers globales (4 tipos) | `infrastructure/api/exception_handlers.py` | ✅ |
+| Logs en `backend/logs/app.log` — visible en host vía bind mount | `infra/docker-compose.yml` | ✅ |
+
+### Stack de middlewares activo
+
+```text
+CORS → HTTPLogging → JWT → Handler → ExceptionHandlers → AuditLog
+```
+
+### Logs en Docker
+
+```text
+Contenedor: /app/logs/app.log
+Host:       backend/logs/app.log   ← sin docker exec, acceso directo
+```
+
+---
+
+## Fase 5 — Frontend 5%
+
+Solo existe `<h1>Brixo</h1>` en `frontend/src/App.jsx`.  
+El backend está completamente listo — puede arrancar ahora.
+
+| Tarea | Tiempo | Estado |
+|-------|--------|--------|
+| `npm install axios react-router-dom zustand` | 15 min | ⭕ |
+| `src/services/api.js` — axios con interceptor JWT y refresh | 30 min | ⭕ |
+| `authStore` (Zustand) — token, usuario, logout | 30 min | ⭕ |
+| `LoginPage` | 50 min | ⭕ |
+| `ProductListPage` | 60 min | ⭕ |
+| `ProductFormModal` | 40 min | ⭕ |
+| `MovementFormModal` | 50 min | ⭕ |
+| `DashboardPage` | 45 min | ⭕ |
+| `AuditLogPage` | 40 min | ⭕ |
+| Routing + layout + rutas privadas | 35 min | ⭕ |
+| Estilos básicos | 40 min | ⭕ |
+
+---
+
+## Fase 6 — QA + Hardening 0%
+
+Bloqueada por Fase 5.
+
+| Tarea | Tipo | Tiempo | Estado |
+|-------|------|--------|--------|
+| Testing manual flujo completo | QA | 45 min | ⭕ |
+| Fix de bugs encontrados | Dev | 60 min | ⭕ |
+| Rate limiting en `POST /api/auth/login` | Seguridad | 30 min | ⭕ |
+| Validar TTL Redis snapshot y expiración de token | Seguridad | 20 min | ⭕ |
+| Cabeceras de seguridad HTTP | Seguridad | 30 min | ⭕ |
+| `request_id` en `HTTPLoggingMiddleware` | Observabilidad | 30 min | ⭕ |
+| `docker-compose.prod.yml` | Infra | 30 min | ⭕ |
+
+---
+
+## Deuda técnica — RESUELTA ✅
+
+| # | Ítem | Resolución |
+|---|------|-----------|
+| 1 | `ocurred_at` → `occurred_at` | Corregido en `domain/events/base.py` |
+| 2 | Directorio `acccess/` (triple c) | Renombrado a `access/`, 2 imports actualizados |
+| 3 | `asssign_role.py` vacío | Eliminado con `git rm` |
+| 4 | `aut_service.py` huérfano | Eliminado con `git rm` |
+| 5 | `domain/events.py` duplicado | Eliminado; import corregido a `domain.events.base` |
+| 6 | `OPENAI_API_KEY` en `backend.env` | `infra/env/*.env` excluido de git en `.gitignore` |
+
+---
+
+**Documento actualizado**: 18 de abril de 2026 (sesión 3)  
+**Próxima revisión**: Al completar Fase 5 Frontend

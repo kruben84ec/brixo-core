@@ -1,6 +1,10 @@
 version: "3.9"
 
 services:
+
+  # ──────────────────────────────────────────
+  # BASE DE DATOS
+  # ──────────────────────────────────────────
   postgres:
     image: postgres:15
     container_name: brixo-postgres
@@ -8,11 +12,20 @@ services:
     env_file:
       - ./env/db.env
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./data/postgres:/var/lib/postgresql/data   # datos persistentes fuera del contenedor
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U brixo_user -d brixo"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
+  # ──────────────────────────────────────────
+  # CACHE / SESIONES
+  # ──────────────────────────────────────────
   redis:
     image: redis:7-alpine
     container_name: brixo-redis
@@ -21,7 +34,18 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
 
+  # ──────────────────────────────────────────
+  # BACKEND — FastAPI
+  # El código se lee desde ../backend (bind mount)
+  # uvicorn --reload + watchfiles detecta cambios en /app
+  # ──────────────────────────────────────────
   backend:
     build:
       context: ..
@@ -34,20 +58,34 @@ services:
       - ./env/backend.env
       - ./env/jwt.env
       - ./env/redis.env
+      - ./env/logging.env
     depends_on:
-      - postgres
-      - redis        # ← agrega esta dependencia
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     ports:
       - "8000:8000"
     volumes:
-      - ../backend:/app
+      - ../backend:/app         # hot reload — cambios en src se reflejan al instante
+                                # LOGS: /app/logs/app.log dentro del contenedor
+                                #       ↓ visible en el host como backend/logs/app.log
+                                #       Rotación automática: 10 MB × 5 archivos
+      - ./env:/app/env:ro       # env files montados como solo lectura
 
+  # ──────────────────────────────────────────
+  # FRONTEND — React + Vite
+  # El código se lee desde ../frontend (bind mount)
+  # Vite HMR detecta cambios en src/ automáticamente
+  # ──────────────────────────────────────────
   frontend:
     build:
       context: ..
       dockerfile: infra/docker/frontend/Dockerfile
     container_name: brixo-frontend
     restart: unless-stopped
+    environment:
+      - VITE_API_URL=http://localhost:8000   # URL accesible desde el navegador del host
     env_file:
       - ./env/frontend.env
     depends_on:
@@ -55,9 +93,8 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ../frontend:/app
-      - /app/node_modules
+      - ../frontend:/app        # hot reload — cambios en src/ activan HMR de Vite
+      - /app/node_modules       # preserva node_modules instalados en el build
 
 volumes:
-  postgres_data:
-  redis_data:        # ← agrega este volumen
+  redis_data:

@@ -1,460 +1,223 @@
-# 🏗️ ARQUITECTURA DE BRIXO - ESTADO ACTUAL VS IMPLEMENTACIÓN
+# ARQUITECTURA DE BRIXO
 
-## 📊 VISTA ACTUAL (HOY)
+**Actualizado**: 18 de abril de 2026  
+**Branch activo**: `dev`  
+**Progreso MVP**: 80% — ver [ROADMAP.md](ROADMAP.md) y [ESTATUS.md](ESTATUS.md)
 
+---
+
+## Principio rector
+
+**Las dependencias apuntan siempre hacia el dominio.** El dominio no conoce ni infraestructura ni adaptadores. Esta regla no es negociable y es la que hace posible conectar agentes de IA o cambiar la base de datos sin tocar la lógica de negocio.
+
+```text
+Adapters → Application → Domain
+               ↑
+         Infrastructure
 ```
+
+| Capa | Puede importar de |
+|------|-------------------|
+| Domain | Nadie |
+| Application | Solo Domain |
+| Infrastructure | Domain + Application |
+| Adapters | Todas las capas |
+
+---
+
+## Vista de módulos — Estado actual (80% MVP)
+
+```text
 ┌─────────────────────────────────────────────────────────────┐
-│                     BRIXO MVP - ESTADO ACTUAL               │
+│               BRIXO MVP — ESTADO ACTUAL (80%)               │
 └─────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────┐
 │   FRONTEND (REACT)       │
-│  ❌ VACÍO                │
-│  - App.jsx: empty        │
-│  - main.jsx: empty       │
+│  ⚠️  EN CURSO            │
+│  - App.jsx: placeholder  │
 │  - Sin componentes       │
 │  - Sin routing           │
 │  - Sin API client        │
 └──────────────┬───────────┘
-               │
-               │ ❌ No conecta (CORS no configurado)
+               │ ✅ CORS habilitado
                │
 ┌──────────────▼───────────────────────────────────────────────┐
-│               FASTAPI BACKEND (PYTHON)                       │
+│               FASTAPI BACKEND (PYTHON 3.12)                  │
 ├──────────────────────────────────────────────────────────────┤
 │                                                              │
-│  ❌ main.py VACÍO - No levanta FastAPI app                 │
-│     - Sin routers                                            │
-│     - Sin middlewares                                        │
-│     - Sin lifespan hooks                                     │
+│  main.py — FastAPI app                                       │
+│    ├─ CORSMiddleware          (localhost:3000)               │
+│    ├─ HTTPLoggingMiddleware   (method/path/status/duration)  │
+│    ├─ JWTAuthMiddleware       (RS256, PUBLIC_PATHS)          │
+│    ├─ Exception Handlers      (dominio, HTTP, validación)    │
+│    └─ EventBus + Lifespan                                    │
 │                                                              │
-│  ✅ APLICACIÓN (Application Layer)                          │
-│     ├─ event_bus.py ✅ (implementado)                       │
-│     ├─ handlers.py ⚠️ (parcial)                             │
-│     ├─ auth/ ⚠️ (parcial - solo login)                      │
-│     └─ use_cases/ ❌ (vacíos o sin implementar)            │
+│  CONTROLADORES / RUTAS (Fase 4 — 100%)                      │
+│    ├─ POST /api/auth/login + refresh                         │
+│    ├─ GET/POST /api/products/ + movimientos                  │
+│    ├─ GET/POST /api/users/ + asignación de roles             │
+│    ├─ GET /api/audit/?limit=N                                │
+│    ├─ GET /me/access                                         │
+│    └─ GET /health (sin autenticación)                        │
 │                                                              │
-│  ✅ DOMINIO (Domain Layer)                                  │
-│     ├─ contracts.py ✅ (User, Tenant, Role, Permission)    │
-│     ├─ events.py ✅ (InventoryChanged, RoleAssigned, etc)  │
-│     ├─ auth.py ✅ (UserLoggedIn)                           │
-│     └─ logs.py ✅ (LogEntry, Actor, LogEventType)          │
+│  SEGURIDAD (Fase 4B — 100%)                                  │
+│    ├─ require_permission(code) — lee snapshot Redis          │
+│    └─ RBAC activo en todos los endpoints protegidos          │
 │                                                              │
-│  ⚠️ INFRAESTRUCTURA (Infrastructure Layer)                 │
-│     ├─ logging.py ✅ (JSON logs)                            │
-│     ├─ redis_client.py ✅ (código existe)                   │
-│     ├─ env/settings.py ⚠️ (incompleto)                      │
-│     └─ web/middleware/ ⚠️ (solo auth, sin integración)     │
+│  OBSERVABILIDAD (Fase 4C — 100%)                             │
+│    ├─ infrastructure/logging.py — JSON a stdout + archivo    │
+│    ├─ infrastructure/api/middleware/http_logging.py          │
+│    ├─ infrastructure/api/exception_handlers.py               │
+│    └─ domain/exceptions.py — jerarquía tipada               │
 │                                                              │
-│  ❌ ADAPTADORES (Adapters Layer)                            │
-│     ├─ repositories/ ❌ (NO existen)                        │
-│     ├─ http/controllers/ ❌ (NO existen)                    │
-│     ├─ dtos/ ❌ (NO existen)                                │
-│     ├─ exceptions.py ❌ (NO existe)                         │
-│     └─ mappers/ ❌ (vacío)                                  │
+│  CASOS DE USO (Fase 3 — 100%)                               │
+│    ├─ LoginUser                                              │
+│    ├─ CreateProductUseCase                                   │
+│    ├─ RegisterInventoryMovementUseCase                       │
+│    ├─ GetProductStockUseCase                                 │
+│    ├─ CreateUserUseCase                                      │
+│    ├─ AssignRoleToUserUseCase                                │
+│    └─ GetAuditLogByTenantUseCase                             │
+│                                                              │
+│  DATA ACCESS LAYER (Fase 2 — 100%)                          │
+│    ├─ AuthRepository / AuthRepositorySQL                     │
+│    ├─ ProductRepository / ProductRepositorySQL               │
+│    ├─ InventoryMovementRepository / SQL                      │
+│    ├─ AuditLogRepository / SQL                               │
+│    ├─ UserRepository / SQL                                   │
+│    ├─ TenantRepository / SQL                                 │
+│    ├─ RoleRepository / SQL                                   │
+│    └─ AccessRepository / SQL                                 │
+│                                                              │
+│  DOMINIO (100%)                                              │
+│    ├─ contracts.py (Tenant, User, Role, Permission)          │
+│    ├─ exceptions.py (jerarquía BrixoException)               │
+│    ├─ logs.py (LogEntry, Actor, LogEventType)                │
+│    └─ events/ (paquete — auth, user, base)                   │
 │                                                              │
 └──────────────┬──────────────────────────────────────────────┘
-               │
-               │ ❌ BD incompleta, sin endpoints
+               │ BD completa — 8 tablas + seed
                │
 ┌──────────────▼──────────────────────────────────────────────┐
-│              INFRAESTRUCTURA (Docker)                        │
+│              INFRAESTRUCTURA (Docker Compose)                │
 ├──────────────────────────────────────────────────────────────┤
-│                                                              │
-│  🗄️ PostgreSQL ✅                                           │
-│     ├─ Tabla: products ✅                                    │
-│     ├─ Tabla: tenants ❌                                     │
-│     ├─ Tabla: users ❌                                       │
-│     ├─ Tabla: roles ❌                                       │
-│     ├─ Tabla: user_roles ❌                                  │
-│     ├─ Tabla: inventory_movements ❌                         │
-│     ├─ Tabla: audit_logs ❌                                  │
-│     └─ Tabla: permissions ❌                                 │
-│                                                              │
-│  🔴 Redis ❌                                                │
-│     - Código existe (redis_client.py)                        │
-│     - NO está en docker-compose.yml                         │
-│     - Sesiones pueden no persistir                           │
-│                                                              │
-│  📦 Dependencies ✅                                          │
-│     - FastAPI 0.128.0                                        │
-│     - PostgreSQL (psycopg2)                                  │
-│     - Pydantic 2.12.5                                        │
-│     - PyJWT 2.10.1                                           │
-│     - Redis 7.1.0                                            │
-│                                                              │
+│  PostgreSQL 15 — 8 tablas (tenants, users, roles,           │
+│                  user_roles, products, inventory_movements,  │
+│                  audit_logs, permissions)                    │
+│  Redis 7      — snapshot user_access:{tenant}:{user}        │
+│  Bind mounts  — hot reload backend + frontend                │
+│  Log file     — backend/logs/app.log (10 MB × 5 rotados)    │
 └──────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🏗️ VISTA FINAL (DESPUÉS DEL MVP)
+## Flujo de seguridad completo
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│              BRIXO MVP - COMPLETAMENTE FUNCIONAL             │
-└─────────────────────────────────────────────────────────────┘
-
-┌──────────────────────────────┐
-│   FRONTEND (REACT + VITE)     │ ✅ COMPLETO
-│  ├─ LoginPage                │
-│  ├─ ProductListPage          │
-│  ├─ DashboardPage            │
-│  ├─ AuditLogPage             │
-│  ├─ Components (modals, etc) │
-│  ├─ API Service Client       │
-│  ├─ Zustand Store            │
-│  └─ Routing & Layout         │
-└──────────────┬────────────────┘
-               │ ✅ CORS habilitado
-               │
-┌──────────────▼────────────────────────────────────────────────┐
-│              FASTAPI BACKEND (PYTHON)                         │ ✅
-├────────────────────────────────────────────────────────────────┤
-│                                                               │
-│  ✅ main.py - FastAPI app completa                           │
-│     ├─ CORS middleware                                        │
-│     ├─ Auth middleware                                        │
-│     ├─ Logging middleware                                     │
-│     ├─ Lifespan hooks (startup/shutdown)                     │
-│     └─ Routers incluidos (5 controllers)                      │
-│                                                               │
-│  ✅ ROUTERS / ENDPOINTS (15+ rutas)                          │
-│     ├─ POST /api/auth/login                                   │
-│     ├─ POST /api/products                                     │
-│     ├─ GET /api/products                                      │
-│     ├─ POST /api/inventory/movements                          │
-│     ├─ GET /api/inventory/stock/{id}                          │
-│     ├─ POST /api/users                                        │
-│     ├─ POST /api/users/{id}/roles                            │
-│     ├─ GET /api/audit/logs                                    │
-│     └─ ... (más)                                              │
-│                                                               │
-│  ✅ APLICACIÓN (Application Layer)                           │
-│     ├─ event_bus.py ✅                                        │
-│     ├─ handlers.py ✅ (completo)                              │
-│     ├─ auth/auth_service.py ✅                               │
-│     └─ use_cases/ ✅ (6 casos de uso)                        │
-│         ├─ CreateProductUseCase                               │
-│         ├─ RegisterMovementUseCase                            │
-│         ├─ LoginUseCase                                       │
-│         ├─ CreateUserUseCase                                  │
-│         ├─ AssignRoleUseCase                                  │
-│         └─ GetAuditLogUseCase                                 │
-│                                                               │
-│  ✅ DOMINIO (Domain Layer)                                    │
-│     ├─ contracts.py ✅                                        │
-│     ├─ events.py ✅                                           │
-│     ├─ auth.py ✅                                             │
-│     └─ logs.py ✅                                             │
-│                                                               │
-│  ✅ INFRAESTRUCTURA (Infrastructure Layer)                    │
-│     ├─ logging.py ✅                                          │
-│     ├─ redis_client.py ✅                                     │
-│     ├─ env/settings.py ✅                                     │
-│     ├─ web/middleware/ ✅                                     │
-│     └─ database.py ✅ (pool conexiones)                       │
-│                                                               │
-│  ✅ ADAPTADORES (Adapters Layer)                              │
-│     ├─ repositories/ ✅ (6 repos)                             │
-│     │   ├─ ProductRepository                                  │
-│     │   ├─ UserRepository                                     │
-│     │   ├─ TenantRepository                                   │
-│     │   ├─ RoleRepository                                     │
-│     │   ├─ AuditLogRepository                                 │
-│     │   └─ InventoryMovementRepository                        │
-│     │                                                         │
-│     ├─ http/controllers/ ✅ (5 controllers)                   │
-│     │   ├─ ProductController                                  │
-│     │   ├─ AuthController                                     │
-│     │   ├─ InventoryController                                │
-│     │   ├─ UserController                                     │
-│     │   └─ AuditController                                    │
-│     │                                                         │
-│     ├─ dtos/ ✅ (6 DTOs)                                      │
-│     │   ├─ ProductDTO                                         │
-│     │   ├─ UserDTO                                            │
-│     │   ├─ MovementDTO                                        │
-│     │   ├─ LoginDTO                                           │
-│     │   ├─ TokenResponseDTO                                   │
-│     │   └─ AuditLogDTO                                        │
-│     │                                                         │
-│     ├─ exceptions.py ✅                                       │
-│     └─ mappers/ ✅                                            │
-│                                                               │
-└──────────────┬────────────────────────────────────────────────┘
-               │ ✅ CRUD operativo
-               │ ✅ Auditoría registrando
-               │
-┌──────────────▼────────────────────────────────────────────────┐
-│         INFRAESTRUCTURA (Docker + BD)                         │ ✅
-├────────────────────────────────────────────────────────────────┤
-│                                                               │
-│  ✅ PostgreSQL                                                │
-│     ├─ tenants ✅                                             │
-│     ├─ users ✅                                               │
-│     ├─ roles ✅                                               │
-│     ├─ user_roles ✅                                          │
-│     ├─ products ✅                                            │
-│     ├─ inventory_movements ✅                                 │
-│     ├─ audit_logs ✅                                          │
-│     └─ permissions ✅                                         │
-│                                                               │
-│  ✅ Redis                                                      │
-│     ├─ Sesiones ✅                                            │
-│     ├─ Caché ✅                                               │
-│     └─ En docker-compose ✅                                   │
-│                                                               │
-│  ✅ docker-compose.yml                                        │
-│     ├─ PostgreSQL service                                     │
-│     ├─ Redis service                                          │
-│     ├─ Backend service                                        │
-│     └─ Frontend service                                       │
-│                                                               │
-└────────────────────────────────────────────────────────────────┘
+```text
+REQUEST
+  │
+  ▼
+CORSMiddleware              ← outermost — preflight OPTIONS sin auth
+  │
+  ▼
+HTTPLoggingMiddleware       ← registra method/path/status/duration
+  │                            user_id y tenant_id disponibles post-JWT
+  ▼
+JWTAuthMiddleware           ← valida RS256, inyecta user_id + tenant_id
+  │                            publica UserAuthenticated en EventBus
+  ▼
+UserAccessProjection        ← escucha UserAuthenticated
+  │                            consulta roles + permisos en BD
+  │                            guarda snapshot en Redis
+  ▼
+require_permission(code)    ← lee snapshot de Redis
+  │                            lanza 403 si el código falta
+  ▼
+Handler / Use Case          ← lógica de negocio sin conocer seguridad
+  │   puede lanzar BrixoException (dominio) o HTTPException
+  ▼
+Exception Handlers          ← separan mensaje al cliente de log técnico
+  │
+  ▼
+AuditLogRepository          ← persiste cada acción relevante en BD
 ```
 
 ---
 
-## 📊 DIAGRAMA DE FLUJO DE DATOS
+## Flujo de datos — request completo
 
-### FLUJO ACTUAL (INCOMPLETO)
-
-```
-Usuario                Backend                  BD
-  │                      │                      │
-  │ (No puede acceder)   │                      │
-  │                      │                      │
-  X─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─X (main.py vacío)    │
-                         │                      │
-                         │ ❌ Endpoint?         │
-                         │                      │
-                         │                      ❌ Tabla?
-```
-
-### FLUJO ESPERADO (POST-MVP)
-
-```
+```text
 ┌─────────┐      ┌────────────────┐      ┌────────────────┐
 │ Usuario │      │    Backend     │      │       BD       │
 │ (React) │      │   (FastAPI)    │      │ (PostgreSQL)   │
 └────┬────┘      └────┬───────────┘      └────┬───────────┘
      │                │                       │
      │ 1. LOGIN       │                       │
-     │ (username/pw)  │                       │
-     │───────────────>│                       │
-     │                │ 2. ValidateUser       │
+     │───────────────>│ ValidateUser          │
      │                │──────────────────────>│
-     │                │                       │ Query: users
      │                │<──────────────────────│
-     │                │ (user_found)          │
-     │                │                       │
-     │                │ 3. GenerateJWT        │
-     │                │ (RS256)               │
-     │                │                       │
-     │ 4. TOKEN + SetSession                 │
+     │                │ GenerateJWT (RS256)   │
+     │ 2. JWT TOKEN   │ Snapshot → Redis      │
      │<───────────────│                       │
-     │                │ Store in Redis        │
-     │                │ (auth:token:xxxx)     │
      │                │                       │
-     │ 5. CREATE PRODUCT                      │
-     │ (name, stock)  │                       │
-     │───────────────>│                       │
-     │                │ ValidateAuth          │
-     │                │ (check JWT)           │
-     │                │                       │
-     │                │ 6. CreateProduct      │
-     │                │──────────────────────>│
-     │                │                       │ INSERT
-     │                │<──────────────────────│
-     │                │ (product_id)          │
-     │                │                       │
-     │                │ 7. PublishEvent       │
-     │                │ (ProductCreated)      │
-     │                │ → EventBus            │
-     │                │ → Handler             │
-     │                │ → LogEntry            │
-     │                │──────────────────────>│
-     │                │                       │ INSERT audit_logs
-     │                │<──────────────────────│
-     │                │                       │
-     │ 8. RESPONSE    │                       │
+     │ 3. POST /api/products/                 │
+     │   Authorization: Bearer <token>        │
+     │───────────────>│ require_permission    │
+     │                │ (INVENTORY_WRITE)     │
+     │                │ CreateProductUseCase  │
+     │                │──────────────────────>│ INSERT products
+     │                │ PublishEvent          │ INSERT audit_logs
+     │ 4. 201 Created │                       │
      │<───────────────│                       │
-     │ ({id, name})   │                       │
-     │                │                       │
-
-[Continúa con movimientos, auditoría, etc...]
 ```
 
 ---
 
-## 🔗 DEPENDENCIAS ENTRE CAPAS
+## Jerarquía de excepciones de dominio
 
-### Capa de Datos → Aplicación
-
-```
-┌─────────────────────┐
-│   Application       │
-│  (Use Cases)        │
-├─────────────────────┤
-│  CreateProductUC    │
-│  └─ ProductRepo     │─────┐
-│  └─ EventBus        │     │
-│  └─ LogEntry        │     │
-│                     │     │
-│  LoginUC            │     │
-│  └─ UserRepo        │     │
-│  └─ RoleRepo        │     │
-│                     │     │
-└──────┬──────────────┘     │
-       │                    │
-       v                    v
-┌──────────────────────────────────┐
-│   Data Layer (Repositories)       │
-├──────────────────────────────────┤
-│  ProductRepository ────────┐      │
-│  UserRepository ────────┐  │      │
-│  RoleRepository ────────┤  │      │
-│  AuditLogRepository ────┤  │      │
-│                         │  │      │
-└─────────────────────────┼──┼──────┘
-                          │  │
-                          v  v
-                    ┌──────────────┐
-                    │ PostgreSQL   │
-                    │              │
-                    │ (8 tables)   │
-                    └──────────────┘
+```text
+BrixoException (base — domain/exceptions.py)
+├── NotFoundError        → HTTP 404  NOT_FOUND
+├── UnauthorizedError    → HTTP 401  UNAUTHORIZED
+├── ForbiddenError       → HTTP 403  FORBIDDEN
+├── ConflictError        → HTTP 409  CONFLICT
+├── DomainValidationError→ HTTP 422  VALIDATION_ERROR
+└── InternalError        → HTTP 500  INTERNAL_ERROR
 ```
 
----
-
-## 📈 CHECKLIST DE COMPLETITUD
-
-### Dominio (95% listo)
-- [x] Contracts (Tenant, User, Role)
-- [x] Events (InventoryChanged, RoleAssigned, etc)
-- [x] Logs (LogEntry, Actor)
-- [x] Auth (UserLoggedIn)
-- [x] Tipado correcto (frozen dataclasses)
-
-### Aplicación (40% listo)
-- [x] Event Bus
-- [x] Handler base
-- [x] Auth Service (parcial)
-- [ ] Use Cases (6/6 - FALTA)
-- [ ] Mappers
-
-### Infraestructura (50% listo)
-- [x] Logging
-- [x] Redis Client (código)
-- [x] Settings (parcial)
-- [ ] Database Pool
-- [ ] Settings completo
-
-### Adaptadores (0% listo)
-- [ ] Repositories (0/6)
-- [ ] HTTP Controllers (0/5)
-- [ ] DTOs (0/6)
-- [ ] Exception handlers
-- [ ] Mappers
-
-### Integración (0% listo)
-- [ ] main.py
-- [ ] Routers
-- [ ] Middlewares
-- [ ] Lifecycle hooks
-- [ ] CORS
-
-### Frontend (0% listo)
-- [ ] Components
-- [ ] Pages
-- [ ] Services
-- [ ] Routing
-- [ ] State management
-
-### BD (10% listo)
-- [x] PostgreSQL container
-- [x] Table: products
-- [ ] Table: tenants
-- [ ] Table: users
-- [ ] Table: roles
-- [ ] Table: user_roles
-- [ ] Table: inventory_movements
-- [ ] Table: audit_logs
-- [ ] Table: permissions
+Los exception handlers en `infrastructure/api/exception_handlers.py` interceptan estas excepciones y devuelven al cliente un JSON limpio, mientras envían el detalle técnico al log. El stack trace nunca se expone al cliente.
 
 ---
 
-## 🎯 ORDEN DE CONSTRUCCIÓN
+## Estado de módulos
 
-```
-PASO 1: Infraestructura
-  └─> Docker Compose (Redis)
-  └─> SQL Schema (8 tablas)
-  └─> Settings.py
-
-PASO 2: Data Access
-  └─> Interfaces Repositorio
-  └─> 6 Repositories (CRUD)
-  └─> Database Pool
-
-PASO 3: Lógica
-  └─> 6 Use Cases
-  └─> Integración Event Bus
-
-PASO 4: API
-  └─> 6 DTOs
-  └─> 5 Controllers
-  └─> 15+ Endpoints
-  └─> Exception handlers
-
-PASO 5: Integración
-  └─> main.py completo
-  └─> Middlewares
-  └─> Lifecycle
-  └─> Routers
-
-PASO 6: Frontend
-  └─> 5 Componentes principales
-  └─> 4 Pages
-  └─> API Client
-  └─> State management
-
-RESULTADO: MVP Funcional ✅
-```
-
----
-
-## 🚀 ESTADO DE CADA MÓDULO
-
-| Módulo | Código | Integración | Status |
-|--------|--------|-------------|--------|
-| Domain | ✅✅✅ | N/A | ✅ LISTO |
-| Event Bus | ✅ | ⚠️ | 60% |
-| Auth Service | ⚠️ | ❌ | 20% |
-| Use Cases | ❌❌❌ | ❌ | 0% |
-| Repositories | ❌❌❌ | ❌ | 0% |
-| Controllers | ❌❌❌ | ❌ | 0% |
-| DTOs | ❌❌❌ | ❌ | 0% |
-| main.py | ❌ | ❌ | 0% |
-| Frontend | ❌ | ❌ | 0% |
-| BD Schema | ⚠️ | N/A | 10% |
-| Docker | ⚠️ | ⚠️ | 80% |
-
----
-
-## 💡 PUNTOS CLAVE
-
-1. **Dominio está bien modelado** → No hay que cambiar estructuras
-2. **Event Bus existe** → Solo hay que conectarlo
-3. **Autenticación está a medias** → Necesita integración
-4. **Data Access falta** → Trabajo mecánico pero crítico
-5. **Frontend está en blanco** → Proyecto completo
-6. **BD está incompleta** → Solo SQL, sin datos complejos
-
-**Conclusión**: El trabajo es **acoplable y secuencial**. Una vez que Infraestructura + BD están, todo lo demás es encajar piezas.
-
----
-
-**Generado**: 24 de enero de 2026
+| Módulo | Estado | Notas |
+|--------|--------|-------|
+| `domain/contracts.py` | ✅ 100% | |
+| `domain/exceptions.py` | ✅ 100% | Jerarquía tipada — Fase 4C |
+| `domain/logs.py` | ✅ 100% | LogEntry inmutable |
+| `domain/events/` | ✅ 100% | Paquete limpio, archivo plano eliminado |
+| `application/event_bus` | ✅ 100% | |
+| `application/handlers` | ✅ 100% | Auditoría persiste login |
+| `application/use_cases/` | ✅ 100% | 7 de 7 |
+| `application/services/access/` | ✅ 100% | Directorio renombrado (deuda técnica resuelta) |
+| `application/services/auth/` | ✅ 100% | |
+| `infrastructure/settings` | ✅ 100% | Pydantic BaseSettings |
+| `infrastructure/jwt_service` | ✅ 100% | RS256 |
+| `infrastructure/jwt_middleware` | ✅ 100% | PUBLIC_PATHS configurado |
+| `infrastructure/permissions` | ✅ 100% | require_permission activo |
+| `infrastructure/logging` | ✅ 100% | JSON a stdout + RotatingFileHandler |
+| `infrastructure/api/middleware/` | ✅ 100% | HTTPLoggingMiddleware — Fase 4C |
+| `infrastructure/api/exception_handlers` | ✅ 100% | 4 handlers globales — Fase 4C |
+| `infrastructure/projections/` | ✅ 100% | Snapshot Redis |
+| `infrastructure/routes/auth` | ✅ 100% | POST /login + POST /refresh |
+| `infrastructure/routes/products` | ✅ 100% | RBAC activo |
+| `infrastructure/routes/users` | ✅ 100% | POST /{id}/roles + RBAC |
+| `infrastructure/routes/audit` | ✅ 100% | RBAC activo |
+| `infrastructure/routes/health` | ✅ 100% | Sin autenticación |
+| `adapters/repositories/` | ✅ 100% | 8 repositorios SQL |
+| `main.py` | ✅ 100% | Middlewares + exception handlers registrados |
+| `infra/init.sql` | ✅ 100% | 8 tablas + seed |
+| `frontend/src/` | ⭕ 5% | Solo placeholder — Fase 5 pendiente |

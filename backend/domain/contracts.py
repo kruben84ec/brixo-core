@@ -5,7 +5,7 @@ from uuid import UUID
 from datetime import datetime
 
 @dataclass(frozen=True)
-class Tenat:
+class Tenant:
     """
     Representa a una empresa/tienda /negocio que utiliza la plataforma.
     """
