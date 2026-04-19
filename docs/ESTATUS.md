@@ -2,11 +2,7 @@
 
 **Fecha**: 18 de abril de 2026
 **Rama activa**: `dev`
-**Estado general**: Backend 100% — Fases 1, 2, 3, 4 y 4B cerradas — Próximo: Fase 5 Frontend — MVP al 77%
-
-> El porcentaje bajó de 68% a 58% porque el roadmap fue actualizado para incluir la Fase 4B
-> (RBAC enforcement, CORS, refresh token). El trabajo estaba pendiente antes, simplemente
-> no estaba en el plan. El avance real del backend no retrocedió.
+**Estado general**: Backend 100% completo — Infraestructura Docker corregida — Próximo: Fase 5 Frontend — MVP al 77%
 
 ---
 
@@ -18,52 +14,46 @@ FASE 2   Data Access Layer        ██████████  100%   ← cer
 FASE 3   Casos de uso             ██████████  100%   ← cerrada
 FASE 4   Controladores / Rutas    ██████████  100%   ← cerrada
 FASE 4B  Seguridad aplicada       ██████████  100%   ← cerrada
-FASE 5   Frontend                 █░░░░░░░░░    5%   ← bloqueada por 4B
+FASE 5   Frontend                 █░░░░░░░░░    5%   ← PROXIMA
 FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← bloqueada por 5
-────────────────────────────────────────────────────
+──────────────────────────────────���─────────────────
 TOTAL MVP                         ████████░░   77%
 ```
 
 ---
 
-## PROXIMAS ACCIONES (orden de prioridad)
+## PROXIMAS ACCIONES
 
 ```text
-✅ F1  Typo Tenat → Tenant en domain/contracts.py
-✅ F1  GET /health sin autenticacion
-✅ F4  POST /api/users/{id}/roles
-✅ F4B CORS en main.py
-✅ F4B require_permission(code) dependency para FastAPI
-✅ F4B Aplicar require_permission en endpoints críticos
-✅ F4B POST /api/auth/refresh
-
-1. F5  Setup React + api.js + authStore + LoginPage            1 día
-2. F5  ProductListPage + modales de producto y movimiento      2 días
-3. F5  DashboardPage + AuditLogPage + routing                  2 días
-4. F6  Testing manual + rate limiting + docs + deploy          1 día
+1. F5  npm install axios react-router-dom zustand        15 min
+2. F5  src/services/api.js — cliente axios + interceptor  30 min
+3. F5  authStore Zustand — token, usuario, logout         30 min
+4. F5  LoginPage                                          50 min
+5. F5  ProductListPage + ProductFormModal                100 min
+6. F5  MovementFormModal                                  50 min
+7. F5  DashboardPage + AuditLogPage                       85 min
+8. F5  Routing + layout + rutas privadas                  35 min
+9. F5  Estilos básicos                                    40 min
+10. F6 Testing manual + rate limiting + docs + deploy      1 día
 ```
 
 ---
 
-## FASE 1 — Infraestructura 90%
-
-### Completado
+## FASE 1 — Infraestructura 100%
 
 | Tarea | Estado |
 | --- | --- |
 | Redis en docker-compose | ✅ |
 | Script SQL completo (8 tablas + seed) | ✅ |
-| settings.py con Pydantic BaseSettings | ✅ |
-| main.py con lifespan, pool y routers | ✅ |
+| `settings.py` con Pydantic BaseSettings | ✅ |
+| `main.py` con lifespan, pool y routers | ✅ |
 | Volumen postgres externo — bind mount `./data/postgres` | ✅ |
 | Env files montados en contenedor — `./env:/app/env:ro` | ✅ |
-
-### Pendiente
-
-| Tarea | Tiempo | Riesgo si no se resuelve |
-| --- | --- | --- |
-| `class Tenat` → `Tenant` en `domain/contracts.py:8` | 10 min | `ImportError` en cualquier código nuevo que importe la entidad |
-| `GET /health` — endpoint sin autenticación | 10 min | Imposible verificar que el stack levanta; Docker healthcheck también lo necesita |
+| Corregir typo `class Tenat` → `Tenant` | ✅ |
+| `GET /health` — endpoint sin autenticación | ✅ |
+| Healthchecks en postgres y redis | ✅ |
+| Hot reload backend con watchfiles + bind mount | ✅ |
+| Hot reload frontend con Vite HMR + bind mount | ✅ |
 
 ---
 
@@ -98,80 +88,78 @@ Todos los repositorios implementados con puerto ABC + adaptador SQL real.
 
 ---
 
-## FASE 4 — Controladores y Rutas 90%
-
-### Rutas activas
+## FASE 4 — Controladores y Rutas 100%
 
 | Componente | Rutas |
 | --- | --- |
-| `AuthController` | `POST /api/auth/login` — validado con Pydantic `LoginRequest` |
+| `AuthController` | `POST /api/auth/login`, `POST /api/auth/refresh` |
 | `ProductController` | `GET /api/products/`, `POST /api/products/`, `GET /api/products/{id}` |
 | `InventoryController` | `POST /api/products/{id}/movements`, `GET /api/products/{id}/movements` |
-| `UserController` | `GET /api/users/`, `POST /api/users/` |
+| `UserController` | `GET /api/users/`, `POST /api/users/`, `POST /api/users/{id}/roles` |
 | `AuditController` | `GET /api/audit/?limit=N` |
 | `AccessController` | `GET /me/access` — lee snapshot de Redis |
+| `HealthController` | `GET /health` — sin autenticación |
 | Middleware | `PUBLIC_PATHS`: `/docs /redoc /openapi.json /health /api/auth/login` |
-| Audit trail | `handle_user_logged_in` persiste `LogEntry` en BD en cada login |
-
-### Ruta pendiente
-
-| Tarea | Tiempo | Por qué importa |
-| --- | --- | --- |
-| `POST /api/users/{id}/roles` | 30 min | `AssignRoleToUserUseCase` existe pero no tiene ruta HTTP — sin esto el RBAC no se puede configurar desde la API |
 
 ---
 
-## FASE 4B — Seguridad aplicada 0% — BRECHA CRITICA
+## FASE 4B — Seguridad aplicada 100%
 
-El RBAC está modelado (tablas, repositorios, Redis projection) pero ningún endpoint verifica permisos.
-Un OPERATOR autenticado puede llamar `POST /api/products/` igual que un OWNER.
-Esta fase debe completarse antes de arrancar el frontend.
-
-### Arquitectura de seguridad implementada
-
-```text
-JWT RS256 (par RSA 2048 bits)
-  └─ JWTAuthMiddleware valida token en cada request
-       └─ inyecta user_id + tenant_id en request.state
-            └─ publica UserAuthenticated en EventBus
-                 └─ UserAccessProjection escucha el evento
-                      └─ consulta roles + permisos en BD
-                           └─ guarda snapshot en Redis: user_access:{tenant}:{user}
-                                └─ GET /me/access sirve el snapshot al cliente
-```
-
-### Lo que falta para que el RBAC sea real
-
-| Tarea | Tiempo | Estado |
+| Tarea | Archivo | Estado |
 | --- | --- | --- |
-| CORS en `main.py` — permite llamadas desde `:3000` | 10 min | ⭕ |
-| `GET /health` (compartido con Fase 1) | 10 min | ⭕ |
-| `require_permission(code)` — FastAPI dependency | 45 min | ⭕ |
-| Aplicar `require_permission` en endpoints de escritura | 30 min | ⭕ |
-| `POST /api/auth/refresh` — renueva token sin re-login | 45 min | ⭕ |
+| CORS en `main.py` — permite llamadas desde `:3000` | `backend/main.py` | ✅ |
+| `require_permission(code)` — FastAPI dependency | `infrastructure/security/permissions.py` | ✅ |
+| RBAC aplicado en endpoints de lectura y escritura | `routes/products.py`, `routes/users.py`, `routes/audit.py` | ✅ |
+| `POST /api/auth/refresh` — renueva token sin re-login | `infrastructure/api/routes/auth.py` | ✅ |
 
-### Permisos a aplicar por endpoint
+### Permisos activos por endpoint
 
 | Endpoint | Permiso |
 | --- | --- |
+| `GET /api/products/` | `INVENTORY_READ` |
 | `POST /api/products/` | `INVENTORY_WRITE` |
 | `POST /api/products/{id}/movements` | `INVENTORY_WRITE` |
-| `GET /api/products/` | `INVENTORY_READ` |
-| `POST /api/users/` | `USERS_WRITE` |
 | `GET /api/users/` | `USERS_READ` |
+| `POST /api/users/` | `USERS_WRITE` |
 | `POST /api/users/{id}/roles` | `ROLES_WRITE` |
 | `GET /api/audit/` | `AUDIT_READ` |
+
+### Flujo de seguridad
+
+```text
+REQUEST
+  │
+  ▼
+CORSMiddleware               ← capa exterior — responde preflight OPTIONS sin auth
+  │
+  ▼
+JWTAuthMiddleware            ← valida RS256, inyecta user_id + tenant_id
+  │                             publica UserAuthenticated en EventBus
+  ▼
+UserAccessProjection         ← escucha UserAuthenticated
+  │                             consulta roles + permisos en BD
+  │                             guarda snapshot en Redis: user_access:{tenant}:{user}
+  ▼
+require_permission(code)     ← lee snapshot de Redis
+  │                             lanza 403 si el código no está en permissions[]
+  ▼
+Handler / Use Case
+  │
+  ▼
+AuditLogRepository           ← persiste cada acción relevante
+```
 
 ---
 
 ## FASE 5 — Frontend 5%
 
-Solo existe `<h1>Brixo</h1>` en `frontend/src/App.jsx`. No arranca antes de que Fase 4B tenga CORS activo.
+Solo existe `<h1>Brixo</h1>` en `frontend/src/App.jsx`.
+CORS activo — puede arrancar ahora.
 
 | Tarea | Tiempo | Estado |
 | --- | --- | --- |
 | `npm install axios react-router-dom zustand` | 15 min | ⭕ |
-| `src/services/api.js` — cliente axios con interceptor JWT y refresh | 30 min | ⭕ |
+| `src/services/api.js` — axios con interceptor JWT y refresh | 30 min | ⭕ |
 | `authStore` (Zustand) — token, usuario, logout | 30 min | ⭕ |
 | `LoginPage` | 50 min | ⭕ |
 | `ProductListPage` | 60 min | ⭕ |
@@ -188,14 +176,47 @@ Solo existe `<h1>Brixo</h1>` en `frontend/src/App.jsx`. No arranca antes de que 
 
 Bloqueada por Fase 5.
 
-| Tarea | Tipo | Tiempo |
+| Tarea | Tipo | Tiempo | Estado |
+| --- | --- | --- | --- |
+| Testing manual flujo completo | QA | 45 min | ⭕ |
+| Fix de bugs encontrados | Dev | 60 min | ⭕ |
+| Rate limiting en `POST /api/auth/login` | Seguridad | 30 min | ⭕ |
+| Validar TTL Redis snapshot y expiración de token | Seguridad | 20 min | ⭕ |
+| README con instrucciones de uso | Docs | 30 min | ⭕ |
+| `docker-compose.prod.yml` | Infra | 30 min | ⭕ |
+
+---
+
+## INFRAESTRUCTURA DOCKER — Estado actual
+
+### Comunicación entre contenedores
+
+```text
+[brixo-postgres :5432]  ←── backend (DNS: postgres)
+[brixo-redis    :6379]  ←── backend (DNS: redis)
+[brixo-backend  :8000]  ←── frontend JS en navegador (localhost:8000)
+[brixo-frontend :3000]  ←── navegador del usuario (localhost:3000)
+```
+
+> El frontend corre Vite dev server en el contenedor. El JS se ejecuta en el
+> navegador del usuario, por lo que las llamadas a la API van a `localhost:8000`
+> (puerto mapeado del host), no al nombre del servicio Docker.
+
+### Hot reload por capa
+
+| Servicio | Mecanismo | Bind mount |
 | --- | --- | --- |
-| Testing manual flujo completo | QA | 45 min |
-| Fix de bugs encontrados | Dev | 60 min |
-| Rate limiting en `POST /api/auth/login` | Seguridad | 30 min |
-| Validar TTL Redis snapshot y expiración de token | Seguridad | 20 min |
-| README con instrucciones de uso | Docs | 30 min |
-| `docker-compose.prod.yml` | Infra | 30 min |
+| Backend | uvicorn `--reload` + `watchfiles` (polling) | `../backend:/app` |
+| Frontend | Vite HMR | `../frontend:/app` |
+| Base de datos | Datos persistentes (no code) | `./data/postgres:/var/lib/postgresql/data` |
+
+### Arranque con dependencias saludables
+
+```text
+postgres ──healthcheck──► backend
+redis    ──healthcheck──► backend
+backend  ──started──────► frontend
+```
 
 ---
 
@@ -203,14 +224,14 @@ Bloqueada por Fase 5.
 
 | # | Ítem | Archivo | Acción |
 | --- | --- | --- | --- |
-| 1 | `class Tenat` → `Tenant` | `domain/contracts.py:8` | Renombrar (bloqueante futuro) |
-| 2 | `ocurred_at` → `occurred_at` | `domain/events/base.py` | Renombrar |
-| 3 | Directorio `acccess/` (triple c) | `application/services/` | Renombrar directorio |
-| 4 | `asssign_role.py` vacío (triple s) | `application/services/` | Eliminar |
-| 5 | `aut_service.py` huérfano | `application/auth/` | Eliminar |
-| 6 | `domain/events.py` duplicado del paquete `domain/events/` | `domain/` | Eliminar el archivo |
+| 1 | `ocurred_at` → `occurred_at` | `domain/events/base.py` | Renombrar atributo |
+| 2 | Directorio `acccess/` (triple c) | `application/services/` | Renombrar directorio |
+| 3 | `asssign_role.py` vacío | `application/services/` | Eliminar archivo |
+| 4 | `aut_service.py` huérfano | `application/auth/` | Eliminar archivo |
+| 5 | `domain/events.py` duplicado del paquete | `domain/` | Eliminar archivo plano |
+| 6 | `OPENAI_API_KEY` en `infra/env/backend.env` | `infra/env/backend.env` | Rotar clave en OpenAI y mover a variable de entorno local no rastreada por git |
 
 ---
 
 **Documento actualizado**: 18 de abril de 2026
-**Proxima revision**: Al completar Fase 4B
+**Próxima revisión**: Al completar Fase 5 Frontend
