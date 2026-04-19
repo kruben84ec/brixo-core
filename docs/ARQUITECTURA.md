@@ -10,7 +10,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│               BRIXO MVP — ESTADO ACTUAL (58%)               │
+│               BRIXO MVP — ESTADO ACTUAL (77%)               │
 └─────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────┐
@@ -22,29 +22,35 @@
 │  - Sin API client        │
 └──────────────┬───────────┘
                │
-               │ ❌ CORS no configurado (Fase 4B pendiente)
+               │ ✅ CORS habilitado — puede arrancar
                │
 ┌──────────────▼───────────────────────────────────────────────┐
 │               FASTAPI BACKEND (PYTHON)                       │
 ├──────────────────────────────────────────────────────────────┤
 │                                                              │
-│  ✅ main.py — FastAPI app funcional                         │
+│  ✅ main.py — FastAPI app completo                          │
+│     ├─ CORSMiddleware activo (localhost:3000)                │
 │     ├─ JWTAuthMiddleware activo                              │
 │     ├─ Lifespan con pool + routers                          │
 │     ├─ EventBus integrado                                    │
-│     └─ ❌ CORS no configurado aún                           │
+│     └─ Swagger con metadata completa (/docs)                │
 │                                                              │
-│  ✅ CONTROLADORES / RUTAS (Fase 4 — 90%)                    │
+│  ✅ CONTROLADORES / RUTAS (Fase 4 — 100%)                   │
 │     ├─ POST /api/auth/login ✅                               │
+│     ├─ POST /api/auth/refresh ✅                             │
 │     ├─ GET  /api/products/, POST /api/products/ ✅          │
 │     ├─ GET  /api/products/{id} ✅                            │
 │     ├─ POST/GET /api/products/{id}/movements ✅             │
 │     ├─ GET/POST /api/users/ ✅                               │
+│     ├─ POST /api/users/{id}/roles ✅                        │
 │     ├─ GET /api/audit/?limit=N ✅                            │
 │     ├─ GET /me/access ✅                                     │
-│     ├─ ❌ POST /api/users/{id}/roles (pendiente)            │
-│     ├─ ❌ GET /health (pendiente)                           │
-│     └─ ❌ POST /api/auth/refresh (Fase 4B)                  │
+│     └─ GET /health ✅ (sin autenticación)                   │
+│                                                              │
+│  ✅ SEGURIDAD APLICADA (Fase 4B — 100%)                     │
+│     ├─ require_permission(code) dependency ✅               │
+│     ├─ RBAC activo en todos los endpoints ✅                 │
+│     └─ POST /api/auth/refresh sin re-login ✅               │
 │                                                              │
 │  ✅ CASOS DE USO (Fase 3 — 100%)                            │
 │     ├─ LoginUser ✅                                          │
@@ -65,8 +71,8 @@
 │     ├─ RoleRepository / SQL ✅                               │
 │     └─ AccessRepository / SQL ✅                             │
 │                                                              │
-│  ✅ DOMINIO (95%)                                            │
-│     ├─ contracts.py ⚠️ (typo Tenat → Tenant pendiente)     │
+│  ✅ DOMINIO (100%)                                           │
+│     ├─ contracts.py ✅ (typo Tenat corregido)               │
 │     ├─ events/ (paquete) ✅                                  │
 │     ├─ auth.py ✅                                            │
 │     └─ logs.py ✅                                            │
@@ -75,14 +81,10 @@
 │     ├─ settings.py (Pydantic BaseSettings) ✅               │
 │     ├─ jwt_service.py (RS256) ✅                             │
 │     ├─ jwt_middleware.py ✅                                   │
+│     ├─ permissions.py (require_permission) ✅               │
 │     ├─ user_access_projection.py (Redis snapshot) ✅        │
 │     ├─ redis_client.py ✅                                    │
 │     └─ logging.py ✅                                         │
-│                                                              │
-│  ❌ SEGURIDAD APLICADA (Fase 4B — 0%)                       │
-│     ├─ CORS en main.py (pendiente)                          │
-│     ├─ require_permission(code) dependency (pendiente)      │
-│     └─ RBAC no verifica permisos en endpoints               │
 │                                                              │
 └──────────────┬──────────────────────────────────────────────┘
                │
@@ -174,7 +176,7 @@ UserAccessProjection         ← escucha UserAuthenticated
   │                             consulta roles + permisos en BD
   │                             guarda snapshot en Redis: user_access:{tenant}:{user}
   ▼
-require_permission(code)     ← Fase 4B PENDIENTE — leerá snapshot de Redis
+require_permission(code)     ← ACTIVO — lee snapshot de Redis
   │                             lanza 403 si el código no está en permissions[]
   ▼
 Handler / Use Case           ← lógica de negocio sin conocer seguridad
@@ -240,21 +242,23 @@ Adapters → Application → Domain
 
 | Módulo | Estado | Notas |
 |--------|--------|-------|
-| `domain/` | 95% | Typo `Tenat` pendiente |
-| `application/event_bus` | 95% | Funcional, revisar handlers async |
-| `application/handlers` | 90% | Auditoría persiste login OK |
+| `domain/` | 100% | Typo `Tenat` corregido |
+| `application/event_bus` | 100% | |
+| `application/handlers` | 100% | Auditoría persiste login OK |
 | `application/use_cases/` | 100% | 7 de 7 implementados |
 | `infrastructure/settings` | 100% | |
-| `infrastructure/jwt_service` | 95% | |
+| `infrastructure/jwt_service` | 100% | RS256 |
 | `infrastructure/jwt_middleware` | 100% | PUBLIC_PATHS configurado |
+| `infrastructure/permissions` | 100% | require_permission activo |
 | `infrastructure/redis` | 100% | |
 | `infrastructure/projection` | 100% | Snapshot en Redis |
-| `infrastructure/routes/auth` | 90% | Falta POST /refresh |
-| `infrastructure/routes/products` | 100% | Sin RBAC aún |
-| `infrastructure/routes/users` | 90% | Falta POST /{id}/roles |
-| `infrastructure/routes/inventory` | 100% | Sin RBAC aún |
-| `infrastructure/routes/audit` | 100% | Sin RBAC aún |
+| `infrastructure/routes/auth` | 100% | POST /login + POST /refresh |
+| `infrastructure/routes/products` | 100% | RBAC activo |
+| `infrastructure/routes/users` | 100% | POST /{id}/roles + RBAC |
+| `infrastructure/routes/inventory` | 100% | RBAC activo |
+| `infrastructure/routes/audit` | 100% | RBAC activo |
+| `infrastructure/routes/health` | 100% | Sin autenticación |
 | `adapters/repositories/` | 100% | 8 repositorios SQL |
-| `main.py` | 95% | Falta CORS |
+| `main.py` | 100% | CORS + Swagger metadata |
 | `init.sql` | 100% | 8 tablas + seed |
-| `frontend/src/` | 5% | Solo `<h1>Brixo</h1>` |
+| `frontend/src/` | 5% | Solo `<h1>Brixo</h1>` — Fase 5 pendiente |

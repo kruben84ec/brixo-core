@@ -1,7 +1,7 @@
 # ROADMAP — BRIXO MVP 2026
 
 **Actualizado**: 18 de abril de 2026  
-**Estado**: Backend ~88% funcional — Fase 4B (seguridad aplicada) y Frontend pendientes  
+**Estado**: Backend 100% completo — Próximo: Fase 5 Frontend — MVP al 77%  
 **Criterio de MVP**: Usuario puede hacer login → crear producto → registrar movimiento → ver auditoría, con RBAC activo
 
 ---
@@ -9,49 +9,36 @@
 ## RESUMEN EJECUTIVO
 
 ```text
-FASE 1   Infraestructura          █████████░   90%   ← 2 pendientes menores
-FASE 2   Data Access Layer        ██████████  100%   ← completo
-FASE 3   Casos de uso             ██████████  100%   ← completo
-FASE 4   Controladores / Rutas    █████████░   90%   ← 1 endpoint pendiente
-FASE 4B  Seguridad aplicada       ░░░░░░░░░░    0%   ← BRECHA CRITICA
-FASE 5   Frontend                 █░░░░░░░░░    5%   ← bloqueante del MVP
+FASE 1   Infraestructura          ██████████  100%   ← cerrada
+FASE 2   Data Access Layer        ██████████  100%   ← cerrada
+FASE 3   Casos de uso             ██████████  100%   ← cerrada
+FASE 4   Controladores / Rutas    ██████████  100%   ← cerrada
+FASE 4B  Seguridad aplicada       ██████████  100%   ← cerrada
+FASE 5   Frontend                 █░░░░░░░░░    5%   ← PROXIMA
 FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← bloqueada por Fase 5
 ────────────────────────────────────────────────────
-TOTAL MVP                         █████░░░░░   58%
+TOTAL MVP                         ████████░░   77%
 ```
-
-> La Fase 4B no existía en el roadmap original. El RBAC está modelado en BD y cacheado en Redis
-> pero ningún endpoint verifica permisos. Cualquier usuario autenticado puede hacer cualquier
-> operación. Esta fase lo corrige antes de arrancar el frontend.
 
 ---
 
 ## ORDEN DE EJECUCION RECOMENDADO
 
 ```text
-HOY — Fase 1 (cierres) + Fase 4 (cierre) + Fase 4B
-├─ F1:  Corregir typo Tenat → Tenant en domain/contracts.py        (10 min)
-├─ F1:  GET /health sin autenticación                               (10 min)
-├─ F4:  POST /api/users/{id}/roles                                  (30 min)
-├─ F4B: CORS en main.py                                             (10 min)
-├─ F4B: Dependency require_permission(code) para FastAPI            (45 min)
-├─ F4B: Aplicar require_permission en endpoints críticos            (30 min)
-└─ F4B: POST /api/auth/refresh                                      (45 min)
-
 PROXIMAS 2 SEMANAS — Fase 5 Frontend
-├─ Día 1: setup + api.js + authStore + LoginPage
+├─ Día 1: npm install + api.js + authStore + LoginPage
 ├─ Día 2: ProductListPage + ProductFormModal + MovementFormModal
 └─ Día 3: DashboardPage + AuditLogPage + routing + estilos
 
 CIERRE — Fase 6 QA + Hardening
-└─ Día 1: testing manual + rate limiting + fixes + docs
+└─ Día 1: testing manual + rate limiting + fixes + docker-compose.prod.yml
 ```
 
 ---
 
 ## FASE 1 — INFRAESTRUCTURA
 
-**Estado**: 90% — **Entrada**: repo vacío / **Salida**: stack levanta, BD inicializada
+**Estado**: 100% ← cerrada — **Entrada**: repo vacío / **Salida**: stack levanta, BD inicializada
 
 | # | Tarea | Tiempo | Estado |
 |---|-------|--------|--------|
@@ -108,7 +95,7 @@ CIERRE — Fase 6 QA + Hardening
 
 ## FASE 4 — CONTROLADORES Y RUTAS
 
-**Estado**: 90% — **Entrada**: use cases listos / **Salida**: API REST consumible desde Swagger
+**Estado**: 100% ← cerrada — **Entrada**: use cases listos / **Salida**: API REST consumible desde Swagger
 
 | # | Tarea | Rutas | Estado |
 |---|-------|-------|--------|
@@ -128,19 +115,15 @@ CIERRE — Fase 6 QA + Hardening
 
 ## FASE 4B — SEGURIDAD APLICADA
 
-**Estado**: 0% — **Entrada**: API funcional / **Salida**: RBAC activo, CORS habilitado, tokens renovables
-
-> Esta fase no existía en el roadmap original. El RBAC estaba modelado correctamente en base de
-> datos y cacheado en Redis, pero ningún endpoint lo verificaba. Un OPERATOR podía crear productos,
-> borrar usuarios o acceder a la auditoría igual que un OWNER. Esta fase cierra esa brecha.
+**Estado**: 100% ← cerrada — **Entrada**: API funcional / **Salida**: RBAC activo, CORS habilitado, tokens renovables
 
 | # | Tarea | Archivo | Tiempo | Estado |
 |---|-------|---------|--------|--------|
-| 1 | CORS en `main.py` — habilita llamadas desde el frontend en `:3000` | `backend/main.py` | 10 min | ⭕ |
-| 2 | `GET /health` — endpoint sin auth para healthcheck y docker | `infrastructure/api/routes/health.py` | 10 min | ⭕ |
-| 3 | `require_permission(code)` — FastAPI dependency que lee Redis snapshot | `infrastructure/security/permissions.py` | 45 min | ⭕ |
-| 4 | Aplicar `require_permission` en endpoints de escritura críticos | `routes/products.py`, `routes/users.py` | 30 min | ⭕ |
-| 5 | `POST /api/auth/refresh` — renueva token sin re-login | `infrastructure/api/routes/auth.py` | 45 min | ⭕ |
+| 1 | CORS en `main.py` — habilita llamadas desde el frontend en `:3000` | `backend/main.py` | 10 min | ✅ |
+| 2 | `GET /health` — endpoint sin auth para healthcheck y docker | `infrastructure/api/routes/health.py` | 10 min | ✅ |
+| 3 | `require_permission(code)` — FastAPI dependency que lee Redis snapshot | `infrastructure/security/permissions.py` | 45 min | ✅ |
+| 4 | Aplicar `require_permission` en endpoints de escritura críticos | `routes/products.py`, `routes/users.py` | 30 min | ✅ |
+| 5 | `POST /api/auth/refresh` — renueva token sin re-login | `infrastructure/api/routes/auth.py` | 45 min | ✅ |
 | **TOTAL** | | | **2h 20min** | |
 
 ### Permisos por endpoint
@@ -210,11 +193,14 @@ async def create_product(...):
 |---|-------|------|--------|--------|
 | 1 | Testing manual flujo completo (login → producto → movimiento → auditoría) | QA | 45 min | ⭕ |
 | 2 | Fix de bugs encontrados | Dev | 60 min | ⭕ |
-| 3 | Rate limiting en `POST /api/auth/login` (max 5 intentos / 60s por IP) | Seguridad | 30 min | ⭕ |
+| 3 | Rate limiting en `POST /api/auth/login` — máx. 5 intentos / 60s por IP, responde `429` con `Retry-After` | Seguridad | 30 min | ⭕ |
 | 4 | Validar TTL del Redis snapshot y expiración correcta del token | Seguridad | 20 min | ⭕ |
-| 5 | README actualizado con instrucciones de uso | Docs | 30 min | ⭕ |
-| 6 | `docker-compose.prod.yml` con variables de entorno seguras | Infra | 30 min | ⭕ |
-| **TOTAL** | | | **3h 35min** | |
+| 5 | Cabeceras de seguridad HTTP — middleware que inyecta `X-Content-Type-Options`, `X-Frame-Options`, `Strict-Transport-Security`, `Content-Security-Policy` | Seguridad | 30 min | ⭕ |
+| 6 | Manejo seguro de errores — handler global FastAPI que oculta stack traces en producción (`BACKEND_ENVIRONMENT=production`) | Seguridad | 20 min | ⭕ |
+| 7 | Protección CSRF — documentar que el esquema Bearer JWT + `SameSite=Strict` en cookies mitiga CSRF; validar origen en CORS | Seguridad | 20 min | ⭕ |
+| 8 | README actualizado con instrucciones de uso | Docs | 30 min | ⭕ |
+| 9 | `docker-compose.prod.yml` con variables de entorno seguras | Infra | 30 min | ⭕ |
+| **TOTAL** | | | **4h 45min** | |
 
 **Validacion**: flujo e2e sin errores — Login → Crear Producto → Registrar Movimiento → Ver Auditoría → Logout
 
@@ -251,20 +237,34 @@ AuditLogRepository                 ← persiste cada acción relevante en audit_
 
 ---
 
+## CONTROLES DE SEGURIDAD — Estado
+
+| Control | Descripción | Dónde | Estado |
+| ------- | ----------- | ----- | ------ |
+| **Inyección de Dependencias** | FastAPI `Depends()` inyecta repos, servicios y permisos — ningún handler instancia sus propias dependencias | `infrastructure/security/permissions.py`, todos los routers | ✅ |
+| **Validación de Inputs** | Pydantic v2 valida tipo, formato y rangos de todos los DTOs de entrada antes de llegar al use case | Todos los routers (`LoginRequest`, `CreateProductRequest`, etc.) | ✅ |
+| **Encriptación de Datos Sensibles** | Contraseñas en bcrypt (unidireccional), tokens en JWT RS256 firmados, claves en archivos `.env` no versionados | `infrastructure/security/jwt_service.py`, `AuthRepositorySQL` | ✅ |
+| **Rate Limiting** | Límite de intentos por IP en el endpoint de login para prevenir brute force — responde `429` con `Retry-After` | `infrastructure/api/routes/auth.py` + Redis | ⭕ Fase 6 |
+| **Protección CSRF** | SPA con `Authorization: Bearer` en header es inmune a CSRF clásico; CORS restringe orígenes; validar `SameSite` si se usan cookies | `backend/main.py` CORSMiddleware | ⭕ Fase 6 |
+| **Cabeceras de Seguridad** | Middleware que añade `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Strict-Transport-Security`, `Content-Security-Policy` | `backend/main.py` (middleware nuevo) | ⭕ Fase 6 |
+| **Manejo Seguro de Errores** | Handler global que en `BACKEND_ENVIRONMENT=production` retorna mensajes genéricos sin stack traces ni rutas internas | `backend/main.py` (exception handler) | ⭕ Fase 6 |
+
+---
+
 ## CRITERIOS DE EXITO DEL MVP
 
 El MVP está LISTO cuando:
 
 | Criterio | Estado |
 |----------|--------|
-| `docker-compose up -d` levanta sin errores | ⭕ |
-| `GET /health` responde 200 | ⭕ |
+| `docker-compose up -d` levanta sin errores | ✅ |
+| `GET /health` responde 200 | ✅ |
 | `POST /api/auth/login` retorna JWT válido | ✅ |
 | `GET /docs` accesible sin token | ✅ |
-| Crear producto funciona con permiso correcto | ⭕ (RBAC pendiente) |
-| Registrar movimiento funciona con permiso correcto | ⭕ (RBAC pendiente) |
-| Usuario sin permiso recibe 403 | ⭕ (RBAC pendiente) |
-| Token expirado se renueva con refresh | ⭕ |
+| Crear producto funciona con permiso correcto | ✅ |
+| Registrar movimiento funciona con permiso correcto | ✅ |
+| Usuario sin permiso recibe 403 | ✅ |
+| Token expirado se renueva con refresh | ✅ |
 | Frontend carga en `http://localhost:3000` | ⭕ |
 | Flujo completo login → producto → movimiento → auditoría | ⭕ |
 
@@ -286,12 +286,11 @@ El MVP está LISTO cuando:
 
 | # | Ítem | Archivo | Acción |
 |---|------|---------|--------|
-| 1 | `class Tenat` → `Tenant` | `domain/contracts.py:8` | Renombrar |
-| 2 | `ocurred_at` → `occurred_at` | `domain/events/base.py` | Renombrar |
-| 3 | Directorio `acccess/` (triple c) | `application/services/` | Renombrar directorio |
-| 4 | `asssign_role.py` vacío | `application/services/` | Eliminar |
-| 5 | `aut_service.py` huérfano | `application/auth/` | Eliminar |
-| 6 | `domain/events.py` duplicado | `domain/` | Eliminar el archivo, queda el paquete |
+| 1 | `ocurred_at` → `occurred_at` | `domain/events/base.py` | Renombrar |
+| 2 | Directorio `acccess/` (triple c) | `application/services/` | Renombrar directorio |
+| 3 | `asssign_role.py` vacío | `application/services/` | Eliminar |
+| 4 | `aut_service.py` huérfano | `application/auth/` | Eliminar |
+| 5 | `domain/events.py` duplicado | `domain/` | Eliminar el archivo, queda el paquete |
 
 ---
 

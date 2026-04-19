@@ -25,7 +25,8 @@ TOTAL MVP                         ████████░░   77%
 ## PROXIMAS ACCIONES
 
 ```text
-1. F5  npm install axios react-router-dom zustand        15 min
+FASE 5 — Frontend (~6h total)
+1. F5  npm install axios react-router-dom zustand         15 min
 2. F5  src/services/api.js — cliente axios + interceptor  30 min
 3. F5  authStore Zustand — token, usuario, logout         30 min
 4. F5  LoginPage                                          50 min
@@ -34,7 +35,14 @@ TOTAL MVP                         ████████░░   77%
 7. F5  DashboardPage + AuditLogPage                       85 min
 8. F5  Routing + layout + rutas privadas                  35 min
 9. F5  Estilos básicos                                    40 min
-10. F6 Testing manual + rate limiting + docs + deploy      1 día
+
+FASE 6 — QA + Hardening (~4h 45min total)
+10. F6 Testing manual flujo completo                      45 min
+11. F6 Rate limiting POST /api/auth/login (Redis, 429)    30 min
+12. F6 Cabeceras de seguridad HTTP (middleware)           30 min
+13. F6 Manejo seguro de errores (handler global prod)     20 min
+14. F6 Protección CSRF — validar esquema Bearer + CORS    20 min
+15. F6 docker-compose.prod.yml + README final             60 min
 ```
 
 ---
@@ -233,5 +241,5 @@ backend  ──started──────► frontend
 
 ---
 
-**Documento actualizado**: 18 de abril de 2026
+**Documento actualizado**: 18 de abril de 2026 (sesión 2)
 **Próxima revisión**: Al completar Fase 5 Frontend

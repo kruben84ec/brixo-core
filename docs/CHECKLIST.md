@@ -17,7 +17,7 @@
 
 ---
 
-## FASE 1 — Infraestructura (90%)
+## FASE 1 — Infraestructura (100%) ← cerrada
 
 | Ítem | Estado | Notas |
 |------|--------|-------|
@@ -61,7 +61,7 @@
 
 ---
 
-## FASE 4 — Controladores y Rutas (90%)
+## FASE 4 — Controladores y Rutas (100%) ← cerrada
 
 | Ítem | Rutas | Estado |
 |------|-------|--------|
@@ -77,18 +77,15 @@
 
 ---
 
-## FASE 4B — Seguridad Aplicada (0%) — BRECHA CRITICA
+## FASE 4B — Seguridad Aplicada (100%) ← cerrada
 
-> El RBAC está modelado (tablas + Redis) pero ningún endpoint verifica permisos.
-> Esta fase debe completarse **antes** de arrancar el frontend.
-
-| Ítem | Archivo | Tiempo | Estado |
-|------|---------|--------|--------|
-| CORS en `main.py` | `backend/main.py` | 10 min | ⭕ |
-| `GET /health` sin auth (compartido con Fase 1) | `routes/health.py` | 10 min | ✅ |
-| `require_permission(code)` FastAPI dependency | `infrastructure/security/permissions.py` | 45 min | ⭕ |
-| Aplicar `require_permission` en endpoints críticos | `routes/products.py`, `routes/users.py` | 30 min | ⭕ |
-| `POST /api/auth/refresh` | `infrastructure/api/routes/auth.py` | 45 min | ⭕ |
+| Ítem | Archivo | Estado |
+|------|---------|--------|
+| CORS en `main.py` | `backend/main.py` | ✅ |
+| `GET /health` sin auth | `routes/health.py` | ✅ |
+| `require_permission(code)` FastAPI dependency | `infrastructure/security/permissions.py` | ✅ |
+| Aplicar `require_permission` en endpoints críticos | `routes/products.py`, `routes/users.py`, `routes/audit.py` | ✅ |
+| `POST /api/auth/refresh` | `infrastructure/api/routes/auth.py` | ✅ |
 
 ### Permisos requeridos por endpoint
 
@@ -104,9 +101,9 @@
 
 ---
 
-## FASE 5 — Frontend (5%)
+## FASE 5 — Frontend (5%) ← PROXIMA
 
-> Solo existe `<h1>Brixo</h1>`. Bloqueado hasta que Fase 4B tenga CORS activo.
+> Solo existe `<h1>Brixo</h1>`. CORS ya activo — puede arrancar.
 
 | Ítem | Tiempo | Estado |
 |------|--------|--------|
@@ -143,12 +140,11 @@
 
 | # | Ítem | Archivo | Acción |
 |---|------|---------|--------|
-| 1 | `class Tenat` → `Tenant` | `domain/contracts.py:8` | Renombrar |
-| 2 | `ocurred_at` → `occurred_at` | `domain/events/base.py` | Renombrar |
-| 3 | Directorio `acccess/` (triple c) | `application/services/` | Renombrar |
-| 4 | `asssign_role.py` vacío (triple s) | `application/services/` | Eliminar |
-| 5 | `aut_service.py` huérfano | `application/auth/` | Eliminar |
-| 6 | `domain/events.py` duplicado del paquete | `domain/` | Eliminar el archivo plano |
+| 1 | `ocurred_at` → `occurred_at` | `domain/events/base.py` | Renombrar |
+| 2 | Directorio `acccess/` (triple c) | `application/services/` | Renombrar |
+| 3 | `asssign_role.py` vacío (triple s) | `application/services/` | Eliminar |
+| 4 | `aut_service.py` huérfano | `application/auth/` | Eliminar |
+| 5 | `domain/events.py` duplicado del paquete | `domain/` | Eliminar el archivo plano |
 
 ---
 
@@ -156,13 +152,13 @@
 
 | Criterio | Estado |
 |----------|--------|
-| `docker-compose up -d` levanta sin errores | ⭕ |
+| `docker-compose up -d` levanta sin errores | ✅ |
 | `GET /health` responde 200 | ✅ |
 | `POST /api/auth/login` retorna JWT válido | ✅ |
 | `GET /docs` accesible sin token | ✅ |
-| Crear producto con permiso correcto | ⭕ (RBAC pendiente) |
-| Registrar movimiento con permiso correcto | ⭕ (RBAC pendiente) |
-| Usuario sin permiso recibe 403 | ⭕ (RBAC pendiente) |
-| Token expirado se renueva con refresh | ⭕ |
+| Crear producto con permiso correcto | ✅ |
+| Registrar movimiento con permiso correcto | ✅ |
+| Usuario sin permiso recibe 403 | ✅ |
+| Token expirado se renueva con refresh | ✅ |
 | Frontend carga en `http://localhost:3000` | ⭕ |
 | Flujo completo login → producto → movimiento → auditoría | ⭕ |
