@@ -1,12 +1,12 @@
 # ROADMAP — BRIXO MVP 2026
 
 **Actualizado**: 18 de abril de 2026  
-**Estado**: Backend 100% completo — Próximo: Fase 5 Frontend — MVP al 77%  
+**Estado**: Backend 100% + Observabilidad activa + Deuda técnica resuelta — Próximo: Fase 5 Frontend — MVP al 80%  
 **Criterio de MVP**: Usuario puede hacer login → crear producto → registrar movimiento → ver auditoría, con RBAC activo
 
 ---
 
-## RESUMEN EJECUTIVO
+## Resumen ejecutivo
 
 ```text
 FASE 1   Infraestructura          ██████████  100%   ← cerrada
@@ -14,15 +14,16 @@ FASE 2   Data Access Layer        ██████████  100%   ← cer
 FASE 3   Casos de uso             ██████████  100%   ← cerrada
 FASE 4   Controladores / Rutas    ██████████  100%   ← cerrada
 FASE 4B  Seguridad aplicada       ██████████  100%   ← cerrada
+FASE 4C  Observabilidad           ██████████  100%   ← cerrada
 FASE 5   Frontend                 █░░░░░░░░░    5%   ← PROXIMA
 FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← bloqueada por Fase 5
 ────────────────────────────────────────────────────
-TOTAL MVP                         ████████░░   77%
+TOTAL MVP                         ████████░░   80%
 ```
 
 ---
 
-## ORDEN DE EJECUCION RECOMENDADO
+## Orden de ejecución recomendado
 
 ```text
 PROXIMAS 2 SEMANAS — Fase 5 Frontend
@@ -36,9 +37,9 @@ CIERRE — Fase 6 QA + Hardening
 
 ---
 
-## FASE 1 — INFRAESTRUCTURA
+## Fase 1 — Infraestructura
 
-**Estado**: 100% ← cerrada — **Entrada**: repo vacío / **Salida**: stack levanta, BD inicializada
+**Estado**: 100% ← cerrada
 
 | # | Tarea | Tiempo | Estado |
 |---|-------|--------|--------|
@@ -48,17 +49,15 @@ CIERRE — Fase 6 QA + Hardening
 | 4 | main.py con lifespan + pool + routers | 30 min | ✅ |
 | 5 | Volumen postgres externo (bind mount `./data/postgres`) | 10 min | ✅ |
 | 6 | Env files montados en contenedor (`./env:/app/env:ro`) | 10 min | ✅ |
-| 7 | Corregir typo `class Tenat` → `Tenant` en `domain/contracts.py` | 10 min | ✅ |
-| 8 | `GET /health` — responde 200 sin token | 10 min | ✅ |
-| **TOTAL** | | **2h 30min** | |
+| 7 | `GET /health` — responde 200 sin token | 10 min | ✅ |
 
-**Validacion**: `curl http://localhost:8000/health` → `{"status": "ok"}`
+**Validación**: `curl http://localhost:8000/health` → `{"status": "ok"}`
 
 ---
 
-## FASE 2 — DATA ACCESS LAYER
+## Fase 2 — Data Access Layer
 
-**Estado**: 100% — **Entrada**: BD funcional / **Salida**: todos los repositorios operativos
+**Estado**: 100% ← cerrada
 
 | # | Repositorio | Puerto | Adaptador SQL | Estado |
 |---|-------------|--------|---------------|--------|
@@ -71,13 +70,11 @@ CIERRE — Fase 6 QA + Hardening
 | 7 | Role | `RoleRepository` | `RoleRepositorySQL` | ✅ |
 | 8 | Access | `AccessRepository` | `AccessRepositorySQL` | ✅ |
 
-**Validacion**: todos los repositorios retornan datos del seed sin errores
-
 ---
 
-## FASE 3 — CASOS DE USO
+## Fase 3 — Casos de uso
 
-**Estado**: 100% — **Entrada**: repos funcionando / **Salida**: lógica de negocio completa
+**Estado**: 100% ← cerrada
 
 | # | Use Case | Archivo | Estado |
 |---|----------|---------|--------|
@@ -89,13 +86,11 @@ CIERRE — Fase 6 QA + Hardening
 | 6 | `AssignRoleToUserUseCase` | `application/use_cases/assign_role_to_user.py` | ✅ |
 | 7 | `GetAuditLogByTenantUseCase` | `application/use_cases/get_audit_log_by_tenant.py` | ✅ |
 
-**Validacion**: cada use case ejecuta sin errores contra BD real
-
 ---
 
-## FASE 4 — CONTROLADORES Y RUTAS
+## Fase 4 — Controladores y Rutas
 
-**Estado**: 100% ← cerrada — **Entrada**: use cases listos / **Salida**: API REST consumible desde Swagger
+**Estado**: 100% ← cerrada
 
 | # | Tarea | Rutas | Estado |
 |---|-------|-------|--------|
@@ -106,25 +101,21 @@ CIERRE — Fase 6 QA + Hardening
 | 5 | `AuditController` | `GET /api/audit/?limit=N` | ✅ |
 | 6 | `AccessController` + Redis snapshot | `GET /me/access` | ✅ |
 | 7 | `PUBLIC_PATHS` en `JWTAuthMiddleware` | `/docs /redoc /openapi.json /health /api/auth/login` | ✅ |
-| 8 | Audit trail en `handlers.py` — persiste login en BD | — | ✅ |
-| 9 | `POST /api/users/{id}/roles` — expone `AssignRoleToUserUseCase` | `POST /api/users/{id}/roles` | ✅ |
-
-**Validacion**: Swagger muestra todos los endpoints, requests/responses funcionan con token válido
+| 8 | Audit trail en `handlers.py` | — | ✅ |
+| 9 | `POST /api/users/{id}/roles` | `POST /api/users/{id}/roles` | ✅ |
 
 ---
 
-## FASE 4B — SEGURIDAD APLICADA
+## Fase 4B — Seguridad aplicada
 
-**Estado**: 100% ← cerrada — **Entrada**: API funcional / **Salida**: RBAC activo, CORS habilitado, tokens renovables
+**Estado**: 100% ← cerrada
 
 | # | Tarea | Archivo | Tiempo | Estado |
 |---|-------|---------|--------|--------|
-| 1 | CORS en `main.py` — habilita llamadas desde el frontend en `:3000` | `backend/main.py` | 10 min | ✅ |
-| 2 | `GET /health` — endpoint sin auth para healthcheck y docker | `infrastructure/api/routes/health.py` | 10 min | ✅ |
-| 3 | `require_permission(code)` — FastAPI dependency que lee Redis snapshot | `infrastructure/security/permissions.py` | 45 min | ✅ |
-| 4 | Aplicar `require_permission` en endpoints de escritura críticos | `routes/products.py`, `routes/users.py` | 30 min | ✅ |
-| 5 | `POST /api/auth/refresh` — renueva token sin re-login | `infrastructure/api/routes/auth.py` | 45 min | ✅ |
-| **TOTAL** | | | **2h 20min** | |
+| 1 | CORS en `main.py` | `backend/main.py` | 10 min | ✅ |
+| 2 | `require_permission(code)` FastAPI dependency | `infrastructure/security/permissions.py` | 45 min | ✅ |
+| 3 | Aplicar `require_permission` en endpoints críticos | `routes/products.py`, `routes/users.py` | 30 min | ✅ |
+| 4 | `POST /api/auth/refresh` | `infrastructure/api/routes/auth.py` | 45 min | ✅ |
 
 ### Permisos por endpoint
 
@@ -138,39 +129,31 @@ CIERRE — Fase 6 QA + Hardening
 | `POST /api/users/{id}/roles` | `ROLES_WRITE` |
 | `GET /api/audit/` | `AUDIT_READ` |
 
-### Como funciona require_permission
+---
 
-```python
-# infrastructure/security/permissions.py
-async def require_permission(code: str):
-    async def dependency(request: Request):
-        snapshot = await _get_snapshot(request.state.user_id, request.state.tenant_id)
-        if code not in snapshot["permissions"]:
-            raise HTTPException(403, f"Permiso requerido: {code}")
-    return Depends(dependency)
+## Fase 4C — Observabilidad y Manejo de Excepciones
 
-# Uso en router:
-@router.post("/", dependencies=[require_permission("INVENTORY_WRITE")])
-async def create_product(...):
-    ...
-```
+**Estado**: 100% ← cerrada
 
-**Validacion**: un usuario con rol OPERATOR recibe 403 al intentar `POST /api/products/` si no tiene el permiso `INVENTORY_WRITE`
+| # | Tarea | Archivo | Tiempo | Estado |
+|---|-------|---------|--------|--------|
+| 1 | Logger JSON + `RotatingFileHandler` (stdout + `/app/logs/app.log`) | `infrastructure/logging.py` | 30 min | ✅ |
+| 2 | `domain/exceptions.py` — jerarquía tipada de excepciones | `domain/exceptions.py` | 20 min | ✅ |
+| 3 | `HTTPLoggingMiddleware` — method/path/status/duration/user_id | `infrastructure/api/middleware/http_logging.py` | 30 min | ✅ |
+| 4 | Exception handlers globales (dominio, HTTP, validación, catch-all) | `infrastructure/api/exception_handlers.py` | 45 min | ✅ |
+| 5 | Registrar middlewares y handlers en `main.py` | `backend/main.py` | 15 min | ✅ |
 
 ---
 
-## FASE 5 — FRONTEND
+## Fase 5 — Frontend
 
 **Estado**: 5% — **Entrada**: API con CORS activo / **Salida**: UI funcional para el flujo MVP
-
-> Solo existe `<h1>Brixo</h1>` en `frontend/src/App.jsx`. No hay dependencias instaladas.
-> Esta fase no puede arrancar antes de que Fase 4B tenga CORS activo.
 
 | # | Tarea | Tiempo | Estado |
 |---|-------|--------|--------|
 | 1 | `npm install axios react-router-dom zustand` | 15 min | ⭕ |
-| 2 | `src/services/api.js` — cliente axios con interceptor JWT y refresh automático | 30 min | ⭕ |
-| 3 | `authStore` (Zustand) — token, usuario, logout, persistencia en localStorage | 30 min | ⭕ |
+| 2 | `src/services/api.js` — cliente axios con interceptor JWT y refresh | 30 min | ⭕ |
+| 3 | `authStore` (Zustand) — token, usuario, logout, localStorage | 30 min | ⭕ |
 | 4 | `LoginPage` — form email+password, manejo de error 401 | 50 min | ⭕ |
 | 5 | `ProductListPage` — tabla con stock actual y alerta de mínimo | 60 min | ⭕ |
 | 6 | `ProductFormModal` — alta de producto con validación client-side | 40 min | ⭕ |
@@ -181,38 +164,38 @@ async def create_product(...):
 | 11 | Estilos básicos (CSS o Tailwind) | 40 min | ⭕ |
 | **TOTAL** | | **6h** | |
 
-**Validacion**: login funciona, puede ver productos, crear uno, registrar un movimiento, ver auditoría
+**Validación**: login funciona, puede ver productos, crear uno, registrar un movimiento, ver auditoría
 
 ---
 
-## FASE 6 — QA + HARDENING
+## Fase 6 — QA + Hardening
 
 **Estado**: 0% — **Entrada**: Frontend funcional / **Salida**: MVP listo para producción
 
 | # | Tarea | Tipo | Tiempo | Estado |
 |---|-------|------|--------|--------|
-| 1 | Testing manual flujo completo (login → producto → movimiento → auditoría) | QA | 45 min | ⭕ |
+| 1 | Testing manual flujo completo | QA | 45 min | ⭕ |
 | 2 | Fix de bugs encontrados | Dev | 60 min | ⭕ |
-| 3 | Rate limiting en `POST /api/auth/login` — máx. 5 intentos / 60s por IP, responde `429` con `Retry-After` | Seguridad | 30 min | ⭕ |
-| 4 | Validar TTL del Redis snapshot y expiración correcta del token | Seguridad | 20 min | ⭕ |
-| 5 | Cabeceras de seguridad HTTP — middleware que inyecta `X-Content-Type-Options`, `X-Frame-Options`, `Strict-Transport-Security`, `Content-Security-Policy` | Seguridad | 30 min | ⭕ |
-| 6 | Manejo seguro de errores — handler global FastAPI que oculta stack traces en producción (`BACKEND_ENVIRONMENT=production`) | Seguridad | 20 min | ⭕ |
-| 7 | Protección CSRF — documentar que el esquema Bearer JWT + `SameSite=Strict` en cookies mitiga CSRF; validar origen en CORS | Seguridad | 20 min | ⭕ |
-| 8 | **`HTTPLoggingMiddleware`** — middleware Starlette que registra cada request: `method`, `path`, `status_code`, `duration_ms`, `tenant_id`, `user_id` usando el `get_logger()` existente en `infrastructure/logging.py`. Ubicación: `infrastructure/api/middleware/http_logging.py`, registrado en `main.py` antes del `JWTAuthMiddleware` | Observabilidad | 30 min | ⭕ |
-| 9 | README actualizado con instrucciones de uso | Docs | 30 min | ⭕ |
-| 10 | `docker-compose.prod.yml` con variables de entorno seguras | Infra | 30 min | ⭕ |
-| **TOTAL** | | | **5h 15min** | |
-
-**Validacion**: flujo e2e sin errores — Login → Crear Producto → Registrar Movimiento → Ver Auditoría → Logout
+| 3 | Rate limiting en `POST /api/auth/login` — máx. 5 intentos / 60s por IP | Seguridad | 30 min | ⭕ |
+| 4 | Validar TTL del Redis snapshot y expiración del token | Seguridad | 20 min | ⭕ |
+| 5 | Cabeceras de seguridad HTTP (`X-Content-Type-Options`, `X-Frame-Options`, etc.) | Seguridad | 30 min | ⭕ |
+| 6 | `request_id` en `HTTPLoggingMiddleware` + header `X-Request-ID` en respuestas | Observabilidad | 30 min | ⭕ |
+| 7 | `docker-compose.prod.yml` con variables de entorno seguras | Infra | 30 min | ⭕ |
+| 8 | README actualizado con instrucciones de uso | Docs | — | ✅ |
+| **TOTAL** | | | **4h 25min** | |
 
 ---
 
-## CAPA DE SEGURIDAD — ARQUITECTURA
-
-Implementado en `backend/infrastructure/security/`:
+## Capa de seguridad — Arquitectura
 
 ```text
 REQUEST
+  │
+  ▼
+CORSMiddleware                     ← outermost — preflight OPTIONS sin auth
+  │
+  ▼
+HTTPLoggingMiddleware              ← registra method/path/status/duration/user_id
   │
   ▼
 JWTAuthMiddleware                  ← valida RS256, inyecta user_id + tenant_id
@@ -220,41 +203,38 @@ JWTAuthMiddleware                  ← valida RS256, inyecta user_id + tenant_id
   ▼
 UserAccessProjection               ← escucha UserAuthenticated
   │                                   consulta roles + permisos en BD
-  │                                   guarda snapshot en Redis (user_access:{tenant}:{user})
+  │                                   guarda snapshot en Redis
   ▼
-require_permission(code)           ← Fase 4B — lee snapshot de Redis
-  │                                   lanza 403 si el código no está en permissions[]
+require_permission(code)           ← lee snapshot de Redis
+  │                                   lanza 403 si el código falta
   ▼
-Handler / Use Case                 ← lógica de negocio sin conocer seguridad
+Handler / Use Case
   │
   ▼
-AuditLogRepository                 ← persiste cada acción relevante en audit_logs
+Exception Handlers                 ← separan mensaje al cliente de log técnico
+  │
+  ▼
+AuditLogRepository                 ← persiste cada acción en audit_logs
 ```
 
-**Claims del JWT**: `sub` (user_id), `tenant` (tenant_id), `iat`, `exp`  
-**Algoritmo**: RS256 con par de claves RSA de 2048 bits  
-**TTL access token**: 8 horas  
-**Password hashing**: bcrypt con salt generado por operación
+---
+
+## Deuda técnica — RESUELTA ✅
+
+Todos los ítems resueltos en sesión 3 (18 abr 2026).
+
+| # | Ítem | Resolución |
+|---|------|-----------|
+| 1 | `ocurred_at` → `occurred_at` | Corregido en `domain/events/base.py` |
+| 2 | Directorio `acccess/` (triple c) | Renombrado a `access/`, imports actualizados |
+| 3 | `asssign_role.py` vacío | Eliminado con `git rm` |
+| 4 | `aut_service.py` huérfano | Eliminado con `git rm` |
+| 5 | `domain/events.py` duplicado | Eliminado; import corregido a `domain.events.base` |
+| 6 | `OPENAI_API_KEY` en `backend.env` | `infra/env/*.env` excluido de git en `.gitignore` |
 
 ---
 
-## CONTROLES DE SEGURIDAD — Estado
-
-| Control | Descripción | Dónde | Estado |
-| ------- | ----------- | ----- | ------ |
-| **Inyección de Dependencias** | FastAPI `Depends()` inyecta repos, servicios y permisos — ningún handler instancia sus propias dependencias | `infrastructure/security/permissions.py`, todos los routers | ✅ |
-| **Validación de Inputs** | Pydantic v2 valida tipo, formato y rangos de todos los DTOs de entrada antes de llegar al use case | Todos los routers (`LoginRequest`, `CreateProductRequest`, etc.) | ✅ |
-| **Encriptación de Datos Sensibles** | Contraseñas en bcrypt (unidireccional), tokens en JWT RS256 firmados, claves en archivos `.env` no versionados | `infrastructure/security/jwt_service.py`, `AuthRepositorySQL` | ✅ |
-| **Rate Limiting** | Límite de intentos por IP en el endpoint de login para prevenir brute force — responde `429` con `Retry-After` | `infrastructure/api/routes/auth.py` + Redis | ⭕ Fase 6 |
-| **Protección CSRF** | SPA con `Authorization: Bearer` en header es inmune a CSRF clásico; CORS restringe orígenes; validar `SameSite` si se usan cookies | `backend/main.py` CORSMiddleware | ⭕ Fase 6 |
-| **Cabeceras de Seguridad** | Middleware que añade `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Strict-Transport-Security`, `Content-Security-Policy` | `backend/main.py` (middleware nuevo) | ⭕ Fase 6 |
-| **Manejo Seguro de Errores** | Handler global que en `BACKEND_ENVIRONMENT=production` retorna mensajes genéricos sin stack traces ni rutas internas | `backend/main.py` (exception handler) | ⭕ Fase 6 |
-
----
-
-## CRITERIOS DE EXITO DEL MVP
-
-El MVP está LISTO cuando:
+## Criterios de éxito del MVP
 
 | Criterio | Estado |
 |----------|--------|
@@ -266,52 +246,31 @@ El MVP está LISTO cuando:
 | Registrar movimiento funciona con permiso correcto | ✅ |
 | Usuario sin permiso recibe 403 | ✅ |
 | Token expirado se renueva con refresh | ✅ |
+| Logs visibles en stdout y en `backend/logs/app.log` | ✅ |
+| Errores devuelven JSON consistente al frontend | ✅ |
 | Frontend carga en `http://localhost:3000` | ⭕ |
 | Flujo completo login → producto → movimiento → auditoría | ⭕ |
 
 ---
 
-## RIESGOS
-
-| Riesgo | Probabilidad | Impacto | Mitigación |
-|--------|-------------|---------|-----------|
-| RBAC mal configurado en seed — usuarios sin permisos bloqueados | Alta | Alto | Verificar seed con admin que tenga todos los permisos |
-| CORS bloqueando frontend antes de configurarlo | Alta | Alto | Fase 4B lo resuelve antes de arrancar frontend |
-| Redis snapshot desincronizado tras reasignar rol | Media | Medio | El snapshot se regenera en cada autenticación |
-| `UserAccessProjection` async no ejecuta correctamente en EventBus sync | Media | Alto | Verificar con log que el snapshot se escribe al hacer login |
-| JWT keys en `.env` comprometidas | Baja | Alto | Rotar keys en `infra/env/jwt.env` y reiniciar backend |
-
----
-
-## DEUDA TECNICA ACTIVA
-
-| # | Ítem | Archivo | Acción |
-|---|------|---------|--------|
-| 1 | `ocurred_at` → `occurred_at` | `domain/events/base.py` | Renombrar |
-| 2 | Directorio `acccess/` (triple c) | `application/services/` | Renombrar directorio |
-| 3 | `asssign_role.py` vacío | `application/services/` | Eliminar |
-| 4 | `aut_service.py` huérfano | `application/auth/` | Eliminar |
-| 5 | `domain/events.py` duplicado | `domain/` | Eliminar el archivo, queda el paquete |
-
----
-
-## GROWTH ROADMAP (Post-MVP)
+## Growth Roadmap (Post-MVP)
 
 ```text
-MES 1 (Mayo 2026)
-├─ MVP v1.0 funcional y con RBAC activo
+MES 1 — Mayo 2026
+├─ MVP v1.0 funcional con RBAC activo
 ├─ Tests de integración en endpoints críticos
 └─ Deploy a staging
 
-MES 2 (Junio 2026)
+MES 2 — Junio 2026
 ├─ Reportes de stock en PDF/CSV
-├─ Alertas de stock bajo por email
+├─ Alertas de stock bajo por email/webhook
 ├─ Multi-warehouse (múltiples almacenes por tenant)
 └─ Deploy a producción
 
-MES 3+ (Julio 2026+)
+MES 3+ — Julio 2026 en adelante
+├─ Agente de reabastecimiento predictivo
+├─ Detector de anomalías de inventario
 ├─ Importación masiva desde CSV/Excel
-├─ Categorías de productos
 ├─ API mobile (React Native)
 └─ Analytics dashboard con histórico de movimientos
 ```

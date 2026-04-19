@@ -26,7 +26,7 @@ from adapters.repositories.access_repository_sql import AccessRepositorySQL
 from adapters.repositories.audit_log_repository_sql import AuditLogRepositorySQL
 from adapters.repositories.role_repository_sql import RoleRepositorySQL
 from adapters.repositories.user_repository_sql import UserRepositorySQL
-from application.services.acccess.access_service import AccessService
+from application.services.access.access_service import AccessService
 from domain.exceptions import BrixoException
 
 from infrastructure.api.routes.access import router as access_router

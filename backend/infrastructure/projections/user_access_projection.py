@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 
 from infrastructure.redis_client import get_redis
 from infrastructure.logging import get_logger
-from application.services.acccess.access_service import AccessService
+from application.services.access.access_service import AccessService
 from domain.events.auth import UserAuthenticated
 from application.event_bus import EventBus
 

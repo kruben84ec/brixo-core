@@ -1,38 +1,35 @@
-# CHECKLIST — Estado Real del Proyecto
+# CHECKLIST — Estado del Proyecto Brixo
 
-**Actualizado**: 18 de abril de 2026
-**Branch**: dev (mergeado desde feature/auth-core)
-**Referencia**: ROADMAP.md es la fuente de verdad sobre el avance por fase
-
-> Los ítems completados reflejan el estado verificado en ROADMAP.md (18-abr-2026).
-> Los ítems pendientes están ordenados por prioridad de desbloqueo.
+**Actualizado**: 18 de abril de 2026  
+**Branch**: `dev`  
+**Fuente de verdad de avance**: [ROADMAP.md](ROADMAP.md)
 
 ---
 
-## LEYENDA
+## Leyenda
 
-- ✅ **Hecho** — implementado y funcional
+- ✅ **Completado** — implementado y funcional
 - ⭕ **Pendiente** — no implementado aún
-- ⚠️ **Parcial / Bug conocido** — existe pero tiene un problema documentado
+- ~~tachado~~ **Resuelto** — ítem de deuda técnica eliminado
 
 ---
 
-## FASE 1 — Infraestructura (100%) ← cerrada
+## Fase 1 — Infraestructura (100%) ✅
 
-| Ítem | Estado | Notas |
-|------|--------|-------|
-| Redis en docker-compose | ✅ | |
-| Script SQL completo (8 tablas + seed) | ✅ | |
-| `settings.py` con Pydantic BaseSettings | ✅ | |
-| `main.py` con lifespan + pool + routers | ✅ | |
+| Ítem | Estado | Archivo |
+|------|--------|---------|
+| Redis en docker-compose | ✅ | `infra/docker-compose.yml` |
+| Script SQL completo (8 tablas + seed) | ✅ | `infra/docker/postgres/init.sql` |
+| `settings.py` con Pydantic BaseSettings | ✅ | `infrastructure/env/settings.py` |
+| `main.py` con lifespan + pool + routers | ✅ | `backend/main.py` |
 | Volumen postgres externo (`./data/postgres`) | ✅ | |
 | Env files montados (`./env:/app/env:ro`) | ✅ | |
-| Corregir typo `class Tenat` → `Tenant` | ✅ | `domain/contracts.py` |
 | `GET /health` sin autenticación | ✅ | `infrastructure/api/routes/health.py` |
+| Hot reload backend + frontend | ✅ | |
 
 ---
 
-## FASE 2 — Data Access Layer (100%)
+## Fase 2 — Data Access Layer (100%) ✅
 
 | Repositorio | Puerto | Adaptador SQL | Estado |
 |-------------|--------|---------------|--------|
@@ -47,7 +44,7 @@
 
 ---
 
-## FASE 3 — Casos de Uso (100%)
+## Fase 3 — Casos de Uso (100%) ✅
 
 | Use Case | Archivo | Estado |
 |----------|---------|--------|
@@ -61,36 +58,35 @@
 
 ---
 
-## FASE 4 — Controladores y Rutas (100%) ← cerrada
+## Fase 4 — Controladores y Rutas (100%) ✅
 
 | Ítem | Rutas | Estado |
 |------|-------|--------|
-| `AuthController` + `LoginRequest` Pydantic | `POST /api/auth/login` | ✅ |
+| `AuthController` | `POST /api/auth/login` | ✅ |
 | `ProductController` | `GET/POST /api/products/`, `GET /api/products/{id}` | ✅ |
 | `InventoryController` | `POST/GET /api/products/{id}/movements` | ✅ |
-| `UserController` | `GET/POST /api/users/` | ✅ |
+| `UserController` | `GET/POST /api/users/`, `POST /api/users/{id}/roles` | ✅ |
 | `AuditController` | `GET /api/audit/?limit=N` | ✅ |
 | `AccessController` + Redis snapshot | `GET /me/access` | ✅ |
 | `PUBLIC_PATHS` en `JWTAuthMiddleware` | `/docs /redoc /openapi.json /health /api/auth/login` | ✅ |
 | Audit trail en handlers — persiste login en BD | — | ✅ |
-| `POST /api/users/{id}/roles` | `POST /api/users/{id}/roles` | ✅ |
+| `POST /api/auth/refresh` | `POST /api/auth/refresh` | ✅ |
 
 ---
 
-## FASE 4B — Seguridad Aplicada (100%) ← cerrada
+## Fase 4B — Seguridad Aplicada (100%) ✅
 
 | Ítem | Archivo | Estado |
 |------|---------|--------|
 | CORS en `main.py` | `backend/main.py` | ✅ |
-| `GET /health` sin auth | `routes/health.py` | ✅ |
 | `require_permission(code)` FastAPI dependency | `infrastructure/security/permissions.py` | ✅ |
-| Aplicar `require_permission` en endpoints críticos | `routes/products.py`, `routes/users.py`, `routes/audit.py` | ✅ |
+| RBAC activo en endpoints críticos | `routes/products.py`, `routes/users.py`, `routes/audit.py` | ✅ |
 | `POST /api/auth/refresh` | `infrastructure/api/routes/auth.py` | ✅ |
 
-### Permisos requeridos por endpoint
+### Permisos por endpoint
 
-| Endpoint | Permiso |
-|----------|---------|
+| Endpoint | Permiso requerido |
+|----------|-------------------|
 | `POST /api/products/` | `INVENTORY_WRITE` |
 | `POST /api/products/{id}/movements` | `INVENTORY_WRITE` |
 | `GET /api/products/` | `INVENTORY_READ` |
@@ -101,12 +97,24 @@
 
 ---
 
-## FASE 5 — Frontend (5%) ← PROXIMA
+## Fase 4C — Observabilidad y Manejo de Excepciones (100%) ✅
 
-> Solo existe `<h1>Brixo</h1>`. CORS ya activo — puede arrancar.
+| Ítem | Archivo | Estado |
+|------|---------|--------|
+| Logger JSON con `RotatingFileHandler` | `infrastructure/logging.py` | ✅ |
+| `HTTPLoggingMiddleware` | `infrastructure/api/middleware/http_logging.py` | ✅ |
+| Jerarquía de excepciones de dominio | `domain/exceptions.py` | ✅ |
+| Exception handlers globales (4 tipos) | `infrastructure/api/exception_handlers.py` | ✅ |
+| Logs persistidos en `backend/logs/app.log` | bind mount Docker | ✅ |
 
-| Ítem | Tiempo | Estado |
-|------|--------|--------|
+---
+
+## Fase 5 — Frontend (5%) ← PRÓXIMA
+
+> Solo existe `<h1>Brixo</h1>`. CORS activo, errores con formato consistente — puede arrancar ahora.
+
+| Ítem | Tiempo est. | Estado |
+|------|-------------|--------|
 | `npm install axios react-router-dom zustand` | 15 min | ⭕ |
 | `src/services/api.js` — axios con interceptor JWT y refresh | 30 min | ⭕ |
 | `authStore` (Zustand) — token, usuario, logout | 30 min | ⭕ |
@@ -121,34 +129,39 @@
 
 ---
 
-## FASE 6 — QA + Hardening (0%)
+## Fase 6 — QA + Hardening (0%)
 
 > Bloqueada por Fase 5.
 
-| Ítem | Tipo | Tiempo | Estado |
-|------|------|--------|--------|
+| Ítem | Tipo | Tiempo est. | Estado |
+|------|------|-------------|--------|
 | Testing manual flujo completo | QA | 45 min | ⭕ |
 | Fix de bugs encontrados | Dev | 60 min | ⭕ |
 | Rate limiting en `POST /api/auth/login` | Seguridad | 30 min | ⭕ |
 | Validar TTL Redis snapshot y expiración de token | Seguridad | 20 min | ⭕ |
-| README con instrucciones de uso | Docs | 30 min | ⭕ |
+| Cabeceras de seguridad HTTP | Seguridad | 30 min | ⭕ |
+| `request_id` en `HTTPLoggingMiddleware` + header `X-Request-ID` | Observabilidad | 30 min | ⭕ |
+| README con instrucciones de uso | Docs | — | ✅ completado en sesión 3 |
 | `docker-compose.prod.yml` | Infra | 30 min | ⭕ |
 
 ---
 
-## DEUDA TECNICA ACTIVA
+## Deuda técnica — RESUELTA ✅
 
-| # | Ítem | Archivo | Acción |
-|---|------|---------|--------|
-| 1 | `ocurred_at` → `occurred_at` | `domain/events/base.py` | Renombrar |
-| 2 | Directorio `acccess/` (triple c) | `application/services/` | Renombrar |
-| 3 | `asssign_role.py` vacío (triple s) | `application/services/` | Eliminar |
-| 4 | `aut_service.py` huérfano | `application/auth/` | Eliminar |
-| 5 | `domain/events.py` duplicado del paquete | `domain/` | Eliminar el archivo plano |
+Todos los ítems de deuda técnica han sido resueltos en sesión 3 (18 abr 2026).
+
+| # | Ítem | Resolución |
+|---|------|-----------|
+| 1 | ~~`ocurred_at` → `occurred_at`~~ | Corregido en `domain/events/base.py` |
+| 2 | ~~Directorio `acccess/` (triple c)~~ | Renombrado a `access/`, 2 imports actualizados |
+| 3 | ~~`asssign_role.py` vacío~~ | Eliminado con `git rm` |
+| 4 | ~~`aut_service.py` huérfano~~ | Eliminado con `git rm` |
+| 5 | ~~`domain/events.py` duplicado~~ | Eliminado; import en `user_access_projection.py` corregido a `domain.events.base` |
+| 6 | ~~`OPENAI_API_KEY` en `backend.env`~~ | Env files excluidos de git (`infra/env/*.env` en `.gitignore`) |
 
 ---
 
-## CRITERIOS DE EXITO DEL MVP
+## Criterios de éxito del MVP
 
 | Criterio | Estado |
 |----------|--------|
@@ -160,5 +173,7 @@
 | Registrar movimiento con permiso correcto | ✅ |
 | Usuario sin permiso recibe 403 | ✅ |
 | Token expirado se renueva con refresh | ✅ |
+| Logs visibles en `docker logs` y en `backend/logs/app.log` | ✅ |
+| Errores devuelven JSON consistente al frontend | ✅ |
 | Frontend carga en `http://localhost:3000` | ⭕ |
 | Flujo completo login → producto → movimiento → auditoría | ⭕ |
