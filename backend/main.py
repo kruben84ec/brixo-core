@@ -36,7 +36,27 @@ async def lifespan(app: FastAPI):
     close_connection_pool()
 
 
-app = FastAPI(title="Brixo Core API", version="0.0.1", lifespan=lifespan)
+app = FastAPI(
+    title="Brixo API",
+    version="1.0.0-mvp",
+    description=(
+        "API REST para el sistema de control de inventario Brixo.\n\n"
+        "**Autenticación**: Bearer JWT (RS256). Usa `POST /api/auth/login` para obtener el token "
+        "y pégalo en el botón **Authorize** de esta UI.\n\n"
+        "**Multi-tenant**: cada request se opera dentro del tenant del usuario autenticado."
+    ),
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_tags=[
+        {"name": "auth",      "description": "Login y renovación de token"},
+        {"name": "products",  "description": "Gestión de productos e inventario"},
+        {"name": "users",     "description": "Gestión de usuarios y asignación de roles"},
+        {"name": "audit",     "description": "Historial de auditoría por tenant"},
+        {"name": "access",    "description": "Snapshot de permisos del usuario autenticado"},
+        {"name": "health",    "description": "Estado del servicio"},
+    ],
+    lifespan=lifespan,
+)
 
 
 def init_app():
