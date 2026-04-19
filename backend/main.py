@@ -2,9 +2,19 @@ from contextlib import asynccontextmanager
 
 from db_wait import wait_for_db
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
 from infrastructure.database import close_connection_pool, initialize_connection_pool
 from infrastructure.security.jwt_middleware import JWTAuthMiddleware
+from infrastructure.api.middleware.http_logging import HTTPLoggingMiddleware
+from infrastructure.api.exception_handlers import (
+    brixo_exception_handler,
+    http_exception_handler,
+    unhandled_exception_handler,
+    validation_exception_handler,
+)
 from infrastructure.api.routes.auth import get_auth_router
 from infrastructure.api.routes.products import create_product_router
 from infrastructure.api.routes.users import create_user_router
@@ -17,6 +27,7 @@ from adapters.repositories.audit_log_repository_sql import AuditLogRepositorySQL
 from adapters.repositories.role_repository_sql import RoleRepositorySQL
 from adapters.repositories.user_repository_sql import UserRepositorySQL
 from application.services.acccess.access_service import AccessService
+from domain.exceptions import BrixoException
 
 from infrastructure.api.routes.access import router as access_router
 from infrastructure.api.routes.health import router as health_router
@@ -58,6 +69,14 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# ── Exception handlers ────────────────────────────────────────────────────────
+# Orden de precedencia: FastAPI elige el handler cuyo tipo sea el más específico.
+# BrixoException y RequestValidationError son más específicos que Exception.
+app.add_exception_handler(BrixoException, brixo_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(StarletteHTTPException, http_exception_handler)
+app.add_exception_handler(Exception, unhandled_exception_handler)
+
 
 def init_app():
     wait_for_db()
@@ -68,8 +87,11 @@ def init_app():
     user_access_projection = UserAccessProjection(event_bus, access_service)
     user_access_projection.register()
 
-    app.add_middleware(JWTAuthMiddleware, event_bus=event_bus)
-    app.add_middleware(
+    # ── Middlewares (add_middleware es LIFO: el último añadido es el más externo) ──
+    # Orden de ejecución en request: CORS → HTTPLogging → JWT → Handler
+    app.add_middleware(JWTAuthMiddleware, event_bus=event_bus)   # ③ innermost
+    app.add_middleware(HTTPLoggingMiddleware)                     # ② capta todos los requests (incl. 401)
+    app.add_middleware(                                           # ① outermost — preflight CORS
         CORSMiddleware,
         allow_origins=["http://localhost:3000"],
         allow_credentials=True,

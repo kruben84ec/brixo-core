@@ -68,6 +68,9 @@ services:
       - "8000:8000"
     volumes:
       - ../backend:/app         # hot reload — cambios en src se reflejan al instante
+                                # LOGS: /app/logs/app.log dentro del contenedor
+                                #       ↓ visible en el host como backend/logs/app.log
+                                #       Rotación automática: 10 MB × 5 archivos
       - ./env:/app/env:ro       # env files montados como solo lectura
 
   # ──────────────────────────────────────────

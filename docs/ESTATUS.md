@@ -1,8 +1,25 @@
 # ESTATUS DEL PROYECTO BRIXO — MVP
 
-**Fecha**: 18 de abril de 2026
-**Rama activa**: `dev`
-**Estado general**: Backend 100% completo — Infraestructura Docker corregida — Próximo: Fase 5 Frontend — MVP al 77%
+**Fecha**: 18 de abril de 2026  
+**Rama activa**: `dev`  
+**Estado general**: Backend 100% completo + Observabilidad activa — Próximo: Fase 5 Frontend — MVP al 80%
+
+---
+
+## INFORME EJECUTIVO — Sesión 3 (18 abr 2026)
+
+### Qué se logró
+
+Se incorporó al backend una **capa de observabilidad y manejo de excepciones** que no existía. El backend ahora tiene visibilidad operacional completa y un contrato de error consistente para el frontend:
+
+- **Logging a archivo**: los logs JSON estructurados se graban en `backend/logs/app.log` con rotación automática (10 MB × 5 archivos) y son visibles en tiempo real desde Docker sin configuración adicional.
+- **Middleware HTTP**: cada request registra `method`, `path`, `status_code`, `duration_ms`, `user_id` y `tenant_id`. Permite detectar endpoints lentos, errores 4xx/5xx y patrones de uso por tenant.
+- **Capa de excepciones de dominio**: jerarquía tipada (`NotFoundError`, `ForbiddenError`, `ConflictError`, etc.) que separa el mensaje al usuario del detalle técnico al log. El frontend siempre recibe un JSON limpio con `error` + `message`; el stack trace completo va al log y nunca se expone.
+- **Catch-all global**: cualquier excepción no prevista retorna `500 INTERNAL_ERROR` al cliente y registra el traceback completo en el log técnico.
+
+### Qué se espera a continuación
+
+**Fase 5 — Frontend** es el próximo bloque de trabajo (~6h). El backend está listo para ser consumido: CORS activo, tokens renovables, RBAC funcional, errores con formato consistente. El frontend recibirá mensajes legibles en lugar de 500 genéricos, lo que facilita el desarrollo y el debugging de la UI.
 
 ---
 
@@ -14,10 +31,11 @@ FASE 2   Data Access Layer        ██████████  100%   ← cer
 FASE 3   Casos de uso             ██████████  100%   ← cerrada
 FASE 4   Controladores / Rutas    ██████████  100%   ← cerrada
 FASE 4B  Seguridad aplicada       ██████████  100%   ← cerrada
+FASE 4C  Observabilidad           ██████████  100%   ← cerrada ← NUEVO
 FASE 5   Frontend                 █░░░░░░░░░    5%   ← PROXIMA
 FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← bloqueada por 5
-──────────────────────────────────���─────────────────
-TOTAL MVP                         ████████░░   77%
+────────────────────────────────────────────────────────────────
+TOTAL MVP                         ████████░░   80%
 ```
 
 ---
@@ -36,13 +54,14 @@ FASE 5 — Frontend (~6h total)
 8. F5  Routing + layout + rutas privadas                  35 min
 9. F5  Estilos básicos                                    40 min
 
-FASE 6 — QA + Hardening (~4h 45min total)
+FASE 6 — QA + Hardening (~5h 15min total)
 10. F6 Testing manual flujo completo                      45 min
 11. F6 Rate limiting POST /api/auth/login (Redis, 429)    30 min
 12. F6 Cabeceras de seguridad HTTP (middleware)           30 min
-13. F6 Manejo seguro de errores (handler global prod)     20 min
+13. F6 Manejo seguro de errores prod (BACKEND_ENVIRONMENT) 20 min  ← parcialmente cubierto por catch-all
 14. F6 Protección CSRF — validar esquema Bearer + CORS    20 min
-15. F6 docker-compose.prod.yml + README final             60 min
+15. F6 request_id en HTTPLoggingMiddleware + header X-Request-ID  30 min
+16. F6 docker-compose.prod.yml + README final             60 min
 ```
 
 ---
@@ -132,37 +151,65 @@ Todos los repositorios implementados con puerto ABC + adaptador SQL real.
 | `POST /api/users/{id}/roles` | `ROLES_WRITE` |
 | `GET /api/audit/` | `AUDIT_READ` |
 
-### Flujo de seguridad
+---
+
+## FASE 4C — Observabilidad y Manejo de Excepciones 100% ← NUEVO
+
+### Componentes implementados
+
+| Componente | Archivo | Estado |
+| --- | --- | --- |
+| Logger JSON con `RotatingFileHandler` (stdout + archivo) | `infrastructure/logging.py` | ✅ |
+| `HTTPLoggingMiddleware` — registra cada request HTTP | `infrastructure/api/middleware/http_logging.py` | ✅ |
+| Jerarquía de excepciones de dominio tipadas | `domain/exceptions.py` | ✅ |
+| `brixo_exception_handler` — dominio → JSON limpio + log ERROR | `infrastructure/api/exception_handlers.py` | ✅ |
+| `http_exception_handler` — HTTPException → JSON + log WARNING | `infrastructure/api/exception_handlers.py` | ✅ |
+| `validation_exception_handler` — Pydantic → campos con error | `infrastructure/api/exception_handlers.py` | ✅ |
+| `unhandled_exception_handler` — catch-all → 500 + traceback al log | `infrastructure/api/exception_handlers.py` | ✅ |
+| Logs persistidos en `backend/logs/app.log` vía bind mount Docker | `infra/docker-compose.yml` | ✅ |
+
+### Flujo de logging completo
 
 ```text
 REQUEST
   │
   ▼
-CORSMiddleware               ← capa exterior — responde preflight OPTIONS sin auth
+CORSMiddleware
   │
   ▼
-JWTAuthMiddleware            ← valida RS256, inyecta user_id + tenant_id
-  │                             publica UserAuthenticated en EventBus
+HTTPLoggingMiddleware      ← registra method/path/status/duration/user_id/tenant_id
+  │
   ▼
-UserAccessProjection         ← escucha UserAuthenticated
-  │                             consulta roles + permisos en BD
-  │                             guarda snapshot en Redis: user_access:{tenant}:{user}
-  ▼
-require_permission(code)     ← lee snapshot de Redis
-  │                             lanza 403 si el código no está en permissions[]
+JWTAuthMiddleware
+  │
   ▼
 Handler / Use Case
-  │
+  │  lanza BrixoException, HTTPException, ValidationError o Exception no prevista
   ▼
-AuditLogRepository           ← persiste cada acción relevante
+Exception Handlers ─────────────────────────────────────────────────────
+  ├── BrixoException      → log ERROR (detail técnico) + JSON {error, message}
+  ├── RequestValidationError → log WARNING + JSON {error, message, fields[]}
+  ├── HTTPException       → log WARNING + JSON {error, message}
+  └── Exception (catch-all) → log ERROR (traceback) + JSON 500 genérico
 ```
+
+### Persistencia de logs en Docker
+
+```text
+Contenedor: /app/logs/app.log
+Host:       backend/logs/app.log      ← accesible sin docker exec
+            backend/logs/app.log.1    ← rotados automáticamente
+            …                            (10 MB × 5 archivos)
+```
+
+Cubierto por el bind mount existente `../backend:/app`. No se necesita volumen adicional.
 
 ---
 
 ## FASE 5 — Frontend 5%
 
-Solo existe `<h1>Brixo</h1>` en `frontend/src/App.jsx`.
-CORS activo — puede arrancar ahora.
+Solo existe `<h1>Brixo</h1>` en `frontend/src/App.jsx`.  
+CORS activo, errores con formato consistente — puede arrancar ahora.
 
 | Tarea | Tiempo | Estado |
 | --- | --- | --- |
@@ -182,7 +229,7 @@ CORS activo — puede arrancar ahora.
 
 ## FASE 6 — QA + Hardening 0%
 
-Bloqueada por Fase 5.
+Bloqueada por Fase 5. Algunos ítems ya tienen base gracias a Fase 4C.
 
 | Tarea | Tipo | Tiempo | Estado |
 | --- | --- | --- | --- |
@@ -190,6 +237,8 @@ Bloqueada por Fase 5.
 | Fix de bugs encontrados | Dev | 60 min | ⭕ |
 | Rate limiting en `POST /api/auth/login` | Seguridad | 30 min | ⭕ |
 | Validar TTL Redis snapshot y expiración de token | Seguridad | 20 min | ⭕ |
+| Cabeceras de seguridad HTTP (middleware) | Seguridad | 30 min | ⭕ |
+| `request_id` en `HTTPLoggingMiddleware` + header `X-Request-ID` | Observabilidad | 30 min | ⭕ |
 | README con instrucciones de uso | Docs | 30 min | ⭕ |
 | `docker-compose.prod.yml` | Infra | 30 min | ⭕ |
 
@@ -206,25 +255,13 @@ Bloqueada por Fase 5.
 [brixo-frontend :3000]  ←── navegador del usuario (localhost:3000)
 ```
 
-> El frontend corre Vite dev server en el contenedor. El JS se ejecuta en el
-> navegador del usuario, por lo que las llamadas a la API van a `localhost:8000`
-> (puerto mapeado del host), no al nombre del servicio Docker.
+### Hot reload y logs por servicio
 
-### Hot reload por capa
-
-| Servicio | Mecanismo | Bind mount |
-| --- | --- | --- |
-| Backend | uvicorn `--reload` + `watchfiles` (polling) | `../backend:/app` |
-| Frontend | Vite HMR | `../frontend:/app` |
-| Base de datos | Datos persistentes (no code) | `./data/postgres:/var/lib/postgresql/data` |
-
-### Arranque con dependencias saludables
-
-```text
-postgres ──healthcheck──► backend
-redis    ──healthcheck──► backend
-backend  ──started──────► frontend
-```
+| Servicio | Mecanismo | Bind mount | Logs |
+| --- | --- | --- | --- |
+| Backend | uvicorn `--reload` + watchfiles | `../backend:/app` | `backend/logs/app.log` ← host |
+| Frontend | Vite HMR | `../frontend:/app` | stdout |
+| Base de datos | Datos persistentes | `./data/postgres:/var/lib/postgresql/data` | — |
 
 ---
 
@@ -241,5 +278,5 @@ backend  ──started──────► frontend
 
 ---
 
-**Documento actualizado**: 18 de abril de 2026 (sesión 2)
+**Documento actualizado**: 18 de abril de 2026 (sesión 3)  
 **Próxima revisión**: Al completar Fase 5 Frontend

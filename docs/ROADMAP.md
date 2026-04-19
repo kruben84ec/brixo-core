@@ -198,9 +198,10 @@ async def create_product(...):
 | 5 | Cabeceras de seguridad HTTP — middleware que inyecta `X-Content-Type-Options`, `X-Frame-Options`, `Strict-Transport-Security`, `Content-Security-Policy` | Seguridad | 30 min | ⭕ |
 | 6 | Manejo seguro de errores — handler global FastAPI que oculta stack traces en producción (`BACKEND_ENVIRONMENT=production`) | Seguridad | 20 min | ⭕ |
 | 7 | Protección CSRF — documentar que el esquema Bearer JWT + `SameSite=Strict` en cookies mitiga CSRF; validar origen en CORS | Seguridad | 20 min | ⭕ |
-| 8 | README actualizado con instrucciones de uso | Docs | 30 min | ⭕ |
-| 9 | `docker-compose.prod.yml` con variables de entorno seguras | Infra | 30 min | ⭕ |
-| **TOTAL** | | | **4h 45min** | |
+| 8 | **`HTTPLoggingMiddleware`** — middleware Starlette que registra cada request: `method`, `path`, `status_code`, `duration_ms`, `tenant_id`, `user_id` usando el `get_logger()` existente en `infrastructure/logging.py`. Ubicación: `infrastructure/api/middleware/http_logging.py`, registrado en `main.py` antes del `JWTAuthMiddleware` | Observabilidad | 30 min | ⭕ |
+| 9 | README actualizado con instrucciones de uso | Docs | 30 min | ⭕ |
+| 10 | `docker-compose.prod.yml` con variables de entorno seguras | Infra | 30 min | ⭕ |
+| **TOTAL** | | | **5h 15min** | |
 
 **Validacion**: flujo e2e sin errores — Login → Crear Producto → Registrar Movimiento → Ver Auditoría → Logout
 
