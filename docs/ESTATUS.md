@@ -48,12 +48,15 @@ FASE 3   Casos de uso             ██████████  100%   ← cer
 FASE 4   Controladores / Rutas    ██████████  100%   ← cerrada
 FASE 4B  Seguridad aplicada       ██████████  100%   ← cerrada
 FASE 4C  Observabilidad           ██████████  100%   ← cerrada
-FASE 4D  SaaS Auth + Bugs         ██████████  100%   ← cerrada (nueva)
-FASE 5   Frontend                 █░░░░░░░░░    5%   ← PROXIMA
+FASE 4D  SaaS Auth + Bugs         ██████████  100%   ← cerrada
+FASE 5   Frontend                 ██░░░░░░░░   10%   ← EN CURSO (setup TS completo)
 FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← bloqueada por 5
 ────────────────────────────────────────────────────
-TOTAL MVP                         ████████░░   83%
+TOTAL MVP                         ████████░░   85%
 ```
+
+**Cálculo Fase 5**: 2 de 18 ítems del ROADMAP completados (35 min de 725 min = 4.8% tiempo, ~10% ponderado por impacto fundacional).  
+**Cálculo MVP**: Fases 1–4D representan el 83% base. Fase 5 al 10% aporta ~1.7% adicional → **85% total**.
 
 ---
 

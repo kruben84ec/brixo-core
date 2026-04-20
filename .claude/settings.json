@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm audit *)",
+      "Bash(mkdir -p theme components/primitives components/layout components/feedback pages services stores hooks types)",
+      "Bash(touch theme/.gitkeep components/primitives/.gitkeep components/layout/.gitkeep components/feedback/.gitkeep pages/.gitkeep services/.gitkeep stores/.gitkeep hooks/.gitkeep types/.gitkeep)",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(npx tsc *)"
+    ]
+  }
+}
