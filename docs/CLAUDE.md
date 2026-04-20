@@ -9,7 +9,7 @@
 **Brixo** — Sistema de control de inventario simple para pequeños negocios y pymes.  
 **No es** un ERP ni sistema contable. **Es** control de stock: entradas, salidas, historial.
 
-**Branch activo**: dev | **Estado**: Backend 100% — MVP al 77% — Próximo: Fase 5 Frontend
+**Branch activo**: dev | **Estado**: Backend 100% — MVP al 83% — Próximo: Fase 5 Frontend (TypeScript)
 
 ---
 
@@ -18,7 +18,7 @@
 | Capa | Tecnología |
 | ---- | ---------- |
 | Backend | Python 3.12, FastAPI 0.128+, Pydantic v2, psycopg2, PyJWT RS256 |
-| Frontend | React 18, Vite 5, JavaScript (JSX) |
+| Frontend | React 18, Vite 5, TypeScript 5, TSX |
 | Infra | Docker Compose, PostgreSQL 15, Redis 7-alpine |
 | Auth | JWT RS256, RBAC por permisos (snapshots Redis) |
 | OS dev | Windows — usar PowerShell o Git Bash |

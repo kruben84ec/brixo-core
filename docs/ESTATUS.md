@@ -2,7 +2,7 @@
 
 **Fecha**: 19 de abril de 2026  
 **Rama activa**: `dev`  
-**Estado general**: Backend 100% + SaaS Auth + Bugs críticos resueltos — Próximo: Fase 5 Frontend — MVP al 83%
+**Estado general**: Backend 100% + SaaS Auth + Bugs críticos resueltos — Próximo: Fase 5 Frontend (TypeScript + Landing Page) — MVP al 83%
 
 ---
 
@@ -201,25 +201,41 @@ CORS → HTTPLogging → JWT → Handler → ExceptionHandlers → AuditLog
 
 ## Fase 5 — Frontend 5%
 
-Solo existe `<h1>Brixo</h1>` en `frontend/src/App.jsx`.  
+Solo existe `<h1>Brixo</h1>` en `frontend/src/App.tsx`.  
 El backend está completamente listo — puede arrancar ahora.
+
+**Stack confirmado**: React 18 + Vite 5 + **TypeScript 5** + Zustand + React Router + Axios
 
 | Tarea | Tiempo | Estado |
 |-------|--------|--------|
-| `npm install axios react-router-dom zustand` | 15 min | ⭕ |
-| `src/services/api.js` — axios con interceptor JWT y refresh | 30 min | ⭕ |
-| `authStore` (Zustand) — token, usuario, logout | 30 min | ⭕ |
-| `RegisterPage` — formulario SaaS (empresa, nombre, email, contraseña) | 50 min | ⭕ |
-| `LoginPage` — form email+password, manejo de error 401 | 50 min | ⭕ |
-| `ProductListPage` — tabla con stock actual y alerta de mínimo | 60 min | ⭕ |
-| `ProductFormModal` — alta de producto con validación client-side | 40 min | ⭕ |
-| `MovementFormModal` — ENTRADA / SALIDA / AJUSTE con cantidad y motivo | 50 min | ⭕ |
-| `DashboardPage` — resumen de stock, alertas de stock bajo | 45 min | ⭕ |
-| `AuditLogPage` — historial paginado con filtros | 40 min | ⭕ |
-| Routing + layout base (sidebar, navbar, rutas privadas) | 35 min | ⭕ |
-| Estilos básicos (CSS o Tailwind) | 40 min | ⭕ |
+| Setup TypeScript: `tsconfig.json`, aliases `@/`, tipos base | 20 min | ⭕ |
+| `npm install` — axios, react-router-dom, zustand + @types | 15 min | ⭕ |
+| `src/theme/tokens.ts` + `ThemeProvider.tsx` + `useTheme` hook | 30 min | ⭕ |
+| `BrixoLogo.tsx` — 3 variantes + favicon assets | 20 min | ⭕ |
+| Componentes primitivos: `Button`, `Input`, `Badge` (TSX) | 40 min | ⭕ |
+| Componentes feedback: `Card`, `Toast`, `Skeleton`, `EmptyState` | 40 min | ⭕ |
+| Componentes overlay: `Modal`, `BottomSheet` | 30 min | ⭕ |
+| `src/services/api.ts` — axios con interceptor JWT y refresh | 30 min | ⭕ |
+| `authStore.ts` (Zustand) — token, usuario, logout, permisos | 30 min | ⭕ |
+| Layout + navegación: `AppShell`, sidebar, bottom-nav, rutas privadas | 40 min | ⭕ |
+| `LandingPage.tsx` — página promocional pública de Brixo | 60 min | ⭕ |
+| `LoginPage.tsx` + `RegisterPage.tsx` | 60 min | ⭕ |
+| `DashboardPage.tsx` — segunda pantalla post-login, KPIs + alertas | 50 min | ⭕ |
+| `InventoryPage.tsx` — tabla desktop + cards móvil | 50 min | ⭕ |
+| `MovementModal.tsx` — ENTRADA / SALIDA / AJUSTE | 50 min | ⭕ |
+| `ProductModal.tsx` — alta de producto con validación | 40 min | ⭕ |
+| `AuditPage.tsx` + `TeamPage.tsx` | 50 min | ⭕ |
+| Vistas por rol + accesibilidad WCAG 2.1 AA | 40 min | ⭕ |
+| Build, ErrorBoundary, optimización producción | 30 min | ⭕ |
 
-**Validación**: registro → login → ver productos → crear uno → registrar movimiento → ver auditoría
+**Flujo de navegación**:
+- `/` → `LandingPage` (pública) — si ya está autenticado, redirige a `/dashboard`
+- `/login` → `LoginPage` — si ya está autenticado, redirige a `/dashboard`
+- `/register` → `RegisterPage`
+- `/dashboard` → segunda pantalla principal post-login (ruta privada)
+- `/inventory`, `/movements`, `/team`, `/audit` → rutas privadas
+
+**Validación**: landing → registro → login → dashboard → crear producto → registrar movimiento → ver auditoría
 
 ---
 

@@ -111,21 +111,34 @@
 
 ## Fase 5 — Frontend (5%) ← PRÓXIMA
 
-> Solo existe `<h1>Brixo</h1>`. CORS activo, errores con formato consistente — puede arrancar ahora.
+> Solo existe `<h1>Brixo</h1>`. Stack migrado a **TypeScript 5 + React 18 + Vite 5**. CORS activo — puede arrancar ahora.
+
+**Flujo de rutas**:
+- `/` → LandingPage pública → redirige a `/dashboard` si ya hay sesión
+- `/login` y `/register` → públicas → redirigen a `/dashboard` si ya hay sesión
+- `/dashboard` → primera pantalla post-login (ruta privada)
 
 | Ítem | Tiempo est. | Estado |
 |------|-------------|--------|
-| `npm install axios react-router-dom zustand` | 15 min | ⭕ |
-| `src/services/api.js` — axios con interceptor JWT y refresh | 30 min | ⭕ |
-| `authStore` (Zustand) — token, usuario, logout | 30 min | ⭕ |
-| `LoginPage` | 50 min | ⭕ |
-| `ProductListPage` | 60 min | ⭕ |
-| `ProductFormModal` | 40 min | ⭕ |
-| `MovementFormModal` | 50 min | ⭕ |
-| `DashboardPage` — stock con alertas de mínimo | 45 min | ⭕ |
-| `AuditLogPage` | 40 min | ⭕ |
-| Routing + layout + rutas privadas | 35 min | ⭕ |
-| Estilos básicos | 40 min | ⭕ |
+| Setup TypeScript: `tsconfig.json`, aliases `@/`, migración `.jsx` → `.tsx` | 20 min | ⭕ |
+| `npm install` — axios, react-router-dom, zustand + @types/react @types/node | 15 min | ⭕ |
+| `src/theme/tokens.ts` + `ThemeProvider.tsx` + `useTheme` hook | 30 min | ⭕ |
+| `BrixoLogo.tsx` — variantes solid, line, horizontal + favicon | 20 min | ⭕ |
+| Primitivos: `Button.tsx`, `Input.tsx`, `Badge.tsx` | 40 min | ⭕ |
+| Feedback: `Card.tsx`, `Toast.tsx`, `Skeleton.tsx`, `EmptyState.tsx` | 40 min | ⭕ |
+| Overlays: `Modal.tsx`, `BottomSheet.tsx` | 30 min | ⭕ |
+| `src/services/api.ts` — axios + interceptor JWT + refresh + tipos | 30 min | ⭕ |
+| `authStore.ts` (Zustand) — token, user, logout, permisos | 30 min | ⭕ |
+| Layout: `AppShell.tsx`, sidebar desktop, bottom-nav móvil, `PrivateRoute.tsx` | 40 min | ⭕ |
+| `LandingPage.tsx` — página promocional pública | 60 min | ⭕ |
+| `LoginPage.tsx` + `RegisterPage.tsx` | 60 min | ⭕ |
+| `DashboardPage.tsx` — KPIs + movimientos recientes + alertas | 50 min | ⭕ |
+| `InventoryPage.tsx` — tabla desktop + cards móvil + semáforo 3 estados | 50 min | ⭕ |
+| `MovementModal.tsx` — ENTRADA / SALIDA / AJUSTE | 50 min | ⭕ |
+| `ProductModal.tsx` — formulario + manejo 409 SKU duplicado | 40 min | ⭕ |
+| `AuditPage.tsx` + `TeamPage.tsx` | 50 min | ⭕ |
+| Vistas por rol (`useAccess.ts`) + accesibilidad WCAG 2.1 AA | 40 min | ⭕ |
+| Build: `ErrorBoundary.tsx`, bundle optimization, Lighthouse ≥ 85 | 30 min | ⭕ |
 
 ---
 
