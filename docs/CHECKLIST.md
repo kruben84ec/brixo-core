@@ -1,54 +1,54 @@
 # CHECKLIST — Estado del Proyecto Brixo
 
-**Actualizado**: 18 de abril de 2026  
-**Branch**: `dev`  
-**Fuente de verdad de avance**: [ROADMAP.md](ROADMAP.md)
+**Actualizado**: 20 de abril de 2026
+**Branch**: `dev`
+**Fuente de verdad de avance**: [ROADMAP.md](ROADMAP.md) — [ESTATUS.md](ESTATUS.md)
 
 ---
 
 ## Leyenda
 
-- ✅ **Completado** — implementado y funcional
-- ⭕ **Pendiente** — no implementado aún
-- ~~tachado~~ **Resuelto** — ítem de deuda técnica eliminado
+- ✅ Completado y funcional
+- ⭕ Pendiente
+- 🔴 Bloqueante — sin esto no avanza el sprint
+- ⭐ Entregable visible — pantalla funcional contra backend real
 
 ---
 
-## Fase 1 — Infraestructura (100%) ✅
+## Backend — 100% ✅
 
-| Ítem | Estado | Archivo |
-|------|--------|---------|
-| Redis en docker-compose | ✅ | `infra/docker-compose.yml` |
-| Script SQL completo (8 tablas + seed) | ✅ | `infra/docker/postgres/init.sql` |
-| `settings.py` con Pydantic BaseSettings | ✅ | `infrastructure/env/settings.py` |
-| `main.py` con lifespan + pool + routers | ✅ | `backend/main.py` |
-| Volumen postgres externo (`./data/postgres`) | ✅ | |
-| Env files montados (`./env:/app/env:ro`) | ✅ | |
-| `GET /health` sin autenticación | ✅ | `infrastructure/api/routes/health.py` |
-| Hot reload backend + frontend | ✅ | |
+### Fase 1 — Infraestructura
 
----
+| Ítem | Estado |
+|------|--------|
+| Redis en docker-compose | ✅ |
+| Script SQL (8 tablas + seed) | ✅ |
+| `settings.py` Pydantic BaseSettings | ✅ |
+| `main.py` con lifespan + pool + routers | ✅ |
+| Volumen postgres externo | ✅ |
+| Env files montados `./env:/app/env:ro` | ✅ |
+| `GET /health` sin autenticación | ✅ |
+| Hot reload backend + frontend | ✅ |
 
-## Fase 2 — Data Access Layer (100%) ✅
+### Fase 2 — Data Access Layer
 
-| Repositorio | Puerto | Adaptador SQL | Estado |
-|-------------|--------|---------------|--------|
-| Auth | `AuthRepository` | `AuthRepositorySQL` | ✅ |
-| Product | `ProductRepository` | `ProductRepositorySQL` | ✅ |
-| InventoryMovement | `InventoryMovementRepository` | `InventoryMovementRepositorySQL` | ✅ |
-| AuditLog | `AuditLogRepository` | `AuditLogRepositorySQL` | ✅ |
-| User | `UserRepository` | `UserRepositorySQL` | ✅ |
-| Tenant | `TenantRepository` | `TenantRepositorySQL` | ✅ |
-| Role | `RoleRepository` | `RoleRepositorySQL` | ✅ |
-| Access | `AccessRepository` | `AccessRepositorySQL` | ✅ |
+| Repositorio | Adaptador SQL | Estado |
+|-------------|---------------|--------|
+| `AuthRepository` | `AuthRepositorySQL` | ✅ |
+| `ProductRepository` | `ProductRepositorySQL` | ✅ |
+| `InventoryMovementRepository` | `InventoryMovementRepositorySQL` | ✅ |
+| `AuditLogRepository` | `AuditLogRepositorySQL` | ✅ |
+| `UserRepository` | `UserRepositorySQL` | ✅ |
+| `TenantRepository` | `TenantRepositorySQL` | ✅ |
+| `RoleRepository` | `RoleRepositorySQL` | ✅ |
+| `AccessRepository` | `AccessRepositorySQL` | ✅ |
 
----
-
-## Fase 3 — Casos de Uso (100%) ✅
+### Fase 3 — Casos de Uso
 
 | Use Case | Archivo | Estado |
 |----------|---------|--------|
 | `LoginUser` | `application/services/auth/login_user.py` | ✅ |
+| `SignUpUseCase` | `application/use_cases/signup.py` | ✅ |
 | `CreateProductUseCase` | `application/use_cases/create_product.py` | ✅ |
 | `RegisterInventoryMovementUseCase` | `application/use_cases/register_inventory_movement.py` | ✅ |
 | `GetProductStockUseCase` | `application/use_cases/get_product_stock.py` | ✅ |
@@ -56,137 +56,143 @@
 | `AssignRoleToUserUseCase` | `application/use_cases/assign_role_to_user.py` | ✅ |
 | `GetAuditLogByTenantUseCase` | `application/use_cases/get_audit_log_by_tenant.py` | ✅ |
 
----
+### Fase 4 — Rutas y Controladores
 
-## Fase 4 — Controladores y Rutas (100%) ✅
+| Endpoint | Permiso | Estado |
+|----------|---------|--------|
+| `POST /api/auth/login` | público | ✅ |
+| `POST /api/auth/register` | público | ✅ |
+| `POST /api/auth/refresh` | token válido | ✅ |
+| `GET /api/products/` | `INVENTORY_READ` | ✅ |
+| `POST /api/products/` | `INVENTORY_WRITE` | ✅ |
+| `GET /api/products/{id}` | `INVENTORY_READ` | ✅ |
+| `POST /api/products/{id}/movements` | `INVENTORY_WRITE` | ✅ |
+| `GET /api/products/{id}/movements` | `INVENTORY_READ` | ✅ |
+| `GET /api/users/` | `USERS_READ` | ✅ |
+| `POST /api/users/` | `USERS_WRITE` | ✅ |
+| `POST /api/users/{id}/roles` | `ROLES_WRITE` | ✅ |
+| `GET /api/audit/?limit=N` | `AUDIT_READ` | ✅ |
+| `GET /me/access` | token válido | ✅ |
+| `GET /health` | público | ✅ |
 
-| Ítem | Rutas | Estado |
-|------|-------|--------|
-| `AuthController` | `POST /api/auth/login` | ✅ |
-| `ProductController` | `GET/POST /api/products/`, `GET /api/products/{id}` | ✅ |
-| `InventoryController` | `POST/GET /api/products/{id}/movements` | ✅ |
-| `UserController` | `GET/POST /api/users/`, `POST /api/users/{id}/roles` | ✅ |
-| `AuditController` | `GET /api/audit/?limit=N` | ✅ |
-| `AccessController` + Redis snapshot | `GET /me/access` | ✅ |
-| `PUBLIC_PATHS` en `JWTAuthMiddleware` | `/docs /redoc /openapi.json /health /api/auth/login` | ✅ |
-| Audit trail en handlers — persiste login en BD | — | ✅ |
-| `POST /api/auth/refresh` | `POST /api/auth/refresh` | ✅ |
+### Fase 4B — Seguridad
 
----
+| Ítem | Estado |
+|------|--------|
+| CORS habilitado para `localhost:3000` | ✅ |
+| `require_permission(code)` FastAPI dependency | ✅ |
+| RBAC activo en todos los endpoints protegidos | ✅ |
+| `JWTAuthMiddleware` RS256 + `PUBLIC_PATHS` | ✅ |
 
-## Fase 4B — Seguridad Aplicada (100%) ✅
+### Fase 4C — Observabilidad
 
-| Ítem | Archivo | Estado |
-|------|---------|--------|
-| CORS en `main.py` | `backend/main.py` | ✅ |
-| `require_permission(code)` FastAPI dependency | `infrastructure/security/permissions.py` | ✅ |
-| RBAC activo en endpoints críticos | `routes/products.py`, `routes/users.py`, `routes/audit.py` | ✅ |
-| `POST /api/auth/refresh` | `infrastructure/api/routes/auth.py` | ✅ |
+| Ítem | Estado |
+|------|--------|
+| Logger JSON + RotatingFileHandler | ✅ |
+| `HTTPLoggingMiddleware` | ✅ |
+| Jerarquía `BrixoException` tipada | ✅ |
+| 4 exception handlers globales | ✅ |
+| Logs en `backend/logs/app.log` vía bind mount | ✅ |
 
-### Permisos por endpoint
+### Fase 4D — SaaS Auth + Bugs
 
-| Endpoint | Permiso requerido |
-|----------|-------------------|
-| `POST /api/products/` | `INVENTORY_WRITE` |
-| `POST /api/products/{id}/movements` | `INVENTORY_WRITE` |
-| `GET /api/products/` | `INVENTORY_READ` |
-| `POST /api/users/` | `USERS_WRITE` |
-| `GET /api/users/` | `USERS_READ` |
-| `POST /api/users/{id}/roles` | `ROLES_WRITE` |
-| `GET /api/audit/` | `AUDIT_READ` |
-
----
-
-## Fase 4C — Observabilidad y Manejo de Excepciones (100%) ✅
-
-| Ítem | Archivo | Estado |
-|------|---------|--------|
-| Logger JSON con `RotatingFileHandler` | `infrastructure/logging.py` | ✅ |
-| `HTTPLoggingMiddleware` | `infrastructure/api/middleware/http_logging.py` | ✅ |
-| Jerarquía de excepciones de dominio | `domain/exceptions.py` | ✅ |
-| Exception handlers globales (4 tipos) | `infrastructure/api/exception_handlers.py` | ✅ |
-| Logs persistidos en `backend/logs/app.log` | bind mount Docker | ✅ |
+| Ítem | Estado |
+|------|--------|
+| `POST /api/auth/register` (tenant + OWNER + JWT) | ✅ |
+| `SignUpUseCase` | ✅ |
+| 5 bugs de runtime resueltos | ✅ |
+| `UnauthorizedError` en login (no `ValueError`) | ✅ |
+| `ConflictError` 409 en tenant duplicado | ✅ |
 
 ---
 
-## Fase 5 — Frontend (5%) ← PRÓXIMA
+## Frontend — 10% ⭕
 
-> Solo existe `<h1>Brixo</h1>`. Stack migrado a **TypeScript 5 + React 18 + Vite 5**. CORS activo — puede arrancar ahora.
+**Stack**: React 18 + TypeScript 6.0.3 + Vite 5 + Zustand 5 + React Router DOM 7 + Axios 1.15
 
-**Flujo de rutas**:
-- `/` → LandingPage pública → redirige a `/dashboard` si ya hay sesión
-- `/login` y `/register` → públicas → redirigen a `/dashboard` si ya hay sesión
-- `/dashboard` → primera pantalla post-login (ruta privada)
+**Referencia visual**: `frontend/src/inspiracion/` (4 prototipos + BrixoMockup.jsx)
 
-| Ítem | Tiempo est. | Estado |
-|------|-------------|--------|
-| Setup TypeScript: `tsconfig.json`, aliases `@/`, migración `.jsx` → `.tsx` | 20 min | ⭕ |
-| `npm install` — axios, react-router-dom, zustand + @types/react @types/node | 15 min | ⭕ |
-| `src/theme/tokens.ts` + `ThemeProvider.tsx` + `useTheme` hook | 30 min | ⭕ |
-| `BrixoLogo.tsx` — variantes solid, line, horizontal + favicon | 20 min | ⭕ |
-| Primitivos: `Button.tsx`, `Input.tsx`, `Badge.tsx` | 40 min | ⭕ |
-| Feedback: `Card.tsx`, `Toast.tsx`, `Skeleton.tsx`, `EmptyState.tsx` | 40 min | ⭕ |
-| Overlays: `Modal.tsx`, `BottomSheet.tsx` | 30 min | ⭕ |
-| `src/services/api.ts` — axios + interceptor JWT + refresh + tipos | 30 min | ⭕ |
-| `authStore.ts` (Zustand) — token, user, logout, permisos | 30 min | ⭕ |
-| Layout: `AppShell.tsx`, sidebar desktop, bottom-nav móvil, `PrivateRoute.tsx` | 40 min | ⭕ |
-| `LandingPage.tsx` — página promocional pública | 60 min | ⭕ |
-| `LoginPage.tsx` + `RegisterPage.tsx` | 60 min | ⭕ |
-| `DashboardPage.tsx` — KPIs + movimientos recientes + alertas | 50 min | ⭕ |
-| `InventoryPage.tsx` — tabla desktop + cards móvil + semáforo 3 estados | 50 min | ⭕ |
-| `MovementModal.tsx` — ENTRADA / SALIDA / AJUSTE | 50 min | ⭕ |
-| `ProductModal.tsx` — formulario + manejo 409 SKU duplicado | 40 min | ⭕ |
-| `AuditPage.tsx` + `TeamPage.tsx` | 50 min | ⭕ |
-| Vistas por rol (`useAccess.ts`) + accesibilidad WCAG 2.1 AA | 40 min | ⭕ |
-| Build: `ErrorBoundary.tsx`, bundle optimization, Lighthouse ≥ 85 | 30 min | ⭕ |
+### Sprint 1 — Auth (en curso)
 
----
+| # | Ítem | Archivo | Estado |
+|---|------|---------|--------|
+| 1 | Setup TypeScript 6 + estructura src/ | `tsconfig.json`, `vite.config.ts` | ✅ |
+| 2 | 🔴 Tokens de diseño + ThemeProvider + useTheme | `theme/tokens.ts`, `theme/ThemeProvider.tsx` | ⭕ |
+| 3 | 🔴 Button.tsx + Input.tsx (primitivos de formulario) | `components/primitives/` | ⭕ |
+| 4 | 🔴 BrixoLogo.tsx + favicon.svg | `components/BrixoLogo.tsx`, `public/` | ⭕ |
+| 5 | 🔴 api.ts — axios + interceptor JWT + refresh + tipos | `services/api.ts`, `types/api.ts` | ⭕ |
+| 6 | 🔴 authStore.ts — Zustand + localStorage | `stores/authStore.ts` | ⭕ |
+| 7 | 🔴 Routing + PrivateRoute + PublicOnlyRoute | `App.tsx`, `components/layout/PrivateRoute.tsx` | ⭕ |
+| 8 | ⭐ RegisterPage.tsx | `pages/RegisterPage.tsx` | ⭕ |
+| 9 | ⭐ LoginPage.tsx | `pages/LoginPage.tsx` | ⭕ |
 
-## Fase 6 — QA + Hardening (0%)
+**Criterio de done Sprint 1**: Un OWNER puede registrar una empresa y luego iniciar sesión desde el browser, con token guardado y redirect a `/dashboard`.
 
-> Bloqueada por Fase 5.
+### Sprint 2 — Dashboard (bloqueado por Sprint 1)
 
-| Ítem | Tipo | Tiempo est. | Estado |
-|------|------|-------------|--------|
-| Testing manual flujo completo | QA | 45 min | ⭕ |
-| Fix de bugs encontrados | Dev | 60 min | ⭕ |
-| Rate limiting en `POST /api/auth/login` | Seguridad | 30 min | ⭕ |
-| Validar TTL Redis snapshot y expiración de token | Seguridad | 20 min | ⭕ |
-| Cabeceras de seguridad HTTP | Seguridad | 30 min | ⭕ |
-| `request_id` en `HTTPLoggingMiddleware` + header `X-Request-ID` | Observabilidad | 30 min | ⭕ |
-| README con instrucciones de uso | Docs | — | ✅ completado en sesión 3 |
-| `docker-compose.prod.yml` | Infra | 30 min | ⭕ |
+| # | Ítem | Archivo | Estado |
+|---|------|---------|--------|
+| 10 | AppShell — sidebar 240px (desktop) + bottom-nav (móvil) | `components/layout/AppShell.tsx` | ⭕ |
+| 11 | MetricCard + Card + Badge + AlertCard | `components/feedback/` | ⭕ |
+| 12 | Toast global + Skeleton shimmer | `components/feedback/Toast.tsx` | ⭕ |
+| 13 | ⭐ DashboardPage.tsx — KPIs + movimientos + alertas | `pages/DashboardPage.tsx` | ⭕ |
 
----
+**Criterio de done Sprint 2**: El usuario ve su dashboard con datos reales del backend al hacer login.
 
-## Deuda técnica — RESUELTA ✅
+### Sprint 3 — Inventario + Acciones (bloqueado por Sprint 2)
 
-Todos los ítems de deuda técnica han sido resueltos en sesión 3 (18 abr 2026).
+| # | Ítem | Archivo | Estado |
+|---|------|---------|--------|
+| 14 | Modal.tsx + BottomSheet.tsx | `components/feedback/` | ⭕ |
+| 15 | EmptyState.tsx | `components/feedback/EmptyState.tsx` | ⭕ |
+| 16 | ⭐ InventoryPage.tsx — tabla + cards móvil + filtros | `pages/InventoryPage.tsx` | ⭕ |
+| 17 | ⭐ MovementModal.tsx — ENTRADA/SALIDA/AJUSTE | `components/MovementModal.tsx` | ⭕ |
+| 18 | ⭐ ProductModal.tsx — nuevo producto + error 409 | `components/ProductModal.tsx` | ⭕ |
 
-| # | Ítem | Resolución |
-|---|------|-----------|
-| 1 | ~~`ocurred_at` → `occurred_at`~~ | Corregido en `domain/events/base.py` |
-| 2 | ~~Directorio `acccess/` (triple c)~~ | Renombrado a `access/`, 2 imports actualizados |
-| 3 | ~~`asssign_role.py` vacío~~ | Eliminado con `git rm` |
-| 4 | ~~`aut_service.py` huérfano~~ | Eliminado con `git rm` |
-| 5 | ~~`domain/events.py` duplicado~~ | Eliminado; import en `user_access_projection.py` corregido a `domain.events.base` |
-| 6 | ~~`OPENAI_API_KEY` en `backend.env`~~ | Env files excluidos de git (`infra/env/*.env` en `.gitignore`) |
+**Criterio de done Sprint 3**: El usuario puede ver su inventario, registrar un movimiento y agregar un producto. **MVP completo**.
+
+### Post-MVP (después de validar con usuarios reales)
+
+| # | Ítem | Estado |
+|---|------|--------|
+| 19 | LandingPage.tsx — página promocional | ⭕ |
+| 20 | AuditPage.tsx — historial paginado | ⭕ |
+| 21 | TeamPage.tsx — gestión de usuarios y roles | ⭕ |
+| 22 | useAccess.ts — vistas diferenciadas por rol | ⭕ |
+| 23 | Accesibilidad WCAG 2.1 AA | ⭕ |
+| 24 | ErrorBoundary + build optimizado + Lighthouse ≥ 85 | ⭕ |
 
 ---
 
-## Criterios de éxito del MVP
+## QA + Hardening — 0% ⭕ (bloqueado por Sprint 3)
+
+| Ítem | Tipo | Estado |
+|------|------|--------|
+| Testing manual flujo completo | QA | ⭕ |
+| Fix de bugs encontrados | Dev | ⭕ |
+| Rate limiting `POST /api/auth/login` (5/60s por IP) | Seguridad | ⭕ |
+| Validar TTL Redis snapshot y expiración token | Seguridad | ⭕ |
+| Cabeceras de seguridad HTTP | Seguridad | ⭕ |
+| `request_id` en HTTPLoggingMiddleware | Observabilidad | ⭕ |
+| `docker-compose.prod.yml` | Infra | ⭕ |
+
+---
+
+## Criterios MVP — Estado actual
 
 | Criterio | Estado |
 |----------|--------|
-| `docker-compose up -d` levanta sin errores | ✅ |
-| `GET /health` responde 200 | ✅ |
-| `POST /api/auth/login` retorna JWT válido | ✅ |
-| `GET /docs` accesible sin token | ✅ |
-| Crear producto con permiso correcto | ✅ |
-| Registrar movimiento con permiso correcto | ✅ |
-| Usuario sin permiso recibe 403 | ✅ |
-| Token expirado se renueva con refresh | ✅ |
-| Logs visibles en `docker logs` y en `backend/logs/app.log` | ✅ |
-| Errores devuelven JSON consistente al frontend | ✅ |
-| Frontend carga en `http://localhost:3000` | ⭕ |
-| Flujo completo login → producto → movimiento → auditoría | ⭕ |
+| Backend levanta sin errores | ✅ |
+| Register crea empresa + OWNER + devuelve JWT | ✅ |
+| Login devuelve JWT válido | ✅ |
+| Refresh renueva sin re-login | ✅ |
+| Errores devuelven JSON `{ error, message }` | ✅ |
+| RBAC activo (403 sin permiso) | ✅ |
+| Logs JSON observables | ✅ |
+| **OWNER puede registrarse desde el browser** | ⭕ |
+| **OWNER puede iniciar sesión y ver dashboard** | ⭕ |
+| **OWNER puede ver inventario con semáforo de stock** | ⭕ |
+| **OPERATOR puede registrar movimiento en < 10 seg** | ⭕ |
+| **OWNER puede agregar un producto nuevo** | ⭕ |
+| Funciona en mobile y desktop | ⭕ |
+| Modo oscuro y claro sin bugs visuales | ⭕ |
