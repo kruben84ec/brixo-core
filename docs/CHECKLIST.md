@@ -106,34 +106,27 @@
 
 ---
 
-## Frontend — 15% ⭕
+## Frontend — 10% ⭕
 
 **Stack**: React 18 + TypeScript 6.0.3 + Vite 5 + Zustand 5 + React Router DOM 7 + Axios 1.15
 
 **Referencia visual**: `frontend/src/inspiracion/` (4 prototipos + BrixoMockup.jsx)
 
-### Sprint 1 — Auth (en curso - 65% completado)
+### Sprint 1 — Auth (en curso)
 
 | # | Ítem | Archivo | Estado |
 |---|------|---------|--------|
 | 1 | Setup TypeScript 6 + estructura src/ | `tsconfig.json`, `vite.config.ts` | ✅ |
 | 2 | 🔴 Tokens de diseño + ThemeProvider + useTheme | `theme/tokens.ts`, `theme/ThemeProvider.tsx` | ⭕ |
-| 3 | 🔴 Button + Input + Field wrapper | `components/primitives/` | ⭕ |
-| 4 | 🔴 BrixoLogo + favicon | `components/BrixoLogo.tsx`, `public/favicon.svg` | ⭕ |
-| 5 | **✅ Cliente API: axios + interceptor JWT + refresh automático** | **`services/api.ts`, `types/api.ts`** | **✅** |
-| 6 | **✅ authStore Zustand (token en memoria + localStorage)** | **`stores/authStore.ts`** | **✅** |
-| 7 | **✅ Routing + PrivateRoute + PublicOnlyRoute** | **`App.tsx`, `components/layout/PrivateRoute.tsx`** | **✅** |
-| 8 | ⭐ RegisterPage | `pages/RegisterPage.tsx` | ⭕ |
-| 9 | ⭐ LoginPage | `pages/LoginPage.tsx` | ⭕ |
+| 3 | 🔴 Button.tsx + Input.tsx (primitivos de formulario) | `components/primitives/` | ⭕ |
+| 4 | 🔴 BrixoLogo.tsx + favicon.svg | `components/BrixoLogo.tsx`, `public/` | ⭕ |
+| 5 | 🔴 api.ts — axios + interceptor JWT + refresh + tipos | `services/api.ts`, `types/api.ts` | ⭕ |
+| 6 | 🔴 authStore.ts — Zustand + localStorage | `stores/authStore.ts` | ⭕ |
+| 7 | 🔴 Routing + PrivateRoute + PublicOnlyRoute | `App.tsx`, `components/layout/PrivateRoute.tsx` | ⭕ |
+| 8 | ⭐ RegisterPage.tsx | `pages/RegisterPage.tsx` | ⭕ |
+| 9 | ⭐ LoginPage.tsx | `pages/LoginPage.tsx` | ⭕ |
 
-**Security measures** (Completadas):
-- ✅ Access token en **memoria** (XSS-safe)
-- ✅ Refresh token en **cookie HttpOnly** (CSRF-safe)
-- ✅ Auto-refresh en 401 (transparente)
-- ✅ Hidratación con `hydrate()`
-- ✅ CORS: localhost:3000 + credentials=True
-
-**Criterio de done Sprint 1**: Un OWNER puede registrar una empresa y luego iniciar sesión desde el browser, con token guardado en cookie y redirect a `/dashboard`.
+**Criterio de done Sprint 1**: Un OWNER puede registrar una empresa y luego iniciar sesión desde el browser, con token guardado y redirect a `/dashboard`.
 
 ### Sprint 2 — Dashboard (bloqueado por Sprint 1)
 

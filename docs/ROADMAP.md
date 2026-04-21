@@ -54,19 +54,11 @@ TOTAL MVP                         █████████░   85%
 | 2 | Tokens de diseño tipados + ThemeProvider + hook useTheme | `theme/tokens.ts`, `theme/ThemeProvider.tsx` | 30 min | ⭕ |
 | 3 | Primitivos UI: Button, Input, Field wrapper | `components/primitives/` | 35 min | ⭕ |
 | 4 | BrixoLogo (solid, line) + favicon.svg | `components/BrixoLogo.tsx`, `public/favicon.svg` | 20 min | ⭕ |
-| **5** | **Cliente API: axios + interceptor JWT + refresh automático + tipos** | **`services/api.ts`, `types/api.ts`** | **35 min** | **✅** |
-| **6** | **authStore Zustand: token, user, logout, persistencia localStorage** | **`stores/authStore.ts`** | **25 min** | **✅** |
-| **7** | **Routing + PrivateRoute + PublicOnlyRoute (guard inverso)** | **`App.tsx`, `components/layout/PrivateRoute.tsx`** | **25 min** | **✅** |
+| 5 | Cliente API: axios + interceptor JWT + refresh automático + tipos | `services/api.ts`, `types/api.ts` | 35 min | ⭕ |
+| 6 | authStore Zustand: token, user, logout, persistencia localStorage | `stores/authStore.ts` | 25 min | ⭕ |
+| 7 | Routing + PrivateRoute + PublicOnlyRoute (guard inverso) | `App.tsx`, `components/layout/PrivateRoute.tsx` | 25 min | ⭕ |
 | **8** | **RegisterPage** — 4 campos, callout propietario, error 409 inline | `pages/RegisterPage.tsx` | 40 min | ⭕ |
 | **9** | **LoginPage** — email + contraseña, toggle pwd, error 401 inline | `pages/LoginPage.tsx` | 35 min | ⭕ |
-
-**Security improvements** (Sprint 1 completado):
-- ✅ Access token guardado en **memoria** (JavaScript inaccesible a XSS)
-- ✅ Refresh token en cookie **HttpOnly + Secure + SameSite=Lax**
-- ✅ User info en localStorage (sin datos sensibles)
-- ✅ Interceptor axios con auto-refresh en 401 (transparente)
-- ✅ Hidratación `hydrate()` al cargar la app
-- ✅ CORS actualizado con localhost:3000 + `allow_credentials=True`
 
 **UX crítico Sprint 1** (basado en prototipos de inspiración):
 - Login y Register en dark mode de forma nativa desde el primer render

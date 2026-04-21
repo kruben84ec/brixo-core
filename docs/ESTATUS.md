@@ -37,48 +37,34 @@ TOTAL MVP                         █████████░   85%
 
 ---
 
-## Sesión 6 — 20 abr 2026 (Seguridad + Sprint 1 Backend)
+## Sesión 5 — 20 abr 2026 (Frontend Setup)
 
-### ✅ Completado — Seguridad de Tokens (OWASP Compliant)
+### Completado
 
-**Arquitectura**: Hybrid approach con access token en memoria + refresh token en cookie HttpOnly
+- ✅ `tsconfig.json` — TypeScript 6, strict, paths `@/*` sin `baseUrl` (TS 6 no lo requiere)
+- ✅ `tsconfig.node.json` — composite: true para referencias de proyecto
+- ✅ `vite.config.ts` — alias `@/`, code-splitting (vendor / state / http chunks)
+- ✅ Migración `main.jsx → main.tsx`, `App.jsx → App.tsx`
+- ✅ `vite-env.d.ts` y `index.html` actualizado (lang=es, Inter + JetBrains Mono, theme-color `#4F46E5`)
+- ✅ Árbol de carpetas `src/` completo (theme, components, pages, services, stores, hooks, types)
+- ✅ Dependencias instaladas: axios, react-router-dom, zustand + @types/react @types/react-dom @types/node
+- ✅ `npx tsc --noEmit` sin errores
 
-| Tarea | Archivo | Estado |
-|-------|---------|--------|
-| Access token: TTL 15 min, guardado en **memoria** (JS no puede acceder) | `services/api.ts` | ✅ |
-| Refresh token: TTL 7 días, en cookie **HttpOnly + Secure + SameSite** | `routes/auth.py` | ✅ |
-| User info: guardar en localStorage (sin token) | `stores/authStore.ts` | ✅ |
-| Endpoint `POST /api/auth/refresh` con validación de refresh token | `routes/auth.py` | ✅ |
-| Endpoint `POST /api/auth/logout` borra cookie | `routes/auth.py` | ✅ |
-| Interceptor axios: auto-refresh en 401 (transparente para UI) | `services/api.ts` | ✅ |
-| Hidratación `hydrate()`: al recargar, obtiene nuevo access token | `stores/authStore.ts` | ✅ |
-| CORS: `allow_credentials=True` + incluir localhost:3000 | `main.py` | ✅ |
+### Pendiente inmediato (Sprint 1)
 
-**Protecciones implementadas**:
-- ✅ **XSS-proof**: Token inaccesible a JavaScript malicioso
-- ✅ **CSRF-proof**: Cookies con `SameSite=Lax`
-- ✅ **Token theft**: Access token corta duración (15 min)
-- ✅ **Session hijacking**: Refresh token en HttpOnly (no se puede extraer)
+Los pasos 2–9 del ROADMAP desbloquean Register + Login funcionales contra el backend real:
 
----
-
-## Sesión 6 — Sprint 1 (En curso)
-
-### ✅ Completado — Tareas 1–5
-
-| # | Tarea | Archivo | Tiempo | Estado |
-|---|-------|---------|--------|--------|
-| 1 | Setup TypeScript 6, vite.config.ts, estructura src/ | `tsconfig.json`, `vite.config.ts` | 35 min | ✅ |
-| **2** | **Tokens de diseño + ThemeProvider + useTheme** | **`theme/tokens.ts`, `theme/ThemeProvider.tsx`** | **30 min** | **⭕** |
-| **3** | **Button + Input + Field wrapper** | **`components/primitives/`** | **35 min** | **⭕** |
-| **4** | **BrixoLogo + favicon** | **`components/BrixoLogo.tsx`, `public/favicon.svg`** | **20 min** | **⭕** |
-| **5** | **api.ts + tipos backend** | **`services/api.ts`, `types/api.ts`** | **35 min** | **✅** |
-| **6** | **authStore Zustand** | **`stores/authStore.ts`** | **25 min** | **✅** |
-| **7** | **Routing + PrivateRoute** | **`App.tsx`, `components/layout/PrivateRoute.tsx`** | **25 min** | **✅** |
-| **8** | **RegisterPage** | **`pages/RegisterPage.tsx`** | **40 min** | **⭕** |
-| **9** | **LoginPage** | **`pages/LoginPage.tsx`** | **35 min** | **⭕** |
-
-**Próximas tareas inmediatas**: 2, 3, 4 (design tokens y UI primitivos)
+```
+2 → ThemeProvider + tokens.ts      (30 min)
+3 → Button + Input primitivos      (35 min)
+4 → BrixoLogo + favicon            (20 min)
+5 → api.ts + tipos backend         (35 min)
+6 → authStore Zustand              (25 min)
+7 → Routing + PrivateRoute         (25 min)
+─────────────────────────────────────────
+8 → RegisterPage  ⭐ PRIMER ENTREGABLE
+9 → LoginPage     ⭐
+```
 
 ---
 

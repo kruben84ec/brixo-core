@@ -93,11 +93,10 @@ def init_app():
     app.add_middleware(HTTPLoggingMiddleware)                     # ② capta todos los requests (incl. 401)
     app.add_middleware(                                           # ① outermost — preflight CORS
         CORSMiddleware,
-        allow_origins=["http://localhost:3000", "http://localhost:8000"],
+        allow_origins=["http://localhost:8000"],
         allow_credentials=True,
-        allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
-        allow_headers=["Content-Type", "Authorization"],
-        expose_headers=["Content-Type"],
+        allow_methods=["*"],
+        allow_headers=["*"],
     )
 
     app.include_router(health_router)
