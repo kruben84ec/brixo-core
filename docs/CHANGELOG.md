@@ -4,6 +4,105 @@ Historial de cambios ordenado por fecha descendente.
 
 ---
 
+## 2026-04-21 — Sesión 6: Sprint 1 Frontend completado (Register + Login)
+
+### feat(fase5-sprint1): Fundación del frontend + autenticación funcional — `HEAD`
+
+#### Task 2 — Tokens de diseño e índigo como marca
+
+- `theme/tokens.ts`: paleta light/dark con índigo `#4F46E5` (light) y `#818CF8` (dark) como marca dominante
+- Semánticos: verde (entrada), rojo (salida/stock bajo), ámbar (ajuste/al límite) — mapean a movimientos de inventario
+- `ThemeProvider.tsx`: detector `prefers-color-scheme`, persistencia localStorage, inyección de CSS variables
+- `hooks/useTheme.ts`: hook para toggle de tema desde cualquier componente
+
+#### Task 3 — Componentes primitivos reutilizables
+
+- `Button.tsx`: 4 variantes (primary, secondary, ghost, danger) × 3 tamaños (sm, md, lg)
+- `Input.tsx`: label + input + error + helper text, con states (focused, error, disabled)
+- CSS modules con dark mode — todos los colores desde variables CSS
+
+#### Task 4 — Logo e identidad visual
+
+- `BrixoLogo.tsx`: SVG dinámico con solid + line variants, responsive sizes
+- `public/favicon.svg`: logo índigo 32×32
+
+#### Task 5 — Cliente HTTP tipado
+
+- `services/api.ts`: axios instance con `baseURL`, timeout, interceptor de request (agregar token)
+- Interceptor de response: maneja 401 (expira sesión), redirige a /login
+- Métodos: `register()`, `login()`, `refresh()`, `getMe()`, `health()`
+- Tipos exportados: `AuthResponse`, `LoginRequest`, `RegisterRequest`, `User`, `Product`, `ErrorResponse`
+
+#### Task 6 — Store de autenticación global
+
+- `stores/authStore.ts`: Zustand con persistencia localStorage
+- Estados: `token`, `user`, `isAuthenticated`, `isLoading`
+- Acciones: `setAuth()`, `logout()`, `setLoading()`, `hydrate()`
+- Lazy-loads desde localStorage al montar App
+
+#### Task 7 — Routing con guards
+
+- `App.tsx`: BrowserRouter + Routes + ThemeProvider
+- `/login`, `/register`: `PublicOnlyRoute` (redirige a /dashboard si autenticado)
+- `/dashboard`: `PrivateRoute` (redirige a /login si no autenticado)
+- `/`: redirige a /dashboard (raíz maneja automáticamente sesión)
+
+#### Task 8 — Pantalla de Registro
+
+- `RegisterPage.tsx`: 4 campos (empresa, nombre, email, contraseña) en grid 2col (móvil: 1col)
+- Callout índigo: "Serás el propietario de la empresa. Después podrás invitar a tu equipo."
+- Toggle password: botón "Mostrar/Ocultar" inline
+- Error 409 en línea: "Esta empresa ya existe" si tenant duplicado
+- Botón CTA: "Crear empresa y empezar" en primary
+- Link switch: "¿Ya tienes una cuenta? Inicia sesión"
+
+#### Task 9 — Pantalla de Login
+
+- `LoginPage.tsx`: email + contraseña
+- Toggle password inline
+- Error 401 en línea: "Email o contraseña inválidos"
+- Botón CTA: "Iniciar sesión"
+- Link switch: "¿No tienes cuenta? Registrate gratis"
+
+#### Estilos globales
+
+- `index.css`: variables CSS root (light/dark), tipografía base 16px (15px móvil), reset de box-sizing
+- Dark mode automático: `[data-theme="dark"]` selector en todos los components
+- Transiciones smooth: 200ms ease-out para cambios de tema
+- Accesibilidad: `:focus-visible` en botones/inputs, `.sr-only` para hidden text, `prefers-reduced-motion`
+
+#### Build y validación
+
+- Vite build: 0 errores TypeScript strict, 3 chunks optimizados (vendor 178KB, http 38KB, state 0.6KB)
+- npm run build: ~2.3 segundos, gzip total 75.6 KB
+
+### refactor: Estructura frontend preparada para Sprint 2
+
+- `main.tsx`: simplificado, ThemeProvider ya está en App.tsx
+- `vite.config.ts`: alias @/, code-splitting confirmado, hot reload en dev
+- Arquitectura lista para agregar componentes de layout (AppShell, Sidebar) sin conflictos
+
+### docs: Actualización de status
+
+- `ESTATUS.md`: Frontend 10% → 90%, MVP 85% → 93%
+- `CHECKLIST.md`: todas las tareas Sprint 1 marcadas ✅
+- `ROADMAP.md`: Sprint 1 completo, Sprint 2 en la mira (AppShell + Dashboard)
+- `CHANGELOG.md`: esta entrada
+
+### CDD (Criteria of Done) Sprint 1
+
+- ✅ Un OWNER puede registrar una empresa desde el browser (POST /api/auth/register)
+- ✅ Un OWNER puede iniciar sesión y recibir JWT válido (POST /api/auth/login)
+- ✅ Token se persiste en localStorage y se restaura al recargar
+- ✅ Redirigido automático: /login → /dashboard si autenticado
+- ✅ Redirigido automático: /register → /dashboard si autenticado
+- ✅ Dark mode y light mode sin bugs visuales, respeta prefers-color-scheme
+- ✅ Mobile-first responsive: Login y Register en móvil y desktop
+- ✅ TypeScript strict: 0 errores de compilación
+- ✅ Build optimizado: Vite genera 3 chunks, total 75.6 KB gzip
+
+---
+
 ## 2026-04-18 — Sesión 3: Deuda técnica resuelta + Observabilidad
 
 ### refactor: Resolución completa de deuda técnica — `HEAD`

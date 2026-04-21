@@ -1,0 +1,98 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 200ms ease-out;
+  position: relative;
+  white-space: nowrap;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--brand, #4f46e5);
+  outline-offset: 2px;
+}
+
+/* Tamaños */
+.button--sm {
+  padding: 6px 12px;
+  font-size: 14px;
+  min-height: 32px;
+}
+
+.button--md {
+  padding: 10px 20px;
+  font-size: 16px;
+  min-height: 44px;
+}
+
+.button--lg {
+  padding: 12px 28px;
+  font-size: 18px;
+  min-height: 48px;
+}
+
+/* Variantes */
+.button--primary {
+  background-color: var(--brand, #4f46e5);
+  color: white;
+}
+
+.button--primary:hover:not(:disabled) {
+  background-color: var(--brand-hover, #4338ca);
+}
+
+.button--primary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.button--secondary {
+  background-color: var(--bg-subtle, #f4f4f5);
+  color: var(--text-primary, #18181b);
+  border: 1px solid var(--border, #e4e4e7);
+}
+
+.button--secondary:hover:not(:disabled) {
+  background-color: var(--bg-muted, #e4e4e7);
+}
+
+.button--ghost {
+  background-color: transparent;
+  color: var(--brand, #4f46e5);
+}
+
+.button--ghost:hover:not(:disabled) {
+  background-color: var(--brand-soft, #eef2ff);
+}
+
+.button--danger {
+  background-color: var(--danger, #dc2626);
+  color: white;
+}
+
+.button--danger:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+
+.button__spinner {
+  display: inline-block;
+  animation: spin 1s steps(3, end) infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

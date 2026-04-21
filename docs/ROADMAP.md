@@ -1,7 +1,7 @@
 # ROADMAP — BRIXO MVP 2026
 
-**Actualizado**: 20 de abril de 2026
-**Estado**: Backend 100% · Frontend en curso (Setup TS completo) · MVP al 85%
+**Actualizado**: 21 de abril de 2026
+**Estado**: Backend 100% · Frontend Sprint 1 ✅ · MVP al 93%
 **Criterio de MVP**: Un OWNER puede registrar su empresa → iniciar sesión → ver su inventario → registrar un movimiento, sin capacitación previa.
 
 ---
@@ -16,10 +16,10 @@ FASE 4   Controladores / Rutas    ██████████  100%   ← cer
 FASE 4B  Seguridad aplicada       ██████████  100%   ← cerrada
 FASE 4C  Observabilidad           ██████████  100%   ← cerrada
 FASE 4D  SaaS Auth + Bugs         ██████████  100%   ← cerrada
-FASE 5   Frontend MVP             ██░░░░░░░░   10%   ← EN CURSO
+FASE 5   Frontend MVP             █████████░   90%   ← Sprint 1 ✅
 FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← bloqueada por 5
 ────────────────────────────────────────────────────
-TOTAL MVP                         █████████░   85%
+TOTAL MVP                         █████████░   93%
 ```
 
 **Stack frontend**: React 18 + TypeScript 6 + Vite 5 + Zustand 5 + React Router DOM 7 + Axios 1.15
@@ -51,14 +51,14 @@ TOTAL MVP                         █████████░   85%
 | # | Tarea | Archivo(s) | Tiempo | Estado |
 |---|-------|-----------|--------|--------|
 | 1 | Setup TypeScript 6, vite.config.ts, aliases @/, estructura src/ | `tsconfig.json`, `vite.config.ts`, `src/` | 35 min | ✅ |
-| 2 | Tokens de diseño tipados + ThemeProvider + hook useTheme | `theme/tokens.ts`, `theme/ThemeProvider.tsx` | 30 min | ⭕ |
-| 3 | Primitivos UI: Button, Input, Field wrapper | `components/primitives/` | 35 min | ⭕ |
-| 4 | BrixoLogo (solid, line) + favicon.svg | `components/BrixoLogo.tsx`, `public/favicon.svg` | 20 min | ⭕ |
-| 5 | Cliente API: axios + interceptor JWT + refresh automático + tipos | `services/api.ts`, `types/api.ts` | 35 min | ⭕ |
-| 6 | authStore Zustand: token, user, logout, persistencia localStorage | `stores/authStore.ts` | 25 min | ⭕ |
-| 7 | Routing + PrivateRoute + PublicOnlyRoute (guard inverso) | `App.tsx`, `components/layout/PrivateRoute.tsx` | 25 min | ⭕ |
-| **8** | **RegisterPage** — 4 campos, callout propietario, error 409 inline | `pages/RegisterPage.tsx` | 40 min | ⭕ |
-| **9** | **LoginPage** — email + contraseña, toggle pwd, error 401 inline | `pages/LoginPage.tsx` | 35 min | ⭕ |
+| 2 | Tokens de diseño tipados + ThemeProvider + hook useTheme | `theme/tokens.ts`, `theme/ThemeProvider.tsx` | 30 min | ✅ |
+| 3 | Primitivos UI: Button, Input, Field wrapper | `components/primitives/` | 35 min | ✅ |
+| 4 | BrixoLogo (solid, line) + favicon.svg | `components/BrixoLogo.tsx`, `public/favicon.svg` | 20 min | ✅ |
+| 5 | Cliente API: axios + interceptor JWT + refresh automático + tipos | `services/api.ts`, `types/api.ts` | 35 min | ✅ |
+| 6 | authStore Zustand: token, user, logout, persistencia localStorage | `stores/authStore.ts` | 25 min | ✅ |
+| 7 | Routing + PrivateRoute + PublicOnlyRoute (guard inverso) | `App.tsx`, `components/layout/PrivateRoute.tsx` | 25 min | ✅ |
+| **8** | **RegisterPage** — 4 campos, callout propietario, error 409 inline | `pages/RegisterPage.tsx` | 40 min | ✅ |
+| **9** | **LoginPage** — email + contraseña, toggle pwd, error 401 inline | `pages/LoginPage.tsx` | 35 min | ✅ |
 
 **UX crítico Sprint 1** (basado en prototipos de inspiración):
 - Login y Register en dark mode de forma nativa desde el primer render
