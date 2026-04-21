@@ -1,41 +1,8 @@
 # ESTATUS DEL PROYECTO BRIXO — MVP
 
-**Fecha**: 18 de abril de 2026  
-**Rama activa**: `dev`  
-**Estado general**: Backend 100% + Observabilidad + Deuda técnica resuelta — Próximo: Fase 5 Frontend — MVP al 80%
-
----
-
-## Informe ejecutivo — Sesión 3 (18 abr 2026)
-
-### Qué se logró
-
-Se resolvió toda la deuda técnica acumulada y se incorporó una capa de observabilidad y manejo de excepciones completa:
-
-**Deuda técnica — 6 ítems resueltos:**
-
-- Typo `ocurred_at` corregido en la clase base `DomainEvent`
-- Directorio `acccess/` (triple c) renombrado a `access/`, con 2 imports actualizados
-- Archivo vacío `asssign_role.py` eliminado
-- Archivo huérfano `aut_service.py` eliminado
-- Módulo duplicado `domain/events.py` eliminado; import corregido a `domain.events.base`
-- Confirmado que `infra/env/*.env` no se versiona en git
-
-**Observabilidad — Fase 4C completada:**
-
-- Logs JSON estructurados escritos a `backend/logs/app.log` con rotación automática y visibles desde Docker sin configuración adicional
-- `HTTPLoggingMiddleware` registra cada request con `method`, `path`, `status_code`, `duration_ms`, `user_id` y `tenant_id`
-- Jerarquía tipada de excepciones de dominio (`BrixoException` y subclases) que separa el mensaje al usuario del detalle técnico al log
-- Catch-all global: cualquier excepción no prevista retorna `500` genérico al cliente y registra el traceback completo en el log
-
-**Documentación — Actualización completa:**
-
-- `README.md` reescrito con enfoque de producto y potencial de IA
-- `ARQUITECTURA.md`, `CHECKLIST.md`, `CHANGELOG.md`, `ROADMAP.md` y `OBSERVABILIDAD.md` actualizados al estado real
-
-### Qué se espera a continuación
-
-**Fase 5 — Frontend** (~6 horas). El backend está completamente listo: CORS activo, tokens renovables, RBAC funcional, errores con formato JSON consistente. El frontend puede arrancar ahora mismo con `npm install`.
+**Fecha**: 20 de abril de 2026
+**Rama activa**: `dev`
+**Estado general**: Backend 100% · Frontend Sprint 1 en curso · MVP al 85%
 
 ---
 
@@ -48,167 +15,169 @@ FASE 3   Casos de uso             ██████████  100%   ← cer
 FASE 4   Controladores / Rutas    ██████████  100%   ← cerrada
 FASE 4B  Seguridad aplicada       ██████████  100%   ← cerrada
 FASE 4C  Observabilidad           ██████████  100%   ← cerrada
-FASE 5   Frontend                 █░░░░░░░░░    5%   ← PROXIMA
+FASE 4D  SaaS Auth + Bugs         ██████████  100%   ← cerrada
+FASE 5   Frontend MVP             ██░░░░░░░░   10%   ← EN CURSO
 FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← bloqueada por 5
 ────────────────────────────────────────────────────
-TOTAL MVP                         ████████░░   80%
+TOTAL MVP                         █████████░   85%
+```
+
+**Cálculo**: Fases 1–4D = 83% base. Fase 5 al 10% aporta ~1.7% → **85% total**.
+
+---
+
+## Stack confirmado
+
+| Capa | Tecnología |
+|------|-----------|
+| Backend | Python 3.12, FastAPI, Pydantic v2, psycopg2, PyJWT RS256 |
+| Frontend | React 18, **TypeScript 6.0.3**, Vite 5, Zustand 5, React Router DOM 7, Axios 1.15 |
+| Infra | Docker Compose, PostgreSQL 15, Redis 7-alpine |
+| Auth | JWT RS256, RBAC por permisos (snapshots Redis) |
+
+---
+
+## Sesión 5 — 20 abr 2026 (Frontend Setup)
+
+### Completado
+
+- ✅ `tsconfig.json` — TypeScript 6, strict, paths `@/*` sin `baseUrl` (TS 6 no lo requiere)
+- ✅ `tsconfig.node.json` — composite: true para referencias de proyecto
+- ✅ `vite.config.ts` — alias `@/`, code-splitting (vendor / state / http chunks)
+- ✅ Migración `main.jsx → main.tsx`, `App.jsx → App.tsx`
+- ✅ `vite-env.d.ts` y `index.html` actualizado (lang=es, Inter + JetBrains Mono, theme-color `#4F46E5`)
+- ✅ Árbol de carpetas `src/` completo (theme, components, pages, services, stores, hooks, types)
+- ✅ Dependencias instaladas: axios, react-router-dom, zustand + @types/react @types/react-dom @types/node
+- ✅ `npx tsc --noEmit` sin errores
+
+### Pendiente inmediato (Sprint 1)
+
+Los pasos 2–9 del ROADMAP desbloquean Register + Login funcionales contra el backend real:
+
+```
+2 → ThemeProvider + tokens.ts      (30 min)
+3 → Button + Input primitivos      (35 min)
+4 → BrixoLogo + favicon            (20 min)
+5 → api.ts + tipos backend         (35 min)
+6 → authStore Zustand              (25 min)
+7 → Routing + PrivateRoute         (25 min)
+─────────────────────────────────────────
+8 → RegisterPage  ⭐ PRIMER ENTREGABLE
+9 → LoginPage     ⭐
 ```
 
 ---
 
-## Próximas acciones
+## Referencia visual activa
 
-```text
-FASE 5 — Frontend (~6h total)
-1. F5  npm install axios react-router-dom zustand         15 min
-2. F5  src/services/api.js — cliente axios + interceptor  30 min
-3. F5  authStore Zustand — token, usuario, logout         30 min
-4. F5  LoginPage                                          50 min
-5. F5  ProductListPage + ProductFormModal                100 min
-6. F5  MovementFormModal                                  50 min
-7. F5  DashboardPage + AuditLogPage                       85 min
-8. F5  Routing + layout + rutas privadas                  35 min
-9. F5  Estilos básicos                                    40 min
+Los prototipos en `frontend/src/inspiracion/` son la fuente de verdad de UI/UX:
 
-FASE 6 — QA + Hardening (~4h 25min total)
-10. F6 Testing manual flujo completo                      45 min
-11. F6 Rate limiting POST /api/auth/login (Redis, 429)    30 min
-12. F6 Cabeceras de seguridad HTTP (middleware)           30 min
-13. F6 request_id en HTTPLoggingMiddleware                30 min
-14. F6 docker-compose.prod.yml + README final             60 min
-```
+| Archivo | Pantalla | Observaciones clave |
+|---------|---------|---------------------|
+| `pantalla1.png` | Login | Logo "B" centrado, dark mode, card flotante, toggle contraseña |
+| `registro de saas.png` | Register | Grid 2col empresa+nombre, callout índigo "propietario" |
+| `panel de control.png` | Dashboard | 4 KPIs, botón "Registrar movimiento" top-right, alertas coloreadas |
+| `listadoInventario.png` | Inventario | Sidebar con 5 ítems, tabla con badges de stock, paginación |
+| `BrixoMockup.jsx` | Todos | Componente React funcional completo — referencia de lógica y estilos |
 
 ---
 
-## Fase 1 — Infraestructura 100%
-
-| Tarea | Estado |
-|-------|--------|
-| Redis en docker-compose | ✅ |
-| Script SQL completo (8 tablas + seed) | ✅ |
-| `settings.py` con Pydantic BaseSettings | ✅ |
-| `main.py` con lifespan, pool y routers | ✅ |
-| Volumen postgres externo — bind mount `./data/postgres` | ✅ |
-| Env files montados en contenedor — `./env:/app/env:ro` | ✅ |
-| `GET /health` — endpoint sin autenticación | ✅ |
-| Healthchecks en postgres y redis | ✅ |
-| Hot reload backend con watchfiles + bind mount | ✅ |
-| Hot reload frontend con Vite HMR + bind mount | ✅ |
-
----
-
-## Fase 2 — Data Access Layer 100%
-
-| Repositorio | Puerto | Adaptador SQL |
-|-------------|--------|---------------|
-| Auth | `AuthRepository` | `AuthRepositorySQL` |
-| Product | `ProductRepository` | `ProductRepositorySQL` |
-| InventoryMovement | `InventoryMovementRepository` | `InventoryMovementRepositorySQL` |
-| AuditLog | `AuditLogRepository` | `AuditLogRepositorySQL` |
-| User | `UserRepository` | `UserRepositorySQL` |
-| Tenant | `TenantRepository` | `TenantRepositorySQL` |
-| Role | `RoleRepository` | `RoleRepositorySQL` |
-| Access | `AccessRepository` | `AccessRepositorySQL` |
-
----
-
-## Fase 3 — Casos de uso 100%
-
-| Use Case | Archivo |
-|----------|---------|
-| `LoginUser` | `application/services/auth/login_user.py` |
-| `CreateProductUseCase` | `application/use_cases/create_product.py` |
-| `RegisterInventoryMovementUseCase` | `application/use_cases/register_inventory_movement.py` |
-| `GetProductStockUseCase` | `application/use_cases/get_product_stock.py` |
-| `CreateUserUseCase` | `application/use_cases/create_user.py` |
-| `AssignRoleToUserUseCase` | `application/use_cases/assign_role_to_user.py` |
-| `GetAuditLogByTenantUseCase` | `application/use_cases/get_audit_log_by_tenant.py` |
-
----
-
-## Fase 4 — Controladores y Rutas 100%
-
-| Componente | Rutas |
-|------------|-------|
-| `AuthController` | `POST /api/auth/login`, `POST /api/auth/refresh` |
-| `ProductController` | `GET /api/products/`, `POST /api/products/`, `GET /api/products/{id}` |
-| `InventoryController` | `POST /api/products/{id}/movements`, `GET /api/products/{id}/movements` |
-| `UserController` | `GET /api/users/`, `POST /api/users/`, `POST /api/users/{id}/roles` |
-| `AuditController` | `GET /api/audit/?limit=N` |
-| `AccessController` | `GET /me/access` — lee snapshot de Redis |
-| `HealthController` | `GET /health` — sin autenticación |
-
----
-
-## Fase 4B — Seguridad aplicada 100%
+## Fase 4D — SaaS Auth + Correcciones de Runtime 100% ← COMPLETADA
 
 | Tarea | Archivo | Estado |
 |-------|---------|--------|
-| CORS en `main.py` | `backend/main.py` | ✅ |
-| `require_permission(code)` — FastAPI dependency | `infrastructure/security/permissions.py` | ✅ |
-| RBAC aplicado en endpoints críticos | `routes/products.py`, `routes/users.py`, `routes/audit.py` | ✅ |
-| `POST /api/auth/refresh` — renueva token sin re-login | `infrastructure/api/routes/auth.py` | ✅ |
+| `POST /api/auth/register` — tenant + OWNER en una operación | `routes/auth.py` | ✅ |
+| `SignUpUseCase` | `use_cases/signup.py` | ✅ |
+| `DATABASE_URL` en `backend.env` | `infra/env/backend.env` | ✅ |
+| `JWT_ACCESS_TOKEN_EXP_MINUTES` sin comentario inline | `infra/env/jwt.env` | ✅ |
+| `LOGGING_LEVEL=INFO` | `infra/env/logging.env` | ✅ |
+| `email-validator` en `requirements.txt` | `backend/requirements.txt` | ✅ |
+| `"name"` → `"tenant_name"/"product_name"/"role_name"` en logger | 3 repos SQL | ✅ |
+| Login usa `UnauthorizedError` 401 — no `ValueError` | `services/auth/login_user.py` | ✅ |
+| `TenantRepositorySQL` captura `UniqueViolation` → `ConflictError` 409 | `adapters/tenant_repository_sql.py` | ✅ |
+| `verify_password` seguro contra excepciones bcrypt | `infrastructure/security/passwords.py` | ✅ |
+
+### Endpoints públicos (sin token)
+
+| Endpoint | Descripción |
+|----------|-------------|
+| `POST /api/auth/login` | Email + password → JWT |
+| `POST /api/auth/register` | Empresa + nombre + email + password → tenant + OWNER + JWT |
+| `GET /health` | Estado del servicio |
+| `GET /docs` | Swagger UI |
 
 ---
 
-## Fase 4C — Observabilidad y Manejo de Excepciones 100%
+## Fase 5 — Frontend MVP (10%)
 
-| Componente | Archivo | Estado |
-|------------|---------|--------|
-| Logger JSON con `RotatingFileHandler` | `infrastructure/logging.py` | ✅ |
-| `HTTPLoggingMiddleware` | `infrastructure/api/middleware/http_logging.py` | ✅ |
-| Jerarquía de excepciones de dominio | `domain/exceptions.py` | ✅ |
-| Exception handlers globales (4 tipos) | `infrastructure/api/exception_handlers.py` | ✅ |
-| Logs en `backend/logs/app.log` — visible en host vía bind mount | `infra/docker-compose.yml` | ✅ |
+**Stack**: React 18 + TypeScript 6 + Vite 5 + Zustand 5 + React Router DOM 7 + Axios 1.15
 
-### Stack de middlewares activo
+**Flujo de rutas MVP**:
 
-```text
-CORS → HTTPLogging → JWT → Handler → ExceptionHandlers → AuditLog
+```
+/register  →  RegisterPage   (pública)
+/login     →  LoginPage      (pública · si autenticado → /dashboard)
+/dashboard →  DashboardPage  (privada · primera pantalla post-login)
+/inventory →  InventoryPage  (privada)
+/          →  redirect según sesión
 ```
 
-### Logs en Docker
+### Sprint 1 — Auth (en curso)
 
-```text
-Contenedor: /app/logs/app.log
-Host:       backend/logs/app.log   ← sin docker exec, acceso directo
-```
+| # | Tarea | Tiempo | Estado |
+|---|-------|--------|--------|
+| 1 | Setup TypeScript 6, vite.config.ts, estructura src/ | 35 min | ✅ |
+| 2 | tokens.ts + ThemeProvider.tsx + useTheme | 30 min | ⭕ |
+| 3 | Button.tsx + Input.tsx + Field wrapper | 35 min | ⭕ |
+| 4 | BrixoLogo.tsx + favicon.svg | 20 min | ⭕ |
+| 5 | api.ts + tipos del backend | 35 min | ⭕ |
+| 6 | authStore.ts (Zustand) | 25 min | ⭕ |
+| 7 | App.tsx routing + PrivateRoute + PublicOnlyRoute | 25 min | ⭕ |
+| **8** | **RegisterPage.tsx** | **40 min** | **⭕** |
+| **9** | **LoginPage.tsx** | **35 min** | **⭕** |
+
+### Sprint 2 — Dashboard (bloqueado por Sprint 1)
+
+| # | Tarea | Tiempo | Estado |
+|---|-------|--------|--------|
+| 10 | AppShell.tsx — sidebar + bottom-nav responsivo | 40 min | ⭕ |
+| 11 | MetricCard + Card + Badge + AlertCard | 35 min | ⭕ |
+| 12 | Toast global + Skeleton shimmer | 20 min | ⭕ |
+| **13** | **DashboardPage.tsx** | **50 min** | **⭕** |
+
+### Sprint 3 — Inventario + Acciones (bloqueado por Sprint 2)
+
+| # | Tarea | Tiempo | Estado |
+|---|-------|--------|--------|
+| 14 | Modal.tsx + BottomSheet.tsx | 25 min | ⭕ |
+| 15 | EmptyState.tsx | 10 min | ⭕ |
+| **16** | **InventoryPage.tsx** | **50 min** | **⭕** |
+| **17** | **MovementModal.tsx** | **50 min** | **⭕** |
+| **18** | **ProductModal.tsx** | **35 min** | **⭕** |
+
+### Post-MVP (no bloquea el flujo de valor)
+
+| # | Tarea | Tiempo | Estado |
+|---|-------|--------|--------|
+| 19 | LandingPage.tsx | 60 min | ⭕ |
+| 20 | AuditPage.tsx | 50 min | ⭕ |
+| 21 | TeamPage.tsx | 50 min | ⭕ |
+| 22 | useAccess.ts — vistas por rol | 40 min | ⭕ |
+| 23 | Accesibilidad WCAG 2.1 AA | 40 min | ⭕ |
+| 24 | ErrorBoundary + build optimizado | 30 min | ⭕ |
 
 ---
 
-## Fase 5 — Frontend 5%
-
-Solo existe `<h1>Brixo</h1>` en `frontend/src/App.jsx`.  
-El backend está completamente listo — puede arrancar ahora.
-
-| Tarea | Tiempo | Estado |
-|-------|--------|--------|
-| `npm install axios react-router-dom zustand` | 15 min | ⭕ |
-| `src/services/api.js` — axios con interceptor JWT y refresh | 30 min | ⭕ |
-| `authStore` (Zustand) — token, usuario, logout | 30 min | ⭕ |
-| `LoginPage` | 50 min | ⭕ |
-| `ProductListPage` | 60 min | ⭕ |
-| `ProductFormModal` | 40 min | ⭕ |
-| `MovementFormModal` | 50 min | ⭕ |
-| `DashboardPage` | 45 min | ⭕ |
-| `AuditLogPage` | 40 min | ⭕ |
-| Routing + layout + rutas privadas | 35 min | ⭕ |
-| Estilos básicos | 40 min | ⭕ |
-
----
-
-## Fase 6 — QA + Hardening 0%
-
-Bloqueada por Fase 5.
+## Fase 6 — QA + Hardening (0%) — bloqueada
 
 | Tarea | Tipo | Tiempo | Estado |
 |-------|------|--------|--------|
 | Testing manual flujo completo | QA | 45 min | ⭕ |
 | Fix de bugs encontrados | Dev | 60 min | ⭕ |
-| Rate limiting en `POST /api/auth/login` | Seguridad | 30 min | ⭕ |
+| Rate limiting `POST /api/auth/login` | Seguridad | 30 min | ⭕ |
 | Validar TTL Redis snapshot y expiración de token | Seguridad | 20 min | ⭕ |
 | Cabeceras de seguridad HTTP | Seguridad | 30 min | ⭕ |
-| `request_id` en `HTTPLoggingMiddleware` | Observabilidad | 30 min | ⭕ |
+| `request_id` en HTTPLoggingMiddleware | Observabilidad | 30 min | ⭕ |
 | `docker-compose.prod.yml` | Infra | 30 min | ⭕ |
 
 ---
@@ -218,13 +187,19 @@ Bloqueada por Fase 5.
 | # | Ítem | Resolución |
 |---|------|-----------|
 | 1 | `ocurred_at` → `occurred_at` | Corregido en `domain/events/base.py` |
-| 2 | Directorio `acccess/` (triple c) | Renombrado a `access/`, 2 imports actualizados |
+| 2 | Directorio `acccess/` (triple c) | Renombrado a `access/` |
 | 3 | `asssign_role.py` vacío | Eliminado con `git rm` |
 | 4 | `aut_service.py` huérfano | Eliminado con `git rm` |
-| 5 | `domain/events.py` duplicado | Eliminado; import corregido a `domain.events.base` |
-| 6 | `OPENAI_API_KEY` en `backend.env` | `infra/env/*.env` excluido de git en `.gitignore` |
+| 5 | `domain/events.py` duplicado | Eliminado; import corregido |
+| 6 | `OPENAI_API_KEY` en `backend.env` | Excluido de git |
+| 7 | `DATABASE_URL` ausente | Agregada en `backend.env` |
+| 8 | `email-validator` ausente | Agregado en `requirements.txt` |
+| 9 | Comentario inline en `jwt.env` | Eliminado |
+| 10 | `"name"` en `extra={}` del logger | Renombrado correctamente |
+| 11 | `ValueError` en login → 500 | Reemplazado por `UnauthorizedError` 401 |
+| 12 | `UniqueViolation` de tenant → 500 | Capturado → `ConflictError` 409 |
 
 ---
 
-**Documento actualizado**: 18 de abril de 2026 (sesión 3)  
-**Próxima revisión**: Al completar Fase 5 Frontend
+**Documento actualizado**: 20 de abril de 2026 (sesión 5)
+**Próxima revisión**: Al completar Sprint 1 (RegisterPage + LoginPage)

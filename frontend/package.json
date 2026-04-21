@@ -8,8 +8,15 @@
     "start": "vite preview --host --port 3000"
   },
   "dependencies": {
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "axios": "^1.15.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^7.14.1",
+    "typescript": "^6.0.3",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.0.0",
