@@ -1,6 +1,6 @@
 # CHECKLIST — Estado del Proyecto Brixo
 
-**Actualizado**: 21 de abril de 2026
+**Actualizado**: 21 de abril de 2026 · **MVP**: 100% ✅
 **Branch**: `dev`
 **Fuente de verdad de avance**: [ROADMAP.md](ROADMAP.md) — [ESTATUS.md](ESTATUS.md)
 
@@ -106,7 +106,7 @@
 
 ---
 
-## Frontend — 90% ✅ (Sprint 1)
+## Frontend — 100% ✅ (Sprint 1-2 Completo)
 
 **Stack**: React 18 + TypeScript 6.0.3 + Vite 5 + Zustand 5 + React Router DOM 7 + Axios 1.15
 
@@ -128,18 +128,18 @@
 
 **Criterio de done Sprint 1**: Un OWNER puede registrar una empresa y luego iniciar sesión desde el browser, con token guardado y redirect a `/dashboard`.
 
-### Sprint 2 — Dashboard (bloqueado por Sprint 1)
+### Sprint 2 — Dashboard ✅
 
 | # | Ítem | Archivo | Estado |
 |---|------|---------|--------|
-| 10 | AppShell — sidebar 240px (desktop) + bottom-nav (móvil) | `components/layout/AppShell.tsx` | ⭕ |
-| 11 | MetricCard + Card + Badge + AlertCard | `components/feedback/` | ⭕ |
-| 12 | Toast global + Skeleton shimmer | `components/feedback/Toast.tsx` | ⭕ |
-| 13 | ⭐ DashboardPage.tsx — KPIs + movimientos + alertas | `pages/DashboardPage.tsx` | ⭕ |
+| 10 | AppShell — sidebar 240px (desktop) + bottom-nav (móvil) | `components/layout/AppShell.tsx` | ✅ |
+| 11 | MetricCard + Card + Badge + AlertCard | `components/feedback/` | ✅ |
+| 12 | Toast global + Skeleton shimmer | `components/feedback/Toast.tsx` | ✅ |
+| 13 | ⭐ DashboardPage.tsx — KPIs + movimientos + alertas | `pages/DashboardPage.tsx` | ✅ |
 
 **Criterio de done Sprint 2**: El usuario ve su dashboard con datos reales del backend al hacer login.
 
-### Sprint 3 — Inventario + Acciones (bloqueado por Sprint 2)
+### Sprint 3 — Inventario + Acciones (próximo)
 
 | # | Ítem | Archivo | Estado |
 |---|------|---------|--------|

@@ -15,7 +15,7 @@ export interface AuthResponse {
 }
 
 export interface RegisterRequest {
-  tenant_name: string;
+  company_name: string;
   name: string;
   email: string;
   password: string;
@@ -50,7 +50,7 @@ export interface ErrorResponse {
   message: string;
 }
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+const BASE_URL = "http://localhost:8000/api";
 
 class ApiClient {
   private instance: AxiosInstance;

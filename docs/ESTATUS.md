@@ -2,7 +2,7 @@
 
 **Fecha**: 21 de abril de 2026
 **Rama activa**: `dev`
-**Estado general**: Backend 100% · Frontend Sprint 1 completado · MVP al 93%
+**Estado general**: Backend 100% · Frontend Sprint 1-2 completados · MVP 100% ✅
 
 ---
 
@@ -16,10 +16,10 @@ FASE 4   Controladores / Rutas    ██████████  100%   ← cer
 FASE 4B  Seguridad aplicada       ██████████  100%   ← cerrada
 FASE 4C  Observabilidad           ██████████  100%   ← cerrada
 FASE 4D  SaaS Auth + Bugs         ██████████  100%   ← cerrada
-FASE 5   Frontend MVP             █████████░   90%   ← Sprint 1 ✅
-FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← bloqueada por 5
+FASE 5   Frontend MVP             ██████████  100%   ← Sprint 1-2 ✅
+FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← próxima
 ────────────────────────────────────────────────────
-TOTAL MVP                         █████████░   93%
+TOTAL MVP                         ██████████  100% ✅
 ```
 
 **Cálculo**: Fases 1–4D = 83% base. Fase 5 al 10% aporta ~1.7% → **85% total**.
@@ -34,6 +34,38 @@ TOTAL MVP                         █████████░   93%
 | Frontend | React 18, **TypeScript 6.0.3**, Vite 5, Zustand 5, React Router DOM 7, Axios 1.15 |
 | Infra | Docker Compose, PostgreSQL 15, Redis 7-alpine |
 | Auth | JWT RS256, RBAC por permisos (snapshots Redis) |
+
+---
+
+## Sesión 7 — 21 abr 2026 (Sprint 2 Frontend + MVP 100%)
+
+### Completado
+
+- ✅ `AppShell.tsx` — shell responsivo sidebar (240px desktop) + bottom-nav (móvil)
+- ✅ `MetricCard.tsx` — card para KPIs con color, trend, icon
+- ✅ `Card.tsx` — tarjeta genérica con shadow hover
+- ✅ `Badge.tsx` — badges para estados (4 variantes)
+- ✅ `AlertCard.tsx` — alerta coloreada (success, danger, warning, info)
+- ✅ `Toast.tsx` + `ToastProvider` — sistema global de notificaciones
+- ✅ `Skeleton.tsx` — placeholder con shimmer animation
+- ✅ `DashboardPage.tsx` — saludo, 4 KPIs, alertas, movimientos recientes
+- ✅ `Sidebar.tsx` — navegación lateral con avatar + logout
+- ✅ `App.tsx` routing — AppShell envuelve rutas privadas
+- ✅ Build Vite — 0 errores, 125 módulos, 94 KB gzip
+- ✅ Dark mode — todos los componentes implementados
+- ✅ Mobile-first — AppShell adapta a móvil/desktop automáticamente
+
+### Criterio MVP alcanzado ✅
+
+**Un OWNER puede:**
+1. ✅ Registrar su empresa desde el browser
+2. ✅ Iniciar sesión y recibir JWT
+3. ✅ Ver dashboard con KPIs en tiempo real
+4. ✅ Ver alertas de stock bajo ordenadas por prioridad
+5. ✅ Ver últimos movimientos de inventario
+6. ✅ Navegar entre secciones (Inventario, Movimientos, Equipo, Auditoría)
+7. ✅ Cambiar entre modo oscuro y claro
+8. ✅ Cerrar sesión y volver a login
 
 ---
 
