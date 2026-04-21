@@ -1,6 +1,6 @@
 # CHECKLIST — Estado del Proyecto Brixo
 
-**Actualizado**: 20 de abril de 2026
+**Actualizado**: 21 de abril de 2026
 **Branch**: `dev`
 **Fuente de verdad de avance**: [ROADMAP.md](ROADMAP.md) — [ESTATUS.md](ESTATUS.md)
 
@@ -106,7 +106,7 @@
 
 ---
 
-## Frontend — 10% ⭕
+## Frontend — 90% ✅ (Sprint 1)
 
 **Stack**: React 18 + TypeScript 6.0.3 + Vite 5 + Zustand 5 + React Router DOM 7 + Axios 1.15
 
@@ -117,14 +117,14 @@
 | # | Ítem | Archivo | Estado |
 |---|------|---------|--------|
 | 1 | Setup TypeScript 6 + estructura src/ | `tsconfig.json`, `vite.config.ts` | ✅ |
-| 2 | 🔴 Tokens de diseño + ThemeProvider + useTheme | `theme/tokens.ts`, `theme/ThemeProvider.tsx` | ⭕ |
-| 3 | 🔴 Button.tsx + Input.tsx (primitivos de formulario) | `components/primitives/` | ⭕ |
-| 4 | 🔴 BrixoLogo.tsx + favicon.svg | `components/BrixoLogo.tsx`, `public/` | ⭕ |
-| 5 | 🔴 api.ts — axios + interceptor JWT + refresh + tipos | `services/api.ts`, `types/api.ts` | ⭕ |
-| 6 | 🔴 authStore.ts — Zustand + localStorage | `stores/authStore.ts` | ⭕ |
-| 7 | 🔴 Routing + PrivateRoute + PublicOnlyRoute | `App.tsx`, `components/layout/PrivateRoute.tsx` | ⭕ |
-| 8 | ⭐ RegisterPage.tsx | `pages/RegisterPage.tsx` | ⭕ |
-| 9 | ⭐ LoginPage.tsx | `pages/LoginPage.tsx` | ⭕ |
+| 2 | Tokens de diseño + ThemeProvider + useTheme | `theme/tokens.ts`, `theme/ThemeProvider.tsx` | ✅ |
+| 3 | Button.tsx + Input.tsx (primitivos de formulario) | `components/primitives/` | ✅ |
+| 4 | BrixoLogo.tsx + favicon.svg | `components/BrixoLogo.tsx`, `public/` | ✅ |
+| 5 | api.ts — axios + interceptor JWT + refresh + tipos | `services/api.ts`, `types/api.ts` | ✅ |
+| 6 | authStore.ts — Zustand + localStorage | `stores/authStore.ts` | ✅ |
+| 7 | Routing + PrivateRoute + PublicOnlyRoute | `App.tsx`, `components/layout/PrivateRoute.tsx` | ✅ |
+| 8 | ⭐ RegisterPage.tsx | `pages/RegisterPage.tsx` | ✅ |
+| 9 | ⭐ LoginPage.tsx | `pages/LoginPage.tsx` | ✅ |
 
 **Criterio de done Sprint 1**: Un OWNER puede registrar una empresa y luego iniciar sesión desde el browser, con token guardado y redirect a `/dashboard`.
 

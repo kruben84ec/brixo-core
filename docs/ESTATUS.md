@@ -1,8 +1,8 @@
 # ESTATUS DEL PROYECTO BRIXO — MVP
 
-**Fecha**: 20 de abril de 2026
+**Fecha**: 21 de abril de 2026
 **Rama activa**: `dev`
-**Estado general**: Backend 100% · Frontend Sprint 1 en curso · MVP al 85%
+**Estado general**: Backend 100% · Frontend Sprint 1 completado · MVP al 93%
 
 ---
 
@@ -16,10 +16,10 @@ FASE 4   Controladores / Rutas    ██████████  100%   ← cer
 FASE 4B  Seguridad aplicada       ██████████  100%   ← cerrada
 FASE 4C  Observabilidad           ██████████  100%   ← cerrada
 FASE 4D  SaaS Auth + Bugs         ██████████  100%   ← cerrada
-FASE 5   Frontend MVP             ██░░░░░░░░   10%   ← EN CURSO
+FASE 5   Frontend MVP             █████████░   90%   ← Sprint 1 ✅
 FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← bloqueada por 5
 ────────────────────────────────────────────────────
-TOTAL MVP                         █████████░   85%
+TOTAL MVP                         █████████░   93%
 ```
 
 **Cálculo**: Fases 1–4D = 83% base. Fase 5 al 10% aporta ~1.7% → **85% total**.
@@ -34,6 +34,42 @@ TOTAL MVP                         █████████░   85%
 | Frontend | React 18, **TypeScript 6.0.3**, Vite 5, Zustand 5, React Router DOM 7, Axios 1.15 |
 | Infra | Docker Compose, PostgreSQL 15, Redis 7-alpine |
 | Auth | JWT RS256, RBAC por permisos (snapshots Redis) |
+
+---
+
+## Sesión 6 — 21 abr 2026 (Sprint 1 Frontend Completo)
+
+### Completado
+
+- ✅ `tokens.ts` + `lightTheme` + `darkTheme` — paleta índigo + semánticos
+- ✅ `ThemeProvider.tsx` — detector `prefers-color-scheme`, persistencia localStorage
+- ✅ `useTheme()` hook — acceso global a tema
+- ✅ `Button.tsx` + `Button.module.css` — 4 variantes (primary, secondary, ghost, danger), 3 tamaños
+- ✅ `Input.tsx` + `Input.module.css` — input con label, error, helper text
+- ✅ `BrixoLogo.tsx` — componente SVG solid + line
+- ✅ `favicon.svg` — logo índigo en public/
+- ✅ `api.ts` — cliente axios con interceptor JWT + refresh automático + tipos
+- ✅ `authStore.ts` — Zustand con persistencia localStorage
+- ✅ `PrivateRoute.tsx` + `PublicOnlyRoute.tsx` — guards de routing
+- ✅ `App.tsx` routing completo — /login, /register, /dashboard
+- ✅ `RegisterPage.tsx` — 4 campos, callout índigo, error 409 inline, toggle password
+- ✅ `LoginPage.tsx` — email + contraseña, error 401 inline, toggle password
+- ✅ `AuthPage.module.css` — estilos compartidos, dark mode, mobile-first
+- ✅ `index.css` — estilos globales, variables CSS, responsive
+- ✅ Build Vite sin errores — 3 chunks optimizados (vendor, state, http)
+- ✅ TypeScript strict — 0 errores
+
+### Pendiente inmediato (Sprint 2)
+
+7 pasos para dashboard operativo:
+
+```
+10 → AppShell + sidebar       (40 min)
+11 → MetricCard + Card        (35 min)
+12 → Toast + Skeleton         (20 min)
+─────────────────────────────────────
+13 → DashboardPage ⭐         (50 min)
+```
 
 ---
 
