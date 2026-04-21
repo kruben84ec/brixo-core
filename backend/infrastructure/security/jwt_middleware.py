@@ -73,3 +73,13 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
             )
 
         return await call_next(request)
+    
+    
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http":
+            if scope["method"] == "OPTIONS":
+                # 🔑 Permitir preflight sin validación JWT
+                await self.app(scope, receive, send)
+                return
+
+        await self.app(scope, receive, send)

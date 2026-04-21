@@ -1,0 +1,159 @@
+/**
+ * Estilos compartidos para AuthPage (Login y Register)
+ */
+
+.authPage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  background-color: var(--bg-canvas, #fafafa);
+  padding: var(--spacing-4, 16px);
+}
+
+[data-theme="dark"] .authPage {
+  background-color: var(--bg-canvas, #09090b);
+}
+
+.container {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6, 24px);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-4, 16px);
+  text-align: center;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary, #18181b);
+  margin: 0;
+}
+
+[data-theme="dark"] .title {
+  color: var(--text-primary, #fafafa);
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--text-secondary, #52525b);
+  margin: 0;
+}
+
+[data-theme="dark"] .subtitle {
+  color: var(--text-secondary, #a1a1aa);
+}
+
+.callout {
+  padding: var(--spacing-4, 16px);
+  background-color: var(--brand-soft, #eef2ff);
+  border-radius: var(--radius-md, 8px);
+  border-left: 4px solid var(--brand, #4f46e5);
+}
+
+[data-theme="dark"] .callout {
+  background-color: rgba(99, 102, 241, 0.15);
+  border-left-color: var(--brand, #818cf8);
+}
+
+.callout p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--brand-soft-text, #3730a3);
+  line-height: 1.5;
+}
+
+[data-theme="dark"] .callout p {
+  color: var(--brand-soft-text, #c7d2fe);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4, 16px);
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-4, 16px);
+}
+
+@media (max-width: 480px) {
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.passwordField {
+  position: relative;
+}
+
+.togglePassword {
+  position: absolute;
+  right: var(--spacing-3, 12px);
+  top: 32px;
+  background: none;
+  border: none;
+  color: var(--brand, #4f46e5);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0;
+  z-index: 10;
+}
+
+.togglePassword:hover {
+  text-decoration: underline;
+}
+
+.errorInline {
+  padding: var(--spacing-3, 12px);
+  background-color: var(--danger-soft, #fef2f2);
+  border-radius: var(--radius-md, 8px);
+  color: var(--danger-text, #b91c1c);
+  font-size: 14px;
+  border-left: 4px solid var(--danger, #dc2626);
+}
+
+[data-theme="dark"] .errorInline {
+  background-color: rgba(239, 68, 68, 0.15);
+  border-left-color: var(--danger, #f87171);
+  color: var(--danger-text, #fca5a5);
+}
+
+.submitButton {
+  margin-top: var(--spacing-2, 8px);
+  width: 100%;
+}
+
+.switch {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-secondary, #52525b);
+  margin: 0;
+}
+
+[data-theme="dark"] .switch {
+  color: var(--text-secondary, #a1a1aa);
+}
+
+.link {
+  color: var(--brand, #4f46e5);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 200ms ease-out;
+}
+
+.link:hover {
+  color: var(--brand-hover, #4338ca);
+  text-decoration: underline;
+}
