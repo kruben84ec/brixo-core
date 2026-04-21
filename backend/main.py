@@ -1,7 +1,8 @@
+import os
 from contextlib import asynccontextmanager
 
 from db_wait import wait_for_db
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -32,6 +33,7 @@ from domain.exceptions import BrixoException
 from infrastructure.api.routes.access import router as access_router
 from infrastructure.api.routes.health import router as health_router
 
+
 access_repository = AccessRepositorySQL()
 access_service = AccessService(access_repository)
 
@@ -50,28 +52,10 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Brixo API",
     version="1.0.0-mvp",
-    description=(
-        "API REST para el sistema de control de inventario Brixo.\n\n"
-        "**Autenticación**: Bearer JWT (RS256). Usa `POST /api/auth/login` para obtener el token "
-        "y pégalo en el botón **Authorize** de esta UI.\n\n"
-        "**Multi-tenant**: cada request se opera dentro del tenant del usuario autenticado."
-    ),
-    docs_url="/docs",
-    redoc_url="/redoc",
-    openapi_tags=[
-        {"name": "auth",      "description": "Login y renovación de token"},
-        {"name": "products",  "description": "Gestión de productos e inventario"},
-        {"name": "users",     "description": "Gestión de usuarios y asignación de roles"},
-        {"name": "audit",     "description": "Historial de auditoría por tenant"},
-        {"name": "access",    "description": "Snapshot de permisos del usuario autenticado"},
-        {"name": "health",    "description": "Estado del servicio"},
-    ],
     lifespan=lifespan,
 )
 
 # ── Exception handlers ────────────────────────────────────────────────────────
-# Orden de precedencia: FastAPI elige el handler cuyo tipo sea el más específico.
-# BrixoException y RequestValidationError son más específicos que Exception.
 app.add_exception_handler(BrixoException, brixo_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 app.add_exception_handler(StarletteHTTPException, http_exception_handler)
@@ -87,18 +71,32 @@ def init_app():
     user_access_projection = UserAccessProjection(event_bus, access_service)
     user_access_projection.register()
 
-    # ── Middlewares (add_middleware es LIFO: el último añadido es el más externo) ──
-    # Orden de ejecución en request: CORS → HTTPLogging → JWT → Handler
-    app.add_middleware(JWTAuthMiddleware, event_bus=event_bus)   # ③ innermost
-    app.add_middleware(HTTPLoggingMiddleware)                     # ② capta todos los requests (incl. 401)
-    app.add_middleware(                                           # ① outermost — preflight CORS
+    # ──────────────────────────────────────────
+    # CORS CONFIG (dinámico desde ENV)
+    # ──────────────────────────────────────────
+    cors_origins = os.getenv(
+        "CORS_ORIGINS",
+        "http://localhost:3000,http://127.0.0.1:3000,http://localhost:8000"
+    ).split(",")
+
+    # ── Middlewares (orden crítico) ──
+    # CORS debe ser el más externo
+    app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:8000"],
+        allow_origins=cors_origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
 
+    app.add_middleware(HTTPLoggingMiddleware)
+
+    # ⚠️ IMPORTANTE: tu middleware JWT debe ignorar OPTIONS
+    app.add_middleware(JWTAuthMiddleware, event_bus=event_bus)
+
+    # ──────────────────────────────────────────
+    # ROUTES
+    # ──────────────────────────────────────────
     app.include_router(health_router)
 
     auth_router = get_auth_router(event_bus)
