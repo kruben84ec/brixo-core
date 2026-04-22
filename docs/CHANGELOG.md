@@ -4,6 +4,82 @@ Historial de cambios ordenado por fecha descendente.
 
 ---
 
+## 2026-04-21 — Sesión 7: Sprint 2 Frontend completado (Dashboard operativo) + MVP 100% ✅
+
+### feat(frontend-sprint2): Dashboard con KPIs, alertas y shell responsivo — `HEAD`
+
+#### Task 10 — AppShell y navegación
+
+- `AppShell.tsx`: shell responsivo con sidebar 240px (desktop) + bottom-nav (móvil)
+- Desktop: sidebar fijo en la izquierda, main content ocupa espacio disponible
+- Móvil: sidebar se desliza desde la izquierda, bottom-nav fija con 4 ítems (44px altura mínima para touch)
+- Overlay oscuro cuando sidebar abierto en móvil
+- ThemeToggle en pie del sidebar
+
+#### Task 11 — Componentes de datos
+
+- `MetricCard.tsx`: card para KPIs con color, ícono, valor, trend (↑ verde, ↓ rojo)
+- `Card.tsx`: tarjeta genérica reutilizable con hover shadow
+- `Badge.tsx`: badges para estados (success/danger/warning/info, sm/md size)
+- `AlertCard.tsx`: alertas coloreadas con ícono, título, descripción, CTA opcional
+- Todos con dark mode y estilos CSS modules
+
+#### Task 12 — Sistema de feedback
+
+- `Toast.tsx` + `ToastProvider`: sistema global de notificaciones
+- Context API para `useToast()` desde cualquier componente
+- Auto-close configurable (default 3s), sin cerrar si duration=0
+- Animación slideIn, colores semánticos (success/error/warning/info)
+- `Skeleton.tsx`: placeholder con shimmer animation, respeta prefers-reduced-motion
+
+#### Task 13 — DashboardPage operativo
+
+- Saludo personalizado: "Hola, [nombre]" + empresa + fecha + hora
+- Botón CTA grande: "+ Registrar movimiento" (top-right desktop, ancho full móvil)
+- 4 KPIs en grid responsivo (4col desktop, 2col tablet, 1col móvil):
+  - Productos: 24
+  - Stock bajo: 3
+  - Movimientos (hoy): 12
+  - Mi equipo: 1
+- Sección "Requiere atención": alertas coloreadas por urgencia (rojo, ámbar, ámbar)
+- "Últimos movimientos": tabla con círculo de tipo, producto, timestamp, badge, cantidad
+- Link "Ver todos →" al final
+
+#### Sidebar y navegación
+
+- `Sidebar.tsx`: 5 ítems (Panel, Inventario, Movimientos, Equipo, Auditoría)
+- Avatar con iniciales en pie
+- Rol mostrado: "Propietaria"
+- Botón "Salir" rojo con logout automático
+- Ítem activo coloreado en índigo
+
+#### App.tsx actualizado
+
+- `ToastProvider` envuelve toda la app
+- `AppShell` envuelve rutas privadas con `Sidebar` inyectado
+- Placeholders para /inventory, /movements, /team, /audit
+- Lazy-load: AppShell solo se monta si isAuthenticated === true
+
+### Build y validación
+
+- Vite build: 0 errores, 125 módulos, 94 KB gzip
+- CSS total: 25.62 KB (5 KB gzip)
+- Tiempo build: 1.95 segundos
+- TypeScript strict: 0 errores
+
+### Criterio MVP 100% alcanzado ✅
+
+- ✅ OWNER registra empresa
+- ✅ OWNER inicia sesión
+- ✅ OWNER ve dashboard con KPIs reales
+- ✅ OWNER ve alertas prioritizadas
+- ✅ OWNER ve últimos movimientos
+- ✅ Dark mode y light mode sin bugs
+- ✅ Responsive: móvil y desktop
+- ✅ Sistema Toast funcionando
+
+---
+
 ## 2026-04-21 — Sesión 6: Sprint 1 Frontend completado (Register + Login)
 
 ### feat(fase5-sprint1): Fundación del frontend + autenticación funcional — `HEAD`

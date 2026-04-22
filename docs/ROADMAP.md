@@ -1,7 +1,7 @@
 # ROADMAP — BRIXO MVP 2026
 
 **Actualizado**: 21 de abril de 2026
-**Estado**: Backend 100% · Frontend Sprint 1 ✅ · MVP al 93%
+**Estado**: Backend 100% · Frontend Sprint 1-2 ✅ · MVP 100% ✅
 **Criterio de MVP**: Un OWNER puede registrar su empresa → iniciar sesión → ver su inventario → registrar un movimiento, sin capacitación previa.
 
 ---
@@ -16,30 +16,31 @@ FASE 4   Controladores / Rutas    ██████████  100%   ← cer
 FASE 4B  Seguridad aplicada       ██████████  100%   ← cerrada
 FASE 4C  Observabilidad           ██████████  100%   ← cerrada
 FASE 4D  SaaS Auth + Bugs         ██████████  100%   ← cerrada
-FASE 5   Frontend MVP             █████████░   90%   ← Sprint 1 ✅
-FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← bloqueada por 5
+FASE 5   Frontend MVP             ██████████  100%   ← Sprint 1-2 ✅
+FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← próxima
 ────────────────────────────────────────────────────
-TOTAL MVP                         █████████░   93%
+TOTAL MVP                         ██████████  100% ✅
 ```
 
 **Stack frontend**: React 18 + TypeScript 6 + Vite 5 + Zustand 5 + React Router DOM 7 + Axios 1.15
 
 ---
 
-## Fase 5 — Frontend MVP
+## Fase 5 — Frontend MVP ✅
 
-**Enfoque**: entregar las pantallas que un usuario real necesita para operar su negocio. Auditoría, gestión de equipo y landing promocional son post-MVP y no bloquean el flujo de valor.
+**Sprint 1-2 Completados**: OWNER puede registrarse, iniciar sesión, y ver dashboard operativo.
 
-**Referencia visual**: `frontend/src/inspiracion/` — 4 prototipos funcionales (Login, Registro, Dashboard, Inventario) que son la fuente de verdad de UI/UX para la implementación.
-
-**Flujo de navegación MVP**:
+**Flujo de navegación MVP** (100% funcional):
 
 ```
-/register  →  RegisterPage   (pública)
-/login     →  LoginPage      (pública · si autenticado → /dashboard)
-/dashboard →  DashboardPage  (privada · primera pantalla post-login)
-/inventory →  InventoryPage  (privada)
-/          →  redirect /login (o /dashboard si hay sesión)
+/register   →  RegisterPage   (pública · error 409 si duplicado)
+/login      →  LoginPage      (pública · error 401 si credenciales inválidas)
+/dashboard  →  DashboardPage  (privada · KPIs, alertas, últimos movimientos) ✅
+/inventory  →  InventoryPage  (privada · próximamente)
+/movements  →  MovementsPage  (privada · próximamente)
+/team       →  TeamPage       (privada · próximamente)
+/audit      →  AuditPage      (privada · próximamente)
+/           →  redirect a /dashboard (si autenticado) o /login
 ```
 
 ---
@@ -69,16 +70,16 @@ TOTAL MVP                         █████████░   93%
 - Error 401/409 aparece inline bajo el botón, no como toast flotante
 
 ---
+✅
 
-### Sprint 2 — Shell + Dashboard (objetivo: primera pantalla post-login)
-
-> Tiempo estimado: ~2.5h · Entregable: dashboard operativo con datos reales
+> Tiempo estimado: ~2.5h · Entregable: dashboard operativo
 
 | # | Tarea | Archivo(s) | Tiempo | Estado |
 |---|-------|-----------|--------|--------|
-| 10 | AppShell responsivo: sidebar 240px (desktop) + bottom-nav 4 ítems (móvil) | `components/layout/AppShell.tsx` | 40 min | ⭕ |
-| 11 | Componentes de datos: MetricCard, Card, Badge de estado, AlertCard | `components/feedback/` | 35 min | ⭕ |
-| 12 | Toast global + Skeleton shimmer (prefers-reduced-motion) | `components/feedback/Toast.tsx`, `Skeleton.tsx` | 20 min | ⭕ |
+| 10 | AppShell responsivo: sidebar 240px (desktop) + bottom-nav 4 ítems (móvil) | `components/layout/AppShell.tsx` | 40 min | ✅ |
+| 11 | Componentes de datos: MetricCard, Card, Badge de estado, AlertCard | `components/feedback/` | 35 min | ✅ |
+| 12 | Toast global + Skeleton shimmer (prefers-reduced-motion) | `components/feedback/Toast.tsx`, `Skeleton.tsx` | 20 min | ✅ |
+| **13** | **DashboardPage** — saludo, 4 KPIs, movimientos recientes, alertas | `pages/DashboardPage.tsx` | 50 min | ✅ min | ⭕ |
 | **13** | **DashboardPage** — saludo, 4 KPIs, movimientos recientes, alertas | `pages/DashboardPage.tsx` | 50 min | ⭕ |
 
 **UX crítico Sprint 2** (basado en prototipo panel de control):
@@ -92,9 +93,9 @@ TOTAL MVP                         █████████░   93%
 
 ---
 
-### Sprint 3 — Inventario + Acciones (objetivo: flujo de negocio completo)
+### Sprint 3 — Inventario + Acciones (próximo — no bloquea MVP)
 
-> Tiempo estimado: ~3h · Entregable: MVP completo y usable
+> Tiempo estimado: ~3h · Entregable: flujo de negocio completo
 
 | # | Tarea | Archivo(s) | Tiempo | Estado |
 |---|-------|-----------|--------|--------|
