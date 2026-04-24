@@ -1,8 +1,8 @@
 # ROADMAP — BRIXO MVP 2026
 
-**Actualizado**: 21 de abril de 2026
-**Estado**: Backend 100% · Frontend Sprint 1-2 ✅ · MVP 100% ✅
-**Criterio de MVP**: Un OWNER puede registrar su empresa → iniciar sesión → ver su inventario → registrar un movimiento, sin capacitación previa.
+**Actualizado**: 23 de abril de 2026
+**Estado**: Backend 100% ✅ · Frontend Sprint 1-2 ✅ · Sprint 3 ⭕ · MVP parcial
+**Criterio de MVP**: Un OWNER puede registrar su empresa → iniciar sesión → ver su inventario → registrar un movimiento, sin capacitación previa. ← **Sprint 3 pendiente para completar este criterio**
 
 ---
 
@@ -16,10 +16,10 @@ FASE 4   Controladores / Rutas    ██████████  100%   ← cer
 FASE 4B  Seguridad aplicada       ██████████  100%   ← cerrada
 FASE 4C  Observabilidad           ██████████  100%   ← cerrada
 FASE 4D  SaaS Auth + Bugs         ██████████  100%   ← cerrada
-FASE 5   Frontend MVP             ██████████  100%   ← Sprint 1-2 ✅
-FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← próxima
+FASE 5   Frontend MVP             ███████░░░   72%   ← Sprint 1-2 ✅ · Sprint 3 ⭕
+FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← bloqueada
 ────────────────────────────────────────────────────
-TOTAL MVP                         ██████████  100% ✅
+TOTAL MVP                         ████████░░   78%
 ```
 
 **Stack frontend**: React 18 + TypeScript 6 + Vite 5 + Zustand 5 + React Router DOM 7 + Axios 1.15
@@ -79,8 +79,7 @@ TOTAL MVP                         ██████████  100% ✅
 | 10 | AppShell responsivo: sidebar 240px (desktop) + bottom-nav 4 ítems (móvil) | `components/layout/AppShell.tsx` | 40 min | ✅ |
 | 11 | Componentes de datos: MetricCard, Card, Badge de estado, AlertCard | `components/feedback/` | 35 min | ✅ |
 | 12 | Toast global + Skeleton shimmer (prefers-reduced-motion) | `components/feedback/Toast.tsx`, `Skeleton.tsx` | 20 min | ✅ |
-| **13** | **DashboardPage** — saludo, 4 KPIs, movimientos recientes, alertas | `pages/DashboardPage.tsx` | 50 min | ✅ min | ⭕ |
-| **13** | **DashboardPage** — saludo, 4 KPIs, movimientos recientes, alertas | `pages/DashboardPage.tsx` | 50 min | ⭕ |
+| **13** | **DashboardPage** — saludo, 4 KPIs, movimientos recientes, alertas (datos simulados) | `pages/DashboardPage.tsx` | 50 min | ✅ |
 
 **UX crítico Sprint 2** (basado en prototipo panel de control):
 - Saludo "Hola, [nombre]" con empresa y fecha/hora local en español
@@ -188,13 +187,13 @@ Derivados de `DISEÑO_BRIXO.md` y validados contra los 4 prototipos de `inspirac
 | Criterio | Estado |
 |----------|--------|
 | Setup TypeScript 6 + Vite 5 sin errores | ✅ |
-| Un OWNER puede registrar su empresa desde el browser | ⭕ |
-| Un OWNER puede iniciar sesión y ver el dashboard | ⭕ |
+| Un OWNER puede registrar su empresa desde el browser | ✅ |
+| Un OWNER puede iniciar sesión y ver el dashboard | ✅ (datos simulados) |
 | Puede ver su inventario con semáforo de stock | ⭕ |
 | Puede registrar un movimiento en < 10 segundos | ⭕ |
 | Puede agregar un nuevo producto | ⭕ |
-| Funciona en mobile y desktop (responsive) | ⭕ |
-| Modo oscuro y claro sin bugs visuales | ⭕ |
+| Funciona en mobile y desktop (responsive) | ✅ |
+| Modo oscuro y claro sin bugs visuales | ✅ |
 
 ---
 

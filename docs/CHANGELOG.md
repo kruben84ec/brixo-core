@@ -4,6 +4,38 @@ Historial de cambios ordenado por fecha descendente.
 
 ---
 
+## 2026-04-23 — Sesión 8: Auditoría de código + corrección de documentación
+
+### audit: Comparación código real vs. docs — inconsistencias corregidas
+
+#### Hallazgos de la auditoría
+
+- `DashboardPage.tsx`: usa `setTimeout` con datos hardcodeados, no llama al API real.
+  El claim "KPIs en tiempo real" en Sesión 7 era incorrecto.
+- `/inventory`, `/movements`, `/team`, `/audit`: son placeholders inline en `App.tsx`
+  (`<div>📦 Inventario - próximamente</div>`), no páginas reales en `src/pages/`.
+- Botón "+ Registrar movimiento": dispara `addToast("Próximamente...")`, no abre modal.
+- Criterio MVP del ROADMAP ("ver inventario + registrar movimiento") **no está cumplido**.
+  Requiere Sprint 3 (0% completado).
+- `docs/CLAUDE.md`: estaba completamente desactualizado (describía estado pre-Sprint 1).
+- `CHECKLIST.md` y `ESTATUS.md`: tablas de Sprint 1-2 no actualizadas tras completar el trabajo.
+  Items 2-13 aparecían como ⭕ cuando deberían ser ✅.
+- `ESTATUS.md` / `CHECKLIST.md`: criterios "OWNER puede registrarse" y "OWNER puede iniciar sesión"
+  marcados como ⭕ cuando ambos funcionan.
+
+#### Correcciones aplicadas
+
+- `docs/ESTATUS.md`: barras de progreso (Fase 5: 100% → 72%, Total: 100% → 78%),
+  tablas Sprint 1-2 actualizadas a ✅, criterios MVP corregidos, fecha actualizada.
+- `docs/CHECKLIST.md`: criterios MVP corregidos (register/login ✅, mobile ✅, dark mode ✅).
+- `docs/ROADMAP.md`: header corregido, barra de progreso, fila duplicada eliminada,
+  criterios frontend actualizados.
+- `README.md`: barra de estado actualizada, badge corregido, endpoint `/register` agregado.
+- `docs/CHANGELOG.md`: esta entrada.
+- `docs/CLAUDE.md`: estado actual actualizado para reflejar Sprint 1-2 completados.
+
+---
+
 ## 2026-04-21 — Sesión 7: Sprint 2 Frontend completado (Dashboard operativo) + MVP 100% ✅
 
 ### feat(frontend-sprint2): Dashboard con KPIs, alertas y shell responsivo — `HEAD`

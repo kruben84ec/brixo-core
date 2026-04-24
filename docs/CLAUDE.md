@@ -9,7 +9,7 @@
 **Brixo** — Sistema de control de inventario simple para pequeños negocios y pymes.  
 **No es** un ERP ni sistema contable. **Es** control de stock: entradas, salidas, historial.
 
-**Branch activo**: dev | **Estado**: Backend 100% — MVP al 83% — Próximo: Fase 5 Frontend (TypeScript)
+**Branch activo**: dev | **Estado**: Backend 100% ✅ — Frontend Sprint 1-2 ✅ — Sprint 3 ⭕ — MVP 78%
 
 ---
 
@@ -140,7 +140,7 @@ start http://localhost:3000
 
 ---
 
-## Estado actual (18 de abril de 2026)
+## Estado actual (23 de abril de 2026)
 
 ### ✅ Backend 100% completo
 
@@ -155,13 +155,13 @@ start http://localhost:3000
 - Todos los repositorios con puerto ABC + adaptador SQL real
 - `AuthRepositorySQL`, `ProductRepositorySQL`, `InventoryMovementRepositorySQL`, `AuditLogRepositorySQL`, `UserRepositorySQL`, `TenantRepositorySQL`, `RoleRepositorySQL`, `AccessRepositorySQL`
 
-**Casos de uso** (Fase 3 — 7 de 7):
+**Casos de uso** (Fase 3 — 8 de 8):
 
-- `LoginUser`, `CreateProductUseCase`, `RegisterInventoryMovementUseCase`, `GetProductStockUseCase`, `CreateUserUseCase`, `AssignRoleToUserUseCase`, `GetAuditLogByTenantUseCase`
+- `SignUpUseCase`, `LoginUser`, `CreateProductUseCase`, `RegisterInventoryMovementUseCase`, `GetProductStockUseCase`, `CreateUserUseCase`, `AssignRoleToUserUseCase`, `GetAuditLogByTenantUseCase`
 
 **Controladores y rutas** (Fase 4 — 100%):
 
-- Todos los endpoints activos: auth, products, inventory, users, audit, access, health
+- Todos los endpoints activos: auth (register + login + refresh), products, inventory, users, audit, access, health
 - Swagger con metadata completa en `/docs`
 
 **Seguridad aplicada** (Fase 4B — 100%):
@@ -171,20 +171,41 @@ start http://localhost:3000
 - RBAC activo en todos los endpoints protegidos
 - `POST /api/auth/refresh` — renueva token sin re-login
 
-### ⭕ Frontend (Fase 5 — 5%)
+### ✅ Frontend Sprint 1-2 completos (Fase 5 — 72%)
 
-Solo existe `<h1>Brixo</h1>` en `frontend/src/App.jsx`. No hay dependencias instaladas.  
-El CORS ya está activo — puede arrancar ahora.
+**Stack**: React 18 + TypeScript 6.0.3 + Vite 5 + Zustand 5 + React Router DOM 7 + Axios 1.15
 
-Próximos pasos en orden:
+**Páginas reales** (`src/pages/`):
+- `RegisterPage.tsx` — 4 campos, error 409 inline, llama `POST /api/auth/register`
+- `LoginPage.tsx` — email + password, error 401 inline, llama `POST /api/auth/login`
+- `DashboardPage.tsx` — saludo, 4 KPIs, alertas, movimientos recientes
 
-1. `npm install axios react-router-dom zustand`
-2. `src/services/api.js` — axios con interceptor JWT y refresh automático
-3. `authStore` (Zustand) — token, usuario, logout, localStorage
-4. `LoginPage`
-5. `ProductListPage` + `ProductFormModal` + `MovementFormModal`
-6. `DashboardPage` + `AuditLogPage`
-7. Routing + layout + rutas privadas + estilos básicos
+**IMPORTANTE — estado real del Dashboard**:
+- La UI está completa y renderiza correctamente
+- Los datos son **simulados** (`setTimeout` + valores hardcodeados)
+- No llama al API real (`GET /api/products/` ni otros endpoints)
+- El botón "+ Registrar movimiento" muestra un toast "Próximamente"
+
+**Páginas placeholder** (inline en `App.tsx`, no en `src/pages/`):
+- `/inventory`, `/movements`, `/team`, `/audit` → `<div>texto - próximamente</div>`
+
+**Componentes completos**:
+- Sistema de tokens light/dark (`theme/tokens.ts`)
+- Button, Input, BrixoLogo, Card, MetricCard, Badge, AlertCard, Toast, Skeleton
+- AppShell responsivo (sidebar 240px desktop + bottom-nav móvil)
+- authStore Zustand + interceptor JWT + refresh automático
+
+### ⭕ Sprint 3 pendiente (para MVP completo)
+
+```
+14 → Modal + BottomSheet
+15 → EmptyState
+16 → InventoryPage — tabla real con datos del backend
+17 → MovementModal — ENTRADA / SALIDA / AJUSTE
+18 → ProductModal — nuevo producto
+```
+
+El criterio MVP del ROADMAP ("ver inventario + registrar movimiento") requiere Sprint 3.
 
 ---
 

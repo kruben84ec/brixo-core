@@ -1,8 +1,8 @@
 # ESTATUS DEL PROYECTO BRIXO — MVP
 
-**Fecha**: 21 de abril de 2026
+**Fecha**: 23 de abril de 2026
 **Rama activa**: `dev`
-**Estado general**: Backend 100% · Frontend Sprint 1-2 completados · MVP 100% ✅
+**Estado general**: Backend 100% ✅ · Frontend Sprint 1-2 ✅ · Sprint 3 ⭕ · MVP parcial
 
 ---
 
@@ -16,13 +16,13 @@ FASE 4   Controladores / Rutas    ██████████  100%   ← cer
 FASE 4B  Seguridad aplicada       ██████████  100%   ← cerrada
 FASE 4C  Observabilidad           ██████████  100%   ← cerrada
 FASE 4D  SaaS Auth + Bugs         ██████████  100%   ← cerrada
-FASE 5   Frontend MVP             ██████████  100%   ← Sprint 1-2 ✅
-FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← próxima
+FASE 5   Frontend MVP             ███████░░░   72%   ← Sprint 1-2 ✅ · Sprint 3 ⭕
+FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← bloqueada
 ────────────────────────────────────────────────────
-TOTAL MVP                         ██████████  100% ✅
+TOTAL MVP                         ████████░░   78%
 ```
 
-**Cálculo**: Fases 1–4D = 83% base. Fase 5 al 10% aporta ~1.7% → **85% total**.
+**Nota**: Sprint 1-2 completos (13 de 18 tareas frontend). Sprint 3 (Inventario + Acciones) pendiente. DashboardPage usa datos simulados — no llama al API real.
 
 ---
 
@@ -55,17 +55,22 @@ TOTAL MVP                         ██████████  100% ✅
 - ✅ Dark mode — todos los componentes implementados
 - ✅ Mobile-first — AppShell adapta a móvil/desktop automáticamente
 
-### Criterio MVP alcanzado ✅
+### Criterio Sprint 1-2 alcanzado ✅
 
 **Un OWNER puede:**
 1. ✅ Registrar su empresa desde el browser
 2. ✅ Iniciar sesión y recibir JWT
-3. ✅ Ver dashboard con KPIs en tiempo real
-4. ✅ Ver alertas de stock bajo ordenadas por prioridad
-5. ✅ Ver últimos movimientos de inventario
-6. ✅ Navegar entre secciones (Inventario, Movimientos, Equipo, Auditoría)
+3. ✅ Ver dashboard con KPIs — **datos simulados** (no llama al API real)
+4. ✅ Ver alertas de stock bajo — **datos hardcodeados** (mock)
+5. ✅ Ver últimos movimientos — **datos hardcodeados** (mock)
+6. ✅ Navegar por el sidebar — /inventory, /movements, /team, /audit son **placeholders**
 7. ✅ Cambiar entre modo oscuro y claro
 8. ✅ Cerrar sesión y volver a login
+
+**Pendiente (Sprint 3) para MVP completo según ROADMAP:**
+- ⭕ Ver inventario real con datos del backend
+- ⭕ Registrar movimiento (ENTRADA / SALIDA / AJUSTE) contra API real
+- ⭕ Agregar nuevo producto
 
 ---
 
@@ -91,16 +96,26 @@ TOTAL MVP                         ██████████  100% ✅
 - ✅ Build Vite sin errores — 3 chunks optimizados (vendor, state, http)
 - ✅ TypeScript strict — 0 errores
 
-### Pendiente inmediato (Sprint 2)
+### Sprint 2 completado ✅
 
-7 pasos para dashboard operativo:
+Dashboard operativo (UI completa con datos simulados):
 
 ```
-10 → AppShell + sidebar       (40 min)
-11 → MetricCard + Card        (35 min)
-12 → Toast + Skeleton         (20 min)
-─────────────────────────────────────
-13 → DashboardPage ⭐         (50 min)
+10 → AppShell + sidebar       ✅
+11 → MetricCard + Card        ✅
+12 → Toast + Skeleton         ✅
+──────────────────────────────────
+13 → DashboardPage ⭐         ✅ (datos mock — no llama API real)
+```
+
+### Pendiente inmediato (Sprint 3)
+
+```
+14 → Modal + BottomSheet      (25 min)
+15 → EmptyState               (10 min)
+16 → InventoryPage ⭐         (50 min)
+17 → MovementModal ⭐         (50 min)
+18 → ProductModal ⭐          (35 min)
 ```
 
 ---
@@ -176,7 +191,7 @@ Los prototipos en `frontend/src/inspiracion/` son la fuente de verdad de UI/UX:
 
 ---
 
-## Fase 5 — Frontend MVP (10%)
+## Fase 5 — Frontend MVP
 
 **Stack**: React 18 + TypeScript 6 + Vite 5 + Zustand 5 + React Router DOM 7 + Axios 1.15
 
@@ -190,28 +205,28 @@ Los prototipos en `frontend/src/inspiracion/` son la fuente de verdad de UI/UX:
 /          →  redirect según sesión
 ```
 
-### Sprint 1 — Auth (en curso)
+### Sprint 1 — Auth (completado ✅)
 
 | # | Tarea | Tiempo | Estado |
 |---|-------|--------|--------|
 | 1 | Setup TypeScript 6, vite.config.ts, estructura src/ | 35 min | ✅ |
-| 2 | tokens.ts + ThemeProvider.tsx + useTheme | 30 min | ⭕ |
-| 3 | Button.tsx + Input.tsx + Field wrapper | 35 min | ⭕ |
-| 4 | BrixoLogo.tsx + favicon.svg | 20 min | ⭕ |
-| 5 | api.ts + tipos del backend | 35 min | ⭕ |
-| 6 | authStore.ts (Zustand) | 25 min | ⭕ |
-| 7 | App.tsx routing + PrivateRoute + PublicOnlyRoute | 25 min | ⭕ |
-| **8** | **RegisterPage.tsx** | **40 min** | **⭕** |
-| **9** | **LoginPage.tsx** | **35 min** | **⭕** |
+| 2 | tokens.ts + ThemeProvider.tsx + useTheme | 30 min | ✅ |
+| 3 | Button.tsx + Input.tsx + Field wrapper | 35 min | ✅ |
+| 4 | BrixoLogo.tsx + favicon.svg | 20 min | ✅ |
+| 5 | api.ts + tipos del backend | 35 min | ✅ |
+| 6 | authStore.ts (Zustand) | 25 min | ✅ |
+| 7 | App.tsx routing + PrivateRoute + PublicOnlyRoute | 25 min | ✅ |
+| **8** | **RegisterPage.tsx** | **40 min** | **✅** |
+| **9** | **LoginPage.tsx** | **35 min** | **✅** |
 
-### Sprint 2 — Dashboard (bloqueado por Sprint 1)
+### Sprint 2 — Dashboard (completado ✅)
 
 | # | Tarea | Tiempo | Estado |
 |---|-------|--------|--------|
-| 10 | AppShell.tsx — sidebar + bottom-nav responsivo | 40 min | ⭕ |
-| 11 | MetricCard + Card + Badge + AlertCard | 35 min | ⭕ |
-| 12 | Toast global + Skeleton shimmer | 20 min | ⭕ |
-| **13** | **DashboardPage.tsx** | **50 min** | **⭕** |
+| 10 | AppShell.tsx — sidebar + bottom-nav responsivo | 40 min | ✅ |
+| 11 | MetricCard + Card + Badge + AlertCard | 35 min | ✅ |
+| 12 | Toast global + Skeleton shimmer | 20 min | ✅ |
+| **13** | **DashboardPage.tsx** (UI completa · datos simulados, no llama API) | **50 min** | **✅** |
 
 ### Sprint 3 — Inventario + Acciones (bloqueado por Sprint 2)
 
@@ -269,5 +284,5 @@ Los prototipos en `frontend/src/inspiracion/` son la fuente de verdad de UI/UX:
 
 ---
 
-**Documento actualizado**: 20 de abril de 2026 (sesión 5)
-**Próxima revisión**: Al completar Sprint 1 (RegisterPage + LoginPage)
+**Documento actualizado**: 23 de abril de 2026 (sesión 8 — auditoría y correcciones)
+**Próxima revisión**: Al completar Sprint 3 (InventoryPage + MovementModal)

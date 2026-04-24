@@ -1,6 +1,6 @@
 # CHECKLIST — Estado del Proyecto Brixo
 
-**Actualizado**: 21 de abril de 2026 · **MVP**: 100% ✅
+**Actualizado**: 23 de abril de 2026 · **Sprint 1-2**: ✅ · **Sprint 3**: ⭕ · **MVP**: parcial
 **Branch**: `dev`
 **Fuente de verdad de avance**: [ROADMAP.md](ROADMAP.md) — [ESTATUS.md](ESTATUS.md)
 
@@ -112,7 +112,7 @@
 
 **Referencia visual**: `frontend/src/inspiracion/` (4 prototipos + BrixoMockup.jsx)
 
-### Sprint 1 — Auth (en curso)
+### Sprint 1 — Auth (completado ✅)
 
 | # | Ítem | Archivo | Estado |
 |---|------|---------|--------|
@@ -189,10 +189,10 @@
 | Errores devuelven JSON `{ error, message }` | ✅ |
 | RBAC activo (403 sin permiso) | ✅ |
 | Logs JSON observables | ✅ |
-| **OWNER puede registrarse desde el browser** | ⭕ |
-| **OWNER puede iniciar sesión y ver dashboard** | ⭕ |
+| **OWNER puede registrarse desde el browser** | ✅ |
+| **OWNER puede iniciar sesión y ver dashboard** | ✅ (datos simulados) |
 | **OWNER puede ver inventario con semáforo de stock** | ⭕ |
 | **OPERATOR puede registrar movimiento en < 10 seg** | ⭕ |
 | **OWNER puede agregar un producto nuevo** | ⭕ |
-| Funciona en mobile y desktop | ⭕ |
-| Modo oscuro y claro sin bugs visuales | ⭕ |
+| Funciona en mobile y desktop | ✅ |
+| Modo oscuro y claro sin bugs visuales | ✅ |
