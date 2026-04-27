@@ -1,0 +1,232 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--textPrimary);
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.controls > * {
+  flex: 1;
+  min-width: 200px;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radiusInput);
+  background: var(--bgSurface);
+  color: var(--textPrimary);
+  font-size: 0.9375rem;
+  transition: border-color 0.2s, background-color 0.2s;
+  flex: 0;
+  white-space: nowrap;
+  min-width: fit-content;
+}
+
+.checkbox:hover {
+  background: var(--bgSubtle);
+}
+
+.checkbox input {
+  cursor: pointer;
+}
+
+.desktopTable {
+  overflow-x: auto;
+  display: none;
+}
+
+.desktopTable table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bgSurface);
+  border: 1px solid var(--border);
+  border-radius: var(--radiusCard);
+  overflow: hidden;
+}
+
+.desktopTable thead {
+  background: var(--bgSubtle);
+  border-bottom: 1px solid var(--border);
+}
+
+.desktopTable th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--textPrimary);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.desktopTable td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--textPrimary);
+}
+
+.desktopTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.desktopTable tbody tr:hover {
+  background: var(--bgSubtle);
+}
+
+.productName {
+  font-weight: 500;
+}
+
+.sku {
+  font-family: var(--fontMono);
+  font-size: 0.875rem;
+  color: var(--textSecondary);
+}
+
+.stock {
+  font-family: var(--fontMono);
+  font-weight: 600;
+  min-width: 50px;
+}
+
+.stock.danger {
+  color: var(--dangerText);
+}
+
+.stock.warning {
+  color: var(--warningText);
+}
+
+.stock.success {
+  color: var(--successText);
+}
+
+.mobileCards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.productCard {
+  padding: 1rem;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.cardProductName {
+  margin: 0 0 0.25rem;
+  font-weight: 600;
+  color: var(--textPrimary);
+  font-size: 1rem;
+}
+
+.cardSku {
+  margin: 0;
+  font-family: var(--fontMono);
+  font-size: 0.8125rem;
+  color: var(--textSecondary);
+}
+
+.cardBody {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.statItem span:first-child {
+  font-size: 0.75rem;
+  color: var(--textSecondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+.statItem span:last-child {
+  font-family: var(--fontMono);
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+
+.stockValue.danger {
+  color: var(--dangerText);
+}
+
+.stockValue.warning {
+  color: var(--warningText);
+}
+
+.stockValue.success {
+  color: var(--successText);
+}
+
+.pagination {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--textSecondary);
+}
+
+.skeletonTable {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .desktopTable {
+    display: block;
+  }
+
+  .mobileCards {
+    display: none;
+  }
+
+  .page {
+    padding: 2rem;
+  }
+
+  .controls {
+    gap: 0.75rem;
+  }
+
+  .controls > * {
+    min-width: 250px;
+  }
+}

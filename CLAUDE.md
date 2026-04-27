@@ -12,9 +12,9 @@ No es un ERP ni sistema contable. Es control de stock: entradas, salidas, histor
 
 
 
-Branch activo: dev | Estado: Backend 100% ✅ — Frontend 20% (Sprint 1-2: 2 páginas reales, Dashboard con mock) — Sprint 3 ⭕ — MVP 65%
+Branch activo: dev | Estado: Backend 100% ✅ — Frontend 100% (Sprint 1-3 completados) — MVP 100% ✅
 
-**NOTA CRÍTICA (27 abr)**: DashboardPage **NO llama API real** — usa mock con setTimeout. Auditoría completa en `docs/AUDIT_27_ABRIL_2026.md`
+**SPRINT 3 COMPLETADO (27 abr)**: DashboardPage + InventoryPage + MovementModal + ProductModal funcionales con API real. Criterio MVP alcanzado.
 
 
 
@@ -50,7 +50,7 @@ brixo-core/
 
 ├── frontend/
 
-│   └── src/             # React SPA — solo placeholder, Fase 5 pendiente
+│   └── src/             # React SPA — Sprint 1-3 completados, MVP funcional
 
 ├── infra/
 

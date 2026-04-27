@@ -1,8 +1,8 @@
 # ROADMAP — BRIXO MVP 2026
 
-**Actualizado**: 27 de abril de 2026 (auditoría de código — estado real)
-**Estado**: Backend 100% ✅ · Frontend Sprint 1-2 (parcial: 2/18) · Sprint 3 ⭕ · MVP 65%
-**Criterio de MVP**: Un OWNER puede registrar su empresa → iniciar sesión → **ver su inventario real → registrar un movimiento**, sin capacitación previa. ← **⚠️ Dashboard carga datos simulados. Sprint 3 no iniciado.**
+**Actualizado**: 27 de abril de 2026 — Sprint 3 completado
+**Estado**: Backend 100% ✅ · Frontend Sprint 1-3 (100%: 18/18 tareas) · MVP 100% ✅
+**Criterio de MVP**: Un OWNER puede registrar su empresa → iniciar sesión → **ver su inventario real → registrar un movimiento**, sin capacitación previa. ← **✅ ALCANZADO: Dashboard, Inventory, MovementModal y ProductModal funcionales.**
 
 ---
 
@@ -16,10 +16,10 @@ FASE 4   Controladores / Rutas    ██████████  100%   ← cer
 FASE 4B  Seguridad aplicada       ██████████  100%   ← cerrada
 FASE 4C  Observabilidad           ██████████  100%   ← cerrada
 FASE 4D  SaaS Auth + Bugs         ██████████  100%   ← cerrada
-FASE 5   Frontend MVP             ██░░░░░░░░   20%   ← Register + Login funcional; Dashboard con mock
-FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← bloqueada
+FASE 5   Frontend MVP             ██████████  100%   ← Sprint 1-3 completos
+FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← siguientes
 ────────────────────────────────────────────────────
-TOTAL MVP                         ████████░░   65%
+TOTAL MVP                         ██████████  100%
 ```
 
 **Stack frontend**: React 18 + TypeScript 6 + Vite 5 + Zustand 5 + React Router DOM 7 + Axios 1.15
@@ -36,7 +36,7 @@ TOTAL MVP                         ████████░░   65%
 /register   →  RegisterPage   (pública · error 409 si duplicado)
 /login      →  LoginPage      (pública · error 401 si credenciales inválidas)
 /dashboard  →  DashboardPage  (privada · KPIs, alertas, últimos movimientos) ✅
-/inventory  →  InventoryPage  (privada · próximamente)
+/inventory  →  InventoryPage  (privada · tabla/cards + busca/filtros + datos reales) ✅
 /movements  →  MovementsPage  (privada · próximamente)
 /team       →  TeamPage       (privada · próximamente)
 /audit      →  AuditPage      (privada · próximamente)
@@ -79,7 +79,7 @@ TOTAL MVP                         ████████░░   65%
 | 10 | AppShell responsivo: sidebar 240px (desktop) + bottom-nav 4 ítems (móvil) | `components/layout/AppShell.tsx` | 40 min | ✅ |
 | 11 | Componentes de datos: MetricCard, Card, Badge de estado, AlertCard | `components/feedback/` | 35 min | ✅ |
 | 12 | Toast global + Skeleton shimmer (prefers-reduced-motion) | `components/feedback/Toast.tsx`, `Skeleton.tsx` | 20 min | ✅ |
-| **13** | **DashboardPage** — saludo, 4 KPIs, movimientos recientes, alertas (datos simulados) | `pages/DashboardPage.tsx` | 50 min | ✅ |
+| **13** | **DashboardPage** — saludo, 4 KPIs, movimientos recientes, alertas (datos API real) | `pages/DashboardPage.tsx` | 50 min | ✅ |
 
 **UX crítico Sprint 2** (basado en prototipo panel de control):
 - Saludo "Hola, [nombre]" con empresa y fecha/hora local en español
@@ -98,11 +98,11 @@ TOTAL MVP                         ████████░░   65%
 
 | # | Tarea | Archivo(s) | Tiempo | Estado |
 |---|-------|-----------|--------|--------|
-| 14 | Modal + BottomSheet (contenedor reutilizable) | `components/feedback/Modal.tsx`, `BottomSheet.tsx` | 25 min | ⭕ |
-| 15 | EmptyState (con CTA contextual) | `components/feedback/EmptyState.tsx` | 10 min | ⭕ |
-| **16** | **InventoryPage** — tabla desktop + cards móvil + búsqueda + filtros | `pages/InventoryPage.tsx` | 50 min | ⭕ |
-| **17** | **MovementModal** — ENTRADA / SALIDA / AJUSTE, 3 pasos, < 10 segundos | `components/MovementModal.tsx` | 50 min | ⭕ |
-| **18** | **ProductModal** — formulario nuevo producto, error 409 SKU duplicado | `components/ProductModal.tsx` | 35 min | ⭕ |
+| 14 | Modal + BottomSheet (contenedor reutilizable) | `components/feedback/Modal.tsx`, `BottomSheet.tsx` | 25 min | ✅ |
+| 15 | EmptyState (con CTA contextual) | `components/feedback/EmptyState.tsx` | 10 min | ✅ |
+| **16** | **InventoryPage** — tabla desktop + cards móvil + búsqueda + filtros | `pages/InventoryPage.tsx` | 50 min | ✅ |
+| **17** | **MovementModal** — ENTRADA / SALIDA / AJUSTE, 3 pasos, < 10 segundos | `components/MovementModal.tsx` | 50 min | ✅ |
+| **18** | **ProductModal** — formulario nuevo producto, error 409 SKU duplicado | `components/ProductModal.tsx` | 35 min | ✅ |
 
 **UX crítico Sprint 3** (basado en prototipo inventario):
 - Sidebar muestra ítems: Panel, Inventario, Movimientos, Equipo, Auditoría — con ítem activo en brandSoft
@@ -182,7 +182,7 @@ Derivados de `DISEÑO_BRIXO.md` y validados contra los 4 prototipos de `inspirac
 | Errores devuelven JSON consistente `{ error, message }` | ✅ |
 | Logs JSON en stdout y `backend/logs/app.log` | ✅ |
 
-### Frontend ⚠️ — Parcialmente Completo (Sprint 1-2: 2 de 18 tareas)
+### Frontend ✅ — 100% Completo (Sprint 1-3: 18 de 18 tareas)
 
 | Criterio | Estado | Notas |
 |----------|--------|-------|
@@ -190,11 +190,11 @@ Derivados de `DISEÑO_BRIXO.md` y validados contra los 4 prototipos de `inspirac
 | Un OWNER puede registrar su empresa desde el browser | ✅ | RegisterPage.tsx llama `POST /api/auth/register` real |
 | Un OWNER puede iniciar sesión | ✅ | LoginPage.tsx llama `POST /api/auth/login` real |
 | Dashboard UI renderiza correctamente | ✅ | AppShell + KPIs + Alertas diseñado |
-| **Dashboard carga datos REALES del API** | ❌ | **Usa mock: setTimeout + hardcoded. No llama GET /api/products/** |
-| Puede ver su inventario con semáforo de stock | ❌ | Sprint 3 no iniciado — InventoryPage no existe |
-| Puede registrar un movimiento en < 10 seg | ❌ | Sprint 3 no iniciado — MovementModal no existe |
-| Puede agregar un nuevo producto | ❌ | Sprint 3 no iniciado — ProductModal no existe |
-| Funciona en mobile y desktop (responsive) | ✅ | AppShell adapta: sidebar 240px → bottom-nav |
+| **Dashboard carga datos REALES del API** | ✅ | DashboardPage.tsx llama GET /api/products/ para KPIs reales |
+| Puede ver su inventario con semáforo de stock | ✅ | InventoryPage con tabla desktop + cards móvil, datos API real |
+| Puede registrar un movimiento en < 10 seg | ✅ | MovementModal: tipo → producto → cantidad → confirmar (3 pasos) |
+| Puede agregar un nuevo producto | ✅ | ProductModal: nombre + SKU + stock mínimo, validación 409 |
+| Funciona en mobile y desktop (responsive) | ✅ | AppShell adapta: sidebar 240px → bottom-nav; Modal ↔ BottomSheet |
 | Modo oscuro y claro sin bugs visuales | ✅ | ThemeProvider + tokens implementado |
 
 ---

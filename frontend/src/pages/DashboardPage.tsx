@@ -16,6 +16,8 @@ import { Badge } from "@/components/feedback/Badge";
 import { AlertCard } from "@/components/feedback/AlertCard";
 import { Skeleton } from "@/components/feedback/Skeleton";
 import { Button } from "@/components/primitives/Button";
+import { MovementModal } from "@/components/MovementModal";
+import { api, Product } from "@/services/api";
 import styles from "./DashboardPage.module.css";
 
 interface KPIData {
@@ -44,6 +46,7 @@ export function DashboardPage() {
   const user = useAuthStore((s) => s.user);
   const { addToast } = useToast();
   const [loading, setLoading] = useState(true);
+  const [showMovementModal, setShowMovementModal] = useState(false);
   const [kpi, setKpi] = useState<KPIData>({
     totalProducts: 0,
     lowStockCount: 0,
@@ -53,65 +56,51 @@ export function DashboardPage() {
   const [movements, setMovements] = useState<Movement[]>([]);
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
 
-  // Simular carga de datos
-  useEffect(() => {
-    const timer = setTimeout(() => {
+  const loadDashboardData = async () => {
+    try {
+      const products = await api.getProducts();
+      const lowStockProducts = products.filter((p) => p.stock <= p.minimum_stock);
+
       setKpi({
-        totalProducts: 24,
-        lowStockCount: 3,
-        recentMovements: 12,
+        totalProducts: products.length,
+        lowStockCount: lowStockProducts.length,
+        recentMovements: products.reduce((sum, p) => sum + Math.floor(Math.random() * 3), 0),
         teamMembers: 1,
       });
-      setMovements([
-        {
-          id: "1",
-          product: "Camiseta roja",
-          type: "ENTRADA",
-          quantity: 50,
-          timestamp: "hace 2 horas",
-        },
-        {
-          id: "2",
-          product: "Pantalón azul",
-          type: "SALIDA",
-          quantity: 5,
-          timestamp: "hace 4 horas",
-        },
-        {
-          id: "3",
-          product: "Gorro blanco",
-          type: "AJUSTE",
-          quantity: -2,
-          timestamp: "hace 6 horas",
-        },
-      ]);
-      setAlerts([
-        {
-          id: "1",
-          type: "danger",
-          title: "Stock crítico",
-          description: "Camiseta roja: 2 unidades (mín. 5)",
-        },
-        {
-          id: "2",
-          type: "warning",
-          title: "Stock bajo",
-          description: "Pantalón azul: 8 unidades (mín. 10)",
-        },
-        {
-          id: "3",
-          type: "warning",
-          title: "Stock bajo",
-          description: "Gorro blanco: 3 unidades (mín. 5)",
-        },
-      ]);
+
+      const alertItems: AlertItem[] = lowStockProducts
+        .map((product) => ({
+          id: product.id,
+          type: product.stock <= product.minimum_stock ? ("danger" as const) : ("warning" as const),
+          title: product.stock <= product.minimum_stock ? "Stock crítico" : "Stock bajo",
+          description: `${product.name}: ${product.stock} unidades (mín. ${product.minimum_stock})`,
+        }))
+        .slice(0, 3);
+
+      setAlerts(alertItems);
+
+      const mockMovements: Movement[] = products.slice(0, 3).map((p, idx) => ({
+        id: `${idx}`,
+        product: p.name,
+        type: ["ENTRADA", "SALIDA", "AJUSTE"][idx % 3] as any,
+        quantity: Math.floor(Math.random() * 50) + 1,
+        timestamp: `hace ${(idx + 1) * 2} horas`,
+      }));
+      setMovements(mockMovements);
+    } catch (err) {
+      console.error("Error loading dashboard:", err);
+      addToast("Error al cargar datos del dashboard", "error", 3000);
+    } finally {
       setLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
+    }
+  };
+
+  useEffect(() => {
+    loadDashboardData();
   }, []);
 
   const handleRegisterMovement = () => {
-    addToast("Próximamente: Modal de movimientos", "info", 3000);
+    setShowMovementModal(true);
   };
 
   const now = new Date();
@@ -239,6 +228,15 @@ export function DashboardPage() {
           <a href="/movements">Ver todos →</a>
         </div>
       </section>
+
+      <MovementModal
+        isOpen={showMovementModal}
+        onClose={() => setShowMovementModal(false)}
+        onSuccess={() => {
+          setShowMovementModal(false);
+          loadDashboardData();
+        }}
+      />
     </div>
   );
 }

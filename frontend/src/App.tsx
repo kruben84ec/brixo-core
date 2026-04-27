@@ -8,25 +8,19 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { LoginPage } from "@/pages/LoginPage";
 import { RegisterPage } from "@/pages/RegisterPage";
 import { DashboardPage } from "@/pages/DashboardPage";
+import { InventoryPage } from "@/pages/InventoryPage";
 import { useAuthStore } from "@/stores/authStore";
 import { useEffect } from "react";
 
 /**
- * Placeholders para rutas del Sprint 3+
+ * Placeholders para rutas post-MVP
  */
-function InventoryPage() {
-  return <div style={{ padding: "2rem" }}>📦 Inventario - próximamente</div>;
-}
 
-function MovementsPage() {
-  return <div style={{ padding: "2rem" }}>↔️ Movimientos - próximamente</div>;
-}
-
-function TeamPage() {
+function TeamPagePlaceholder() {
   return <div style={{ padding: "2rem" }}>👥 Equipo - próximamente</div>;
 }
 
-function AuditPage() {
+function AuditPagePlaceholder() {
   return <div style={{ padding: "2rem" }}>📋 Auditoría - próximamente</div>;
 }
 
@@ -90,7 +84,7 @@ function App() {
                   element={
                     <PrivateRoute>
                       <AppShell sidebarContent={<Sidebar activeItem="movements" />}>
-                        <MovementsPage />
+                        <MovementsPagePlaceholder />
                       </AppShell>
                     </PrivateRoute>
                   }
@@ -100,7 +94,7 @@ function App() {
                   element={
                     <PrivateRoute>
                       <AppShell sidebarContent={<Sidebar activeItem="team" />}>
-                        <TeamPage />
+                        <TeamPagePlaceholder />
                       </AppShell>
                     </PrivateRoute>
                   }
@@ -110,7 +104,7 @@ function App() {
                   element={
                     <PrivateRoute>
                       <AppShell sidebarContent={<Sidebar activeItem="audit" />}>
-                        <AuditPage />
+                        <AuditPagePlaceholder />
                       </AppShell>
                     </PrivateRoute>
                   }
