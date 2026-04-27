@@ -12,7 +12,9 @@ No es un ERP ni sistema contable. Es control de stock: entradas, salidas, histor
 
 
 
-Branch activo: dev | Estado: Backend 100% ✅ — Frontend Sprint 1-2 ✅ — Sprint 3 ⭕ — MVP 78%
+Branch activo: dev | Estado: Backend 100% ✅ — Frontend 20% (Sprint 1-2: 2 páginas reales, Dashboard con mock) — Sprint 3 ⭕ — MVP 65%
+
+**NOTA CRÍTICA (27 abr)**: DashboardPage **NO llama API real** — usa mock con setTimeout. Auditoría completa en `docs/AUDIT_27_ABRIL_2026.md`
 
 
 
@@ -224,7 +226,12 @@ RBAC activo en todos los endpoints protegidos
 
 POST /api/auth/refresh — renueva token sin re-login
 
-✅ Frontend Sprint 1-2 completos (Fase 5 — 72%)
+⚠️ Frontend Sprint 1-2 PARCIAL (Fase 5 — 20% de 18 tareas)
+
+**Realidad (auditoría 27 abr)**: 
+- ✅ 2 páginas reales (Register + Login) que llaman API
+- ⚠️ 1 página con UI pero sin lógica (Dashboard: mock con setTimeout)
+- ❌ 0 páginas Sprint 3 iniciadas (Inventory, Movements, Team, Audit son placeholders inline)
 
 Stack: React 18 + TypeScript 6.0.3 + Vite 5 + Zustand 5 + React Router DOM 7 + Axios 1.15
 

@@ -1,8 +1,8 @@
 # ROADMAP — BRIXO MVP 2026
 
-**Actualizado**: 23 de abril de 2026
-**Estado**: Backend 100% ✅ · Frontend Sprint 1-2 ✅ · Sprint 3 ⭕ · MVP parcial
-**Criterio de MVP**: Un OWNER puede registrar su empresa → iniciar sesión → ver su inventario → registrar un movimiento, sin capacitación previa. ← **Sprint 3 pendiente para completar este criterio**
+**Actualizado**: 27 de abril de 2026 (auditoría de código — estado real)
+**Estado**: Backend 100% ✅ · Frontend Sprint 1-2 (parcial: 2/18) · Sprint 3 ⭕ · MVP 65%
+**Criterio de MVP**: Un OWNER puede registrar su empresa → iniciar sesión → **ver su inventario real → registrar un movimiento**, sin capacitación previa. ← **⚠️ Dashboard carga datos simulados. Sprint 3 no iniciado.**
 
 ---
 
@@ -16,10 +16,10 @@ FASE 4   Controladores / Rutas    ██████████  100%   ← cer
 FASE 4B  Seguridad aplicada       ██████████  100%   ← cerrada
 FASE 4C  Observabilidad           ██████████  100%   ← cerrada
 FASE 4D  SaaS Auth + Bugs         ██████████  100%   ← cerrada
-FASE 5   Frontend MVP             ███████░░░   72%   ← Sprint 1-2 ✅ · Sprint 3 ⭕
+FASE 5   Frontend MVP             ██░░░░░░░░   20%   ← Register + Login funcional; Dashboard con mock
 FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← bloqueada
 ────────────────────────────────────────────────────
-TOTAL MVP                         ████████░░   78%
+TOTAL MVP                         ████████░░   65%
 ```
 
 **Stack frontend**: React 18 + TypeScript 6 + Vite 5 + Zustand 5 + React Router DOM 7 + Axios 1.15
@@ -182,18 +182,20 @@ Derivados de `DISEÑO_BRIXO.md` y validados contra los 4 prototipos de `inspirac
 | Errores devuelven JSON consistente `{ error, message }` | ✅ |
 | Logs JSON en stdout y `backend/logs/app.log` | ✅ |
 
-### Frontend ⭕ — En curso
+### Frontend ⚠️ — Parcialmente Completo (Sprint 1-2: 2 de 18 tareas)
 
-| Criterio | Estado |
-|----------|--------|
-| Setup TypeScript 6 + Vite 5 sin errores | ✅ |
-| Un OWNER puede registrar su empresa desde el browser | ✅ |
-| Un OWNER puede iniciar sesión y ver el dashboard | ✅ (datos simulados) |
-| Puede ver su inventario con semáforo de stock | ⭕ |
-| Puede registrar un movimiento en < 10 segundos | ⭕ |
-| Puede agregar un nuevo producto | ⭕ |
-| Funciona en mobile y desktop (responsive) | ✅ |
-| Modo oscuro y claro sin bugs visuales | ✅ |
+| Criterio | Estado | Notas |
+|----------|--------|-------|
+| Setup TypeScript 6 + Vite 5 sin errores | ✅ | `tsc --noEmit` pasa, 0 errores |
+| Un OWNER puede registrar su empresa desde el browser | ✅ | RegisterPage.tsx llama `POST /api/auth/register` real |
+| Un OWNER puede iniciar sesión | ✅ | LoginPage.tsx llama `POST /api/auth/login` real |
+| Dashboard UI renderiza correctamente | ✅ | AppShell + KPIs + Alertas diseñado |
+| **Dashboard carga datos REALES del API** | ❌ | **Usa mock: setTimeout + hardcoded. No llama GET /api/products/** |
+| Puede ver su inventario con semáforo de stock | ❌ | Sprint 3 no iniciado — InventoryPage no existe |
+| Puede registrar un movimiento en < 10 seg | ❌ | Sprint 3 no iniciado — MovementModal no existe |
+| Puede agregar un nuevo producto | ❌ | Sprint 3 no iniciado — ProductModal no existe |
+| Funciona en mobile y desktop (responsive) | ✅ | AppShell adapta: sidebar 240px → bottom-nav |
+| Modo oscuro y claro sin bugs visuales | ✅ | ThemeProvider + tokens implementado |
 
 ---
 

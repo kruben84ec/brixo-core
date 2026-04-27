@@ -3,7 +3,13 @@
     "allow": [
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(npx skills *)",
+      "Bash(npx ctx7 *)",
+      "PowerShell(npx ctx7 setup)",
+      "PowerShell(powershell -Command \"npx ctx7 setup\")",
+      "Bash(awk '{print $NF}')",
+      "Bash(grep -v \"^$\")"
     ]
   },
   "enabledPlugins": {}

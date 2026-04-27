@@ -1,8 +1,8 @@
 # ESTATUS DEL PROYECTO BRIXO — MVP
 
-**Fecha**: 23 de abril de 2026
+**Fecha**: 27 de abril de 2026 (actualizado — auditoría de código)
 **Rama activa**: `dev`
-**Estado general**: Backend 100% ✅ · Frontend Sprint 1-2 ✅ · Sprint 3 ⭕ · MVP parcial
+**Estado general**: Backend 100% ✅ · Frontend Sprint 1-2 (parcial) · Sprint 3 ⭕ · MVP 65% (no 78%)
 
 ---
 
@@ -16,13 +16,18 @@ FASE 4   Controladores / Rutas    ██████████  100%   ← cer
 FASE 4B  Seguridad aplicada       ██████████  100%   ← cerrada
 FASE 4C  Observabilidad           ██████████  100%   ← cerrada
 FASE 4D  SaaS Auth + Bugs         ██████████  100%   ← cerrada
-FASE 5   Frontend MVP             ███████░░░   72%   ← Sprint 1-2 ✅ · Sprint 3 ⭕
+FASE 5   Frontend MVP             ██░░░░░░░░   20%   ← Sprint 1-2: sólo 2 páginas reales contra API
 FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← bloqueada
 ────────────────────────────────────────────────────
-TOTAL MVP                         ████████░░   78%
+TOTAL MVP                         ████████░░   65%
 ```
 
-**Nota**: Sprint 1-2 completos (13 de 18 tareas frontend). Sprint 3 (Inventario + Acciones) pendiente. DashboardPage usa datos simulados — no llama al API real.
+**NOTA CRÍTICA (27 abr 2026)**: Auditoría de código revela:
+- ✅ **RegisterPage y LoginPage**: Páginas reales que llaman API real
+- ⚠️ **DashboardPage**: UI lista pero usa datos **simulados** (setTimeout + hardcoded) — **NO llama API real**
+- ❌ **Páginas Sprint 3**: Placeholders inline en App.tsx, no existen como archivos separados
+- ❌ **Componentes Sprint 3**: Modal, BottomSheet, EmptyState, MovementModal, ProductModal aún no existen
+- 📊 **Frontend real**: 2/18 tareas completas (Register + Login). Dashboard es **UI sin lógica**.
 
 ---
 
