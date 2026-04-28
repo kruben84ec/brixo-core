@@ -259,6 +259,12 @@
       "skillPath": "skills/email-sequence/SKILL.md",
       "computedHash": "f4513ca015f509187ec39bff603663ffc82bcd078b9e22bd26ef87dce4e36a7c"
     },
+    "emil-design-eng": {
+      "source": "emilkowalski/skill",
+      "sourceType": "github",
+      "skillPath": "skills/emil-design-eng/SKILL.md",
+      "computedHash": "ac3fc5b4e206488ffc408a2806f829bb2e5eaf518fded09be34790685c2b3a0d"
+    },
     "entry-point-analyzer": {
       "source": "trailofbits/skills",
       "sourceType": "github",

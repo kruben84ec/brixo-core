@@ -5,7 +5,11 @@
       "Bash(npx tsc *)",
       "Bash(npx vite *)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(ls)",
+      "Bash(python3 \"D:\\\\repositorio\\\\brixo-core\\\\infra\\\\.agents\\\\skills\\\\ui-ux-pro-max\\\\scripts\\\\search.py\" \"SaaS inventory management pyme small business productivity\" --design-system -p \"Brixo\" -f markdown)",
+      "Bash(python \"D:\\\\repositorio\\\\brixo-core\\\\infra\\\\.agents\\\\skills\\\\ui-ux-pro-max\\\\scripts\\\\search.py\" \"SaaS inventory management pyme small business productivity\" --design-system -p \"Brixo\" -f markdown)",
+      "PowerShell(Get-ChildItem *)"
     ]
   }
 }
