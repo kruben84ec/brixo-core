@@ -7,8 +7,8 @@
 .error {
   margin: 0;
   font-size: 0.875rem;
-  color: var(--dangerText);
-  background: var(--dangerSoft);
+  color: var(--danger-text);
+  background: var(--danger-soft);
   padding: 0.75rem;
-  border-radius: var(--radiusInput);
+  border-radius: 10px;
 }

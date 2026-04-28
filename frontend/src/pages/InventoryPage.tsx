@@ -85,20 +85,28 @@ export function InventoryPage() {
       </div>
 
       <div className={styles.controls}>
-        <Input
-          type="text"
-          placeholder="Buscar producto o SKU..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.currentTarget.value)}
-        />
-        <label className={styles.checkbox}>
-          <input
-            type="checkbox"
-            checked={showLowStockOnly}
-            onChange={(e) => setShowLowStockOnly(e.currentTarget.checked)}
+        <div className={styles.searchWrapper}>
+          <Input
+            type="text"
+            placeholder="Buscar por nombre o SKU..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.currentTarget.value)}
           />
-          <span>Stock bajo ({products.filter((p) => p.stock <= p.minimum_stock).length})</span>
-        </label>
+        </div>
+        <div className={styles.filters}>
+          <button
+            className={`${styles.filterPill} ${!showLowStockOnly ? styles.filterPillActive : ""}`}
+            onClick={() => setShowLowStockOnly(false)}
+          >
+            Todos
+          </button>
+          <button
+            className={`${styles.filterPill} ${showLowStockOnly ? styles.filterPillDanger : ""}`}
+            onClick={() => setShowLowStockOnly(true)}
+          >
+            Stock bajo · {products.filter((p) => p.stock <= p.minimum_stock).length}
+          </button>
+        </div>
       </div>
 
       {filteredProducts.length === 0 ? (

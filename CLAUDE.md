@@ -12,7 +12,9 @@ No es un ERP ni sistema contable. Es control de stock: entradas, salidas, histor
 
 
 
-Branch activo: dev | Estado: Backend 100% ✅ — Frontend 100% (Sprint 1-3 completados) — MVP 100% ✅
+Branch activo: dev | Estado: Backend 100% ✅ — Frontend 100% (Sprint 1-3 + UI Polish) — MVP 100% ✅
+
+**UI POLISH COMPLETADO (28 abr)**: CSS Modules bug crítico resuelto (Button/Input sin estilos), Icon.tsx inline SVG, BrixoLogo rediseñado, AppShell/Sidebar con iconos SVG, MetricCard/AlertCard/Badge según spec, variables CSS normalizadas en Modal/BottomSheet/EmptyState.
 
 **SPRINT 3 COMPLETADO (27 abr)**: DashboardPage + InventoryPage + MovementModal + ProductModal funcionales con API real. Criterio MVP alcanzado.
 

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useTheme } from "@/hooks/useTheme";
+import { BrixoLogo } from "@/components/BrixoLogo";
+import { Icon } from "@/components/Icon";
 import styles from "./AppShell.module.css";
 
 interface AppShellProps {
@@ -13,71 +15,73 @@ interface AppShellProps {
   }>;
 }
 
-/**
- * Shell de la aplicación - Sidebar (desktop) + Bottom-nav (móvil)
- * - Sidebar 240px en desktop
- * - Bottom-nav 4 ítems en móvil
- * - Safe area inset para dispositivos con notch
- */
 export const AppShell: React.FC<AppShellProps> = ({
   children,
   sidebarContent,
   bottomNavItems = [],
 }) => {
-  const { toggle } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className={styles.shell}>
-      {/* Sidebar - visible solo en desktop */}
+      {/* Sidebar */}
       <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}>
         <div className={styles.sidebarHeader}>
+          <div className={styles.logoArea}>
+            <BrixoLogo size="sm" />
+            <span className={styles.brandName}>Brixo</span>
+          </div>
           <button
             className={styles.closeBtn}
             onClick={() => setSidebarOpen(false)}
             aria-label="Cerrar sidebar"
           >
-            ✕
+            <Icon name="x" size={18} />
           </button>
         </div>
         {sidebarContent}
-        <div className={styles.sidebarFooter}>
-          <button
-            className={styles.themeToggle}
-            onClick={toggle}
-            aria-label="Cambiar tema"
-          >
-            🌓
-          </button>
-        </div>
       </aside>
 
-      {/* Overlay cuando sidebar abierto en móvil */}
+      {/* Overlay móvil */}
       {sidebarOpen && (
-        <div
-          className={styles.overlay}
-          onClick={() => setSidebarOpen(false)}
-        />
+        <div className={styles.overlay} onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* Main content */}
+      {/* Main */}
       <main className={styles.main}>
-        {/* Header con burger menu en móvil */}
-        <div className={styles.topBar}>
-          <button
-            className={styles.menuBtn}
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            aria-label="Abrir menú"
-          >
-            ☰
-          </button>
-        </div>
+        <header className={styles.topBar}>
+          <div className={styles.topBarStart}>
+            <button
+              className={styles.menuBtn}
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              aria-label="Abrir menú"
+            >
+              <Icon name="menu" size={20} />
+            </button>
+            <div className={styles.mobileLogoArea}>
+              <BrixoLogo size="sm" />
+              <span className={styles.brandName}>Brixo</span>
+            </div>
+          </div>
+          <div className={styles.topBarEnd}>
+            <button
+              className={styles.iconBtn}
+              onClick={toggleTheme}
+              aria-label="Cambiar tema"
+            >
+              <Icon name={theme === "dark" ? "sun" : "moon"} size={18} />
+            </button>
+            <button className={styles.iconBtn} aria-label="Notificaciones">
+              <Icon name="bell" size={18} />
+            </button>
+          </div>
+        </header>
 
-        {/* Contenido principal */}
         <div className={styles.content}>{children}</div>
       </main>
 
-      {/* Bottom nav - visible solo en móvil */}
+      {/* Bottom nav móvil */}
       {bottomNavItems.length > 0 && (
         <nav className={styles.bottomNav}>
           {bottomNavItems.map((item, idx) => (

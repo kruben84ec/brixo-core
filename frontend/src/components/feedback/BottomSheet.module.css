@@ -13,7 +13,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: var(--bgSurface);
+  background: var(--bg-surface);
   border-top: 1px solid var(--border);
   border-radius: 24px 24px 0 0;
   z-index: 99;
@@ -35,7 +35,7 @@
 .handle {
   width: 40px;
   height: 4px;
-  background: var(--bgMuted);
+  background: var(--bg-muted);
   border-radius: 2px;
   margin: 0.75rem auto 1rem;
 }
@@ -51,7 +51,7 @@
   margin: 0;
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--textPrimary);
+  color: var(--text-primary);
 }
 
 .close {
@@ -59,7 +59,7 @@
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: var(--textSecondary);
+  color: var(--text-secondary);
   padding: 0.25rem;
   display: flex;
   align-items: center;
@@ -70,14 +70,14 @@
 }
 
 .close:hover {
-  color: var(--textPrimary);
+  color: var(--text-primary);
 }
 
 .content {
   flex: 1;
   overflow-y: auto;
   padding: 0 1.5rem;
-  color: var(--textPrimary);
+  color: var(--text-primary);
 }
 
 .footer {

@@ -1,17 +1,9 @@
-/**
- * Página de Registro
- * - 4 campos: empresa, nombre, email, contraseña
- * - Callout índigo: "Serás el propietario"
- * - Error 409 en línea si empresa duplicada
- * - Dark mode nativo
- * - Botón CTA: "Crear empresa y empezar"
- */
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BrixoLogo } from "@/components/BrixoLogo";
 import { Button } from "@/components/primitives/Button";
 import { Input } from "@/components/primitives/Input";
+import { Icon } from "@/components/Icon";
 import { api, RegisterRequest } from "@/services/api";
 import { useAuthStore } from "@/stores/authStore";
 import styles from "./AuthPage.module.css";
@@ -33,12 +25,11 @@ export function RegisterPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.currentTarget;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Limpiar error del campo cuando empieza a escribir
     if (errors[name]) {
       setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
+        const next = { ...prev };
+        delete next[name];
+        return next;
       });
     }
   };
@@ -46,9 +37,13 @@ export function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      const response = await api.register(formData as RegisterRequest);
+      const response = await api.register({
+        company_name: formData.tenant_name,
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      } as RegisterRequest);
       const user = {
         id: "temp",
         tenant_id: "temp",
@@ -60,14 +55,12 @@ export function RegisterPage() {
       setAuth(response.access_token, user);
       navigate("/dashboard");
     } catch (error: any) {
-      const message = error.response?.data?.message || "Error desconocido";
       if (error.response?.status === 409) {
         setErrors({ tenant_name: "Esta empresa ya existe" });
-      } else if (error.response?.status === 422) {
-        // Validación de Pydantic
-        setErrors({ general: message });
       } else {
-        setErrors({ general: message });
+        setErrors({
+          general: error.response?.data?.message || "Error al crear la cuenta",
+        });
       }
     } finally {
       setLoading(false);
@@ -76,67 +69,56 @@ export function RegisterPage() {
 
   return (
     <div className={styles.authPage}>
-      <div className={styles.container}>
-        {/* Logo y título */}
+      <div className={styles.card}>
         <div className={styles.header}>
-          <BrixoLogo size="md" />
-          <h1 className={styles.title}>Registrar empresa</h1>
+          <BrixoLogo size="lg" />
+          <h1 className={styles.title}>Crea tu empresa</h1>
           <p className={styles.subtitle}>
-            Inicia tu gestión de inventario en segundos
+            Sin capacitación. Sin complejidad. Listo en un minuto.
           </p>
         </div>
 
-        {/* Callout índigo */}
-        <div className={styles.callout}>
-          <p>
-            Serás el <strong>propietario</strong> de la empresa. Después podrás
-            invitar a tu equipo.
-          </p>
-        </div>
-
-        {/* Formulario */}
         <form onSubmit={handleSubmit} className={styles.form}>
-          {/* Grid 2 columnas: empresa + nombre */}
-          <div className={styles.grid2}>
-            <Input
-              label="Nombre de la empresa"
-              name="tenant_name"
-              value={formData.tenant_name}
-              onChange={handleChange}
-              placeholder="Ej: Mi Tienda"
-              error={errors.tenant_name}
-              required
-            />
-            <Input
-              label="Tu nombre"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Ej: Carlos Pérez"
-              required
-            />
-          </div>
-
-          {/* Email en full width */}
           <Input
-            label="Email"
+            label="Nombre de la empresa"
+            name="tenant_name"
+            icon="building"
+            value={formData.tenant_name}
+            onChange={handleChange}
+            placeholder="Ej: Café de la Esquina"
+            error={errors.tenant_name}
+            required
+          />
+          <Input
+            label="Tu nombre"
+            name="name"
+            icon="user"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Ej: Laura Jaramillo"
+            required
+          />
+          <Input
+            label="Correo"
             name="email"
             type="email"
+            icon="mail"
             value={formData.email}
             onChange={handleChange}
-            placeholder="tu@email.com"
+            placeholder="tu@empresa.com"
             required
           />
 
-          {/* Contraseña con toggle */}
           <div className={styles.passwordField}>
             <Input
               label="Contraseña"
               name="password"
               type={showPassword ? "text" : "password"}
+              icon="lock"
               value={formData.password}
               onChange={handleChange}
               placeholder="Mín. 8 caracteres"
+              helperText="Incluye una mayúscula y un número."
               required
             />
             <button
@@ -148,25 +130,32 @@ export function RegisterPage() {
             </button>
           </div>
 
-          {/* Error general */}
+          <div className={styles.callout}>
+            <span className={styles.calloutIcon}>
+              <Icon name="arrowRight" size={16} strokeWidth={2.5} />
+            </span>
+            <p>
+              Serás el <strong>propietario</strong> de la empresa. Después
+              podrás invitar a tu equipo.
+            </p>
+          </div>
+
           {errors.general && (
             <div className={styles.errorInline}>{errors.general}</div>
           )}
 
-          {/* Botón primario */}
           <Button
             type="submit"
             variant="primary"
-            size="md"
+            size="lg"
             loading={loading}
             className={styles.submitButton}
           >
             Crear empresa y empezar
           </Button>
 
-          {/* Link a login */}
           <p className={styles.switch}>
-            ¿Ya tienes una cuenta?{" "}
+            ¿Ya tienes cuenta?{" "}
             <a href="/login" className={styles.link}>
               Inicia sesión
             </a>

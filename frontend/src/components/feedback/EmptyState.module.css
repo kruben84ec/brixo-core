@@ -18,13 +18,13 @@
   margin: 0;
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--textPrimary);
+  color: var(--text-primary);
 }
 
 .description {
   margin: 0;
   font-size: 0.9375rem;
-  color: var(--textSecondary);
+  color: var(--text-secondary);
   max-width: 300px;
 }
 

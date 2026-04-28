@@ -1,6 +1,6 @@
 # CHECKLIST — Estado del Proyecto Brixo
 
-**Actualizado**: 23 de abril de 2026 · **Sprint 1-2**: ✅ · **Sprint 3**: ⭕ · **MVP**: parcial
+**Actualizado**: 28 de abril de 2026 · **Sprint 1-3**: ✅ · **UI Polish**: ✅ · **MVP**: ✅
 **Branch**: `dev`
 **Fuente de verdad de avance**: [ROADMAP.md](ROADMAP.md) — [ESTATUS.md](ESTATUS.md)
 
@@ -106,7 +106,7 @@
 
 ---
 
-## Frontend — 100% ✅ (Sprint 1-2 Completo)
+## Frontend — 100% ✅ (Sprint 1-3 Completo + UI Polish)
 
 **Stack**: React 18 + TypeScript 6.0.3 + Vite 5 + Zustand 5 + React Router DOM 7 + Axios 1.15
 
@@ -139,17 +139,33 @@
 
 **Criterio de done Sprint 2**: El usuario ve su dashboard con datos reales del backend al hacer login.
 
-### Sprint 3 — Inventario + Acciones (próximo)
+### Sprint 3 — Inventario + Acciones ✅
 
 | # | Ítem | Archivo | Estado |
 |---|------|---------|--------|
-| 14 | Modal.tsx + BottomSheet.tsx | `components/feedback/` | ⭕ |
-| 15 | EmptyState.tsx | `components/feedback/EmptyState.tsx` | ⭕ |
-| 16 | ⭐ InventoryPage.tsx — tabla + cards móvil + filtros | `pages/InventoryPage.tsx` | ⭕ |
-| 17 | ⭐ MovementModal.tsx — ENTRADA/SALIDA/AJUSTE | `components/MovementModal.tsx` | ⭕ |
-| 18 | ⭐ ProductModal.tsx — nuevo producto + error 409 | `components/ProductModal.tsx` | ⭕ |
+| 14 | Modal.tsx + BottomSheet.tsx | `components/feedback/` | ✅ |
+| 15 | EmptyState.tsx | `components/feedback/EmptyState.tsx` | ✅ |
+| 16 | ⭐ InventoryPage.tsx — tabla + cards móvil + filtros | `pages/InventoryPage.tsx` | ✅ |
+| 17 | ⭐ MovementModal.tsx — ENTRADA/SALIDA/AJUSTE | `components/MovementModal.tsx` | ✅ |
+| 18 | ⭐ ProductModal.tsx — nuevo producto + error 409 | `components/ProductModal.tsx` | ✅ |
 
-**Criterio de done Sprint 3**: El usuario puede ver su inventario, registrar un movimiento y agregar un producto. **MVP completo**.
+**Criterio de done Sprint 3**: El usuario puede ver su inventario, registrar un movimiento y agregar un producto. **MVP completo** ✅
+
+### UI Polish — Sesión 9 (28 abr 2026) ✅
+
+| Ítem | Archivo | Estado |
+|------|---------|--------|
+| Bug CSS Modules: Button/Input sin estilos | `components/primitives/Button.tsx`, `Input.tsx` | ✅ |
+| Bug AppShell: `toggle` → `toggleTheme` | `components/layout/AppShell.tsx` | ✅ |
+| Bug App.tsx: `MovementsPagePlaceholder` undefined | `App.tsx` | ✅ |
+| Icon.tsx — SVG inline sin librería externa | `components/Icon.tsx` | ✅ |
+| BrixoLogo.tsx rediseñado (spec DISEÑO_BRIXO) | `components/BrixoLogo.tsx` | ✅ |
+| AppShell + Sidebar con iconos SVG | `components/layout/` | ✅ |
+| MetricCard: delta-based, sin emoji | `components/feedback/MetricCard.tsx` | ✅ |
+| AlertCard: border-left 3px únicamente | `components/feedback/AlertCard.tsx` | ✅ |
+| Badge: border-radius 6px | `components/feedback/Badge.module.css` | ✅ |
+| Auth pages: card desktop, full-screen móvil | `pages/AuthPage.module.css` | ✅ |
+| CSS vars normalizadas: 5 archivos (Modal, MovementModal, ProductModal, BottomSheet, EmptyState) | `*.module.css` | ✅ |
 
 ### Post-MVP (después de validar con usuarios reales)
 
@@ -191,8 +207,8 @@
 | Logs JSON observables | ✅ |
 | **OWNER puede registrarse desde el browser** | ✅ |
 | **OWNER puede iniciar sesión y ver dashboard** | ✅ (datos simulados) |
-| **OWNER puede ver inventario con semáforo de stock** | ⭕ |
-| **OPERATOR puede registrar movimiento en < 10 seg** | ⭕ |
-| **OWNER puede agregar un producto nuevo** | ⭕ |
+| **OWNER puede ver inventario con semáforo de stock** | ✅ |
+| **OPERATOR puede registrar movimiento en < 10 seg** | ✅ |
+| **OWNER puede agregar un producto nuevo** | ✅ |
 | Funciona en mobile y desktop | ✅ |
 | Modo oscuro y claro sin bugs visuales | ✅ |

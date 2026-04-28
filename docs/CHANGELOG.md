@@ -4,6 +4,105 @@ Historial de cambios ordenado por fecha descendente.
 
 ---
 
+## 2026-04-28 — Sesión 9: UI Polish — diseño alineado al spec + bugs CSS críticos resueltos
+
+### fix: CSS Modules completamente rotos en Button e Input — aplicados desde cero
+
+**Bug crítico resuelto**: `Button.tsx` e `Input.tsx` importaban `styles` desde `.module.css`
+pero usaban strings literales (`"button button--primary"`) en lugar de `styles.primary`.
+Vite genera nombres hasheados en CSS Modules, por lo que **ningún estilo se aplicaba**.
+TypeScript lo confirmaba con `'styles' is declared but its value is never read`.
+
+- `Button.tsx` + `Button.module.css`: reescritos. Clases renombradas de BEM (`button--primary`)
+  a identificadores simples (`primary`) para compatibilidad con `styles[variant]`.
+  Spinner CSS en lugar de "⋯", `border-radius: 10px`, `min-height: 44px/48px`.
+- `Input.tsx` + `Input.module.css`: reescritos. Añadida prop `icon?: string`.
+  Renderiza `<Icon>` en `.iconLeft` cuando se provee. `padding-left: 44px` con ícono.
+  `min-height: 44px`, `border-radius: 10px`, foco con color de marca.
+
+### fix: AppShell — bug `useTheme().toggle` no existe
+
+- `AppShell.tsx`: `const { toggle } = useTheme()` → `const { theme, toggleTheme } = useTheme()`.
+  El hook siempre expuso `toggleTheme`; `toggle` era undefined — el botón de tema no hacía nada.
+
+### fix: App.tsx — `MovementsPagePlaceholder` referenciado pero nunca definido
+
+- Añadida la función `MovementsPagePlaceholder` que faltaba. Causaba crash de runtime en `/movements`.
+
+### feat: Icon.tsx — componente SVG inline (sin librería externa)
+
+- Nuevo componente `components/Icon.tsx` con ~20 íconos (home, box, swap, users, list, menu, x,
+  sun, moon, bell, plus, minus, search, alert, logout, arrowRight, mail, lock, building, user, eye).
+- Sin dependencia de lucide-react ni similar — paths SVG inline, `strokeWidth` configurable.
+
+### feat: BrixoLogo.tsx — logo geométrico según DISEÑO_BRIXO.md
+
+- Reemplazado texto "B" por SVG con path de la letra B + punto de marca según especificación.
+- Variante `solid` (fondo índigo) y `line` (currentColor para dark/light theming).
+
+### feat: AppShell + Sidebar — iconos SVG, logo en sidebar, topBar siempre visible
+
+- `AppShell.tsx`: BrixoLogo + "Brixo" en `.sidebarHeader` (visible en desktop y móvil).
+  TopBar siempre renderizado (no solo en móvil): iconos de tema + campana en desktop,
+  hamburger + logo en móvil.
+- `Sidebar.tsx`: todos los ítems con `<Icon name={item.icon}>` — eliminados emojis.
+  Ítem logout con icono. Navegación: home, box, swap, users, list.
+- `AppShell.module.css` + `Sidebar.module.css`: reescritos con clases correctas de CSS Modules.
+
+### feat: MetricCard — rediseño según spec (delta-based, sin emoji)
+
+- `MetricCard.tsx`: eliminados props `icon` y `color`. Añadidos `delta`, `deltaColor`, `valueColor`.
+- `MetricCard.module.css`: sin barra de color superior, sin emoji. `.value` 28px weight 600
+  tabular-nums. `.delta_success/.delta_danger/.delta_warning/.delta_info` para texto coloreado.
+
+### feat: AlertCard — borde izquierdo 3px únicamente, sin borde completo
+
+- `AlertCard.tsx`: eliminado prop `icon`, usa `<Icon name="alert" size={12}>` interno.
+- `AlertCard.module.css`: `border-radius: 0 10px 10px 0`, solo `border-left: 3px solid`.
+
+### feat: Badge — border-radius 6px según DISEÑO_BRIXO.md
+
+- `Badge.module.css`: `border-radius: 6px` (antes 9999px/pill), `padding: 3px 8px`, `font-size: 11px`.
+
+### feat: Auth pages — card con sombra, full-screen en móvil
+
+- `LoginPage.tsx` + `RegisterPage.tsx`: reescritos. Inputs con íconos (`icon="mail"`, `icon="lock"`,
+  `icon="building"`, `icon="user"`). Toggle contraseña. `forgotRow` en login. Callout con `<Icon>`.
+- `AuthPage.module.css`: `.card` centrado 420px desktop (16px radius, box-shadow 40px padding),
+  full-screen en móvil (≤480px: sin borde, sin radius, `min-height: 100dvh`).
+
+### feat: DashboardPage — iconos en movimientos, layout de dos columnas
+
+- `DashboardPage.tsx`: `.typeIconBox` 32×32 rounded con `<Icon>` por tipo de movimiento.
+  `movementConfig` mapea type → `{ bgClass, icon, sign }`. CTA móvil separado (`.mobileCta`).
+- `DashboardPage.module.css`: grid 1.5fr 1fr desktop, 1fr móvil. Colores semánticos por tipo.
+
+### feat: InventoryPage — filter pills en lugar de checkbox
+
+- `InventoryPage.tsx`: filtros como `.filterPill` / `.filterPillActive` / `.filterPillDanger`.
+- `InventoryPage.module.css`: variables CSS corregidas, tabla desktop y cards móvil con spec.
+
+### fix: Variables CSS camelCase → kebab-case en 5 archivos
+
+Cinco archivos de CSS Modules usaban variables como `--bgSurface`, `--textPrimary`, `--radiusCard`
+que no existen — las vars definidas en `index.css` usan kebab-case (`--bg-surface`, `--text-primary`).
+Resultado: Modal, MovementModal, ProductModal, BottomSheet y EmptyState eran **completamente sin estilos**.
+
+| Archivo | Variables corregidas |
+|---------|---------------------|
+| `Modal.module.css` | `--bgSurface`, `--radiusCard`, `--shadowLg`, `--textPrimary` ×3, `--textSecondary` |
+| `MovementModal.module.css` | `--bgSurface`, `--bgSubtle`, `--textPrimary` ×3, `--textSecondary` ×3, `--radiusInput` ×2, `--fontMono`, `--dangerText`, `--dangerSoft` |
+| `ProductModal.module.css` | `--dangerText`, `--dangerSoft`, `--radiusInput` |
+| `BottomSheet.module.css` | `--bgSurface`, `--bgMuted`, `--textPrimary` ×3, `--textSecondary` |
+| `EmptyState.module.css` | `--textPrimary`, `--textSecondary` |
+
+### Build final
+
+- Vite build: **140 módulos, 0 errores**, 41.37 KB CSS, ~2.4 segundos.
+- `tsc --noEmit`: 1 warning pre-existente (`AuthResponse` unused en `authStore.ts`) — no bloquea.
+
+---
+
 ## 2026-04-23 — Sesión 8: Auditoría de código + corrección de documentación
 
 ### audit: Comparación código real vs. docs — inconsistencias corregidas

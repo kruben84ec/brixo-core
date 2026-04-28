@@ -35,9 +35,9 @@
   align-items: center;
   padding: 0.75rem;
   border: 1px solid var(--border);
-  border-radius: var(--radiusInput);
-  background: var(--bgSurface);
-  color: var(--textPrimary);
+  border-radius: 10px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   cursor: pointer;
   transition: all 0.2s;
   text-align: left;
@@ -46,7 +46,7 @@
 
 .productItem:hover:not(:disabled) {
   border-color: var(--brand);
-  background: var(--bgSubtle);
+  background: var(--bg-subtle);
 }
 
 .productItem:disabled {
@@ -61,19 +61,19 @@
 .productName {
   margin: 0;
   font-weight: 500;
-  color: var(--textPrimary);
+  color: var(--text-primary);
 }
 
 .productSku {
   margin: 0.25rem 0 0;
-  font-family: var(--fontMono);
+  font-family: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
   font-size: 0.8125rem;
-  color: var(--textSecondary);
+  color: var(--text-secondary);
 }
 
 .productStock {
   margin: 0;
-  color: var(--textSecondary);
+  color: var(--text-secondary);
   font-size: 0.875rem;
   white-space: nowrap;
   margin-left: 1rem;
@@ -81,7 +81,7 @@
 
 .emptyState {
   text-align: center;
-  color: var(--textSecondary);
+  color: var(--text-secondary);
   padding: 2rem 1rem;
   margin: 0;
 }
@@ -94,8 +94,8 @@
 
 .productSummary {
   padding: 1rem;
-  background: var(--bgSubtle);
-  border-radius: var(--radiusInput);
+  background: var(--bg-subtle);
+  border-radius: 10px;
 }
 
 .productSummary .productName {
@@ -111,16 +111,16 @@
 .stockInfo {
   margin: 0;
   font-size: 0.875rem;
-  color: var(--textSecondary);
+  color: var(--text-secondary);
 }
 
 .error {
   margin: 0;
   font-size: 0.875rem;
-  color: var(--dangerText);
-  background: var(--dangerSoft);
+  color: var(--danger-text);
+  background: var(--danger-soft);
   padding: 0.75rem;
-  border-radius: var(--radiusInput);
+  border-radius: 10px;
 }
 
 @media (max-width: 768px) {

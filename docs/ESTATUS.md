@@ -1,8 +1,8 @@
 # ESTATUS DEL PROYECTO BRIXO — MVP
 
-**Fecha**: 27 de abril de 2026 (Sprint 3 completado)
+**Fecha**: 28 de abril de 2026 (Sesión 9 — UI polish + CSS bugs)
 **Rama activa**: `dev`
-**Estado general**: Backend 100% ✅ · Frontend Sprint 1-3 (100% — 18/18) · MVP 100% ✅
+**Estado general**: Backend 100% ✅ · Frontend Sprint 1-3 (100% — 18/18) · UI Polish ✅ · MVP 100% ✅
 
 ---
 
@@ -22,7 +22,18 @@ FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← sig
 TOTAL MVP                         ██████████  100%
 ```
 
-**NOVEDAD (27 abr 2026 — Sprint 3)**: Sprint 3 completado 100% — se alcanzó criterio MVP:
+**NOVEDAD (28 abr 2026 — Sesión 9)**: UI polish completo + bugs CSS críticos resueltos:
+- ✅ **CSS Modules bug**: Button e Input completamente sin estilos → reescritos correctamente
+- ✅ **AppShell toggle bug**: `useTheme().toggle` → `toggleTheme` (botón tema no funcionaba)
+- ✅ **Icon.tsx**: Componente SVG inline nuevo — sin dependencia externa
+- ✅ **BrixoLogo.tsx**: Logo geométrico rediseñado según DISEÑO_BRIXO.md
+- ✅ **AppShell + Sidebar**: Iconos SVG, logo en sidebar header, TopBar siempre visible
+- ✅ **MetricCard / AlertCard / Badge**: Rediseñados según spec (delta, borde 3px, radius 6px)
+- ✅ **Auth pages**: Card con sombra en desktop, full-screen en móvil, inputs con iconos
+- ✅ **CSS variables camelCase → kebab-case**: Modal, MovementModal, ProductModal, BottomSheet, EmptyState estaban sin estilos — corregidos
+- 📊 **Build**: 140 módulos, 0 errores
+
+**Sprint 3 completado (27 abr 2026)**:
 - ✅ **RegisterPage y LoginPage**: Páginas reales que llaman API real
 - ✅ **DashboardPage**: Conectada a API real — carga KPIs, alertas, movimientos desde backend
 - ✅ **InventoryPage**: Tabla desktop + cards móvil, búsqueda, filtros, datos API real
@@ -41,6 +52,35 @@ TOTAL MVP                         ██████████  100%
 | Frontend | React 18, **TypeScript 6.0.3**, Vite 5, Zustand 5, React Router DOM 7, Axios 1.15 |
 | Infra | Docker Compose, PostgreSQL 15, Redis 7-alpine |
 | Auth | JWT RS256, RBAC por permisos (snapshots Redis) |
+
+---
+
+## Sesión 9 — 28 abr 2026 (UI Polish + CSS Bugs)
+
+### Completado
+
+- ✅ **Bug crítico resuelto**: `Button.tsx` e `Input.tsx` usaban strings literales en lugar de `styles.*` — ningún estilo se aplicaba
+- ✅ **Bug crítico resuelto**: `AppShell` llamaba a `useTheme().toggle` (no existe) → corregido a `toggleTheme`
+- ✅ **Bug resuelto**: `MovementsPagePlaceholder` referenciado en `App.tsx` pero nunca definido → crash en `/movements`
+- ✅ `Icon.tsx` — componente SVG inline con ~20 íconos, sin librería externa
+- ✅ `BrixoLogo.tsx` — logo geométrico rediseñado (path B + punto, variante solid/line)
+- ✅ `AppShell.tsx` — logo en sidebar, TopBar siempre visible, `toggleTheme` correcto
+- ✅ `Sidebar.tsx` — íconos SVG en lugar de emojis
+- ✅ `MetricCard.tsx/.module.css` — delta-based, sin emoji, sin barra de color superior
+- ✅ `AlertCard.tsx/.module.css` — border-left 3px únicamente, `border-radius: 0 10px 10px 0`
+- ✅ `Badge.module.css` — `border-radius: 6px` según spec
+- ✅ `Button.tsx/.module.css` — reescritos (CSS Modules fix, spinner CSS, radius 10px, min-height 44px)
+- ✅ `Input.tsx/.module.css` — reescritos (CSS Modules fix, prop `icon`, padding-left 44px con icono)
+- ✅ `LoginPage.tsx` / `RegisterPage.tsx` — inputs con íconos, card layout, forgotRow, callout con icon
+- ✅ `AuthPage.module.css` — card centrado desktop, full-screen móvil (≤480px)
+- ✅ `DashboardPage.tsx/.module.css` — iconos en movimientos, grid 2 columnas
+- ✅ `InventoryPage.tsx/.module.css` — filter pills, variables CSS corregidas
+- ✅ `Modal.module.css` — vars camelCase → kebab-case
+- ✅ `MovementModal.module.css` — vars camelCase → kebab-case
+- ✅ `ProductModal.module.css` — vars camelCase → kebab-case
+- ✅ `BottomSheet.module.css` — vars camelCase → kebab-case
+- ✅ `EmptyState.module.css` — vars camelCase → kebab-case
+- ✅ Build Vite: 140 módulos, 0 errores, 41.37 KB CSS
 
 ---
 
@@ -240,15 +280,15 @@ Los prototipos en `frontend/src/inspiracion/` son la fuente de verdad de UI/UX:
 | 12 | Toast global + Skeleton shimmer | 20 min | ✅ |
 | **13** | **DashboardPage.tsx** (UI completa · datos simulados, no llama API) | **50 min** | **✅** |
 
-### Sprint 3 — Inventario + Acciones (bloqueado por Sprint 2)
+### Sprint 3 — Inventario + Acciones (completado ✅)
 
 | # | Tarea | Tiempo | Estado |
 |---|-------|--------|--------|
-| 14 | Modal.tsx + BottomSheet.tsx | 25 min | ⭕ |
-| 15 | EmptyState.tsx | 10 min | ⭕ |
-| **16** | **InventoryPage.tsx** | **50 min** | **⭕** |
-| **17** | **MovementModal.tsx** | **50 min** | **⭕** |
-| **18** | **ProductModal.tsx** | **35 min** | **⭕** |
+| 14 | Modal.tsx + BottomSheet.tsx | 25 min | ✅ |
+| 15 | EmptyState.tsx | 10 min | ✅ |
+| **16** | **InventoryPage.tsx** | **50 min** | **✅** |
+| **17** | **MovementModal.tsx** | **50 min** | **✅** |
+| **18** | **ProductModal.tsx** | **35 min** | **✅** |
 
 ### Post-MVP (no bloquea el flujo de valor)
 
@@ -296,5 +336,5 @@ Los prototipos en `frontend/src/inspiracion/` son la fuente de verdad de UI/UX:
 
 ---
 
-**Documento actualizado**: 23 de abril de 2026 (sesión 8 — auditoría y correcciones)
-**Próxima revisión**: Al completar Sprint 3 (InventoryPage + MovementModal)
+**Documento actualizado**: 28 de abril de 2026 (sesión 9 — UI polish + CSS bugs)
+**Próxima revisión**: Al iniciar QA + Hardening (Fase 6)

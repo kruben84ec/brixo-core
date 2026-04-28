@@ -16,12 +16,16 @@ import { useEffect } from "react";
  * Placeholders para rutas post-MVP
  */
 
+function MovementsPagePlaceholder() {
+  return <div style={{ padding: "2rem", color: "var(--text-secondary)" }}>Movimientos — próximamente</div>;
+}
+
 function TeamPagePlaceholder() {
-  return <div style={{ padding: "2rem" }}>👥 Equipo - próximamente</div>;
+  return <div style={{ padding: "2rem", color: "var(--text-secondary)" }}>Equipo — próximamente</div>;
 }
 
 function AuditPagePlaceholder() {
-  return <div style={{ padding: "2rem" }}>📋 Auditoría - próximamente</div>;
+  return <div style={{ padding: "2rem", color: "var(--text-secondary)" }}>Auditoría — próximamente</div>;
 }
 
 function App() {
