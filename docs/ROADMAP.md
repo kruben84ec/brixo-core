@@ -1,7 +1,7 @@
 # ROADMAP — BRIXO MVP 2026
 
-**Actualizado**: 27 de abril de 2026 — Sprint 3 completado
-**Estado**: Backend 100% ✅ · Frontend Sprint 1-3 (100%: 18/18 tareas) · MVP 100% ✅
+**Actualizado**: 28 de abril de 2026 — Sprint 3 completado + Audit profundo (9 gaps identificados)
+**Estado**: Backend 100% ✅ · Frontend Sprint 1-3 (100%: 18/18 tareas) · UI Polish ✅ · MVP 100% ✅ (con deuda técnica post-MVP)
 **Criterio de MVP**: Un OWNER puede registrar su empresa → iniciar sesión → **ver su inventario real → registrar un movimiento**, sin capacitación previa. ← **✅ ALCANZADO: Dashboard, Inventory, MovementModal y ProductModal funcionales.**
 
 ---

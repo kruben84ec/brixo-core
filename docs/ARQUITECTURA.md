@@ -1,8 +1,8 @@
 # ARQUITECTURA DE BRIXO
 
-**Actualizado**: 18 de abril de 2026  
+**Actualizado**: 28 de abril de 2026  
 **Branch activo**: `dev`  
-**Progreso MVP**: 80% — ver [ROADMAP.md](ROADMAP.md) y [ESTATUS.md](ESTATUS.md)
+**Progreso MVP**: 100% ✅ — Backend completo, Frontend Sprint 1-3, UI Polish — ver [ROADMAP.md](ROADMAP.md) y [ESTATUS.md](ESTATUS.md)
 
 ---
 
@@ -25,20 +25,21 @@ Adapters → Application → Domain
 
 ---
 
-## Vista de módulos — Estado actual (80% MVP)
+## Vista de módulos — Estado actual (100% MVP)
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-│               BRIXO MVP — ESTADO ACTUAL (80%)               │
+│               BRIXO MVP — ESTADO ACTUAL (100%)              │
 └─────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────┐
 │   FRONTEND (REACT)       │
-│  ⚠️  EN CURSO            │
-│  - App.jsx: placeholder  │
-│  - Sin componentes       │
-│  - Sin routing           │
-│  - Sin API client        │
+│  ✅ COMPLETO (Sprint 1-3) │
+│  + UI Polish (28 abr)    │
+│  - App.tsx: routing real │
+│  - Componentes completos │
+│  - API client funcional  │
+│  - 18/18 tareas finales  │
 └──────────────┬───────────┘
                │ ✅ CORS habilitado
                │
@@ -110,6 +111,60 @@ Adapters → Application → Domain
 │  Log file     — backend/logs/app.log (10 MB × 5 rotados)    │
 └──────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## Deuda técnica identificada en audit (28 abr 2026)
+
+Durante una auditoría profunda de código en la sesión 10, se identificaron **9 gaps** que existen en el MVP y requieren resolución en Fase 6 (QA + Hardening):
+
+### Frontend — 5 gaps
+
+1. **DashboardPage — movimientos recientes son datos falsos** (`frontend/src/pages/DashboardPage.tsx:L50-70`)
+   - Usa `products.slice(0,5).map()` con `Math.random()` para simular movimientos
+   - No llama a `GET /api/products/{id}/movements` ni a ningún endpoint real de movimientos
+   - Impacto: Los "Movimientos recientes" no reflejan datos reales, pueden cambiar en cada render
+
+2. **LoginPage + RegisterPage — IDs de usuario hard-coded a "temp"** (`LoginPage.tsx:L45`, `RegisterPage.tsx:L52`)
+   - Construyen `user: { id: "temp", tenant_id: "temp", name: "..." }`
+   - No llaman a `GET /api/users/me` post-login para hidratar `user_id` y `tenant_id` reales
+   - Impacto: Cualquier lógica que dependa de `user.id` o `user.tenant_id` fallará silenciosamente
+
+3. **Bug App.tsx — Rutas privadas hidratadas condicionalmente** (`App.tsx:L30`)
+   - Rutas privadas renderizadas solo si `isAuthenticated === true` en el render inicial
+   - `hydrate()` ocurre en `useEffect` (async) → al recargar, `isAuthenticated` es `false` al momento del primer render
+   - React Router no encuentra la ruta privada y redirige a `/`
+   - Impacto: Usuarios con sesión activa en localStorage pueden ser redirigidos al landing al recargar la página
+
+4. **BottomSheet nunca activado** (`MovementModal.tsx:L15`)
+   - `MovementModal` siempre recibe `isMobile={false}` (valor por defecto)
+   - El componente `BottomSheet.tsx` está completamente implementado pero nunca se usa
+   - Impacto: En móvil, los modales de entrada/salida no adaptan a la pantalla (abren como modal desktop)
+
+5. **Rutas post-MVP sin páginas** (`App.tsx:L60-70`)
+   - `/movements`, `/team`, `/audit` son placeholders inline sin componentes en `src/pages/`
+   - Impacto: Usuarios navegan a estas rutas y ven solo texto "próximamente"
+
+### Backend — 4 gaps
+
+1. **`UserCreated` sin handler** (`application/handlers.py`)
+   - El evento `UserCreated` se emite en `SignUpUseCase` y `CreateUserUseCase` pero no tiene handler registrado
+   - Solo `UserLoggedIn` y `UserLoginFailed` se persisten en audit log
+   - Impacto: Creación de usuarios y signup **no quedan auditados automáticamente**
+
+2. **Métodos sin endpoints** (`adapters/repositories/role_repository_sql.py`)
+   - `create_role()` y `revoke_role_from_user()` están implementados en el repositorio
+   - No hay endpoints HTTP para estas operaciones
+   - Impacto: Funcionalidad de gestión de roles existe pero es inaccesible vía API
+
+3. **Inconsistencia JWT TTL** (`infrastructure/settings.py` + `infra/env/jwt.env`)
+   - `JWTSettings` default: 480 minutos (8 horas)
+   - `Settings` default: 15 minutos
+   - Impacto: Tokens pueden expirar inesperadamente según cuál configuración se use
+
+4. **Endpoint `/me/access` fuera de `/api`** (`infrastructure/routes/`)
+   - Inconsistencia con el resto de la API que usa prefijo `/api`
+   - Impacto: Confusión en documentación y consumidores de API
 
 ---
 
@@ -220,4 +275,4 @@ Los exception handlers en `infrastructure/api/exception_handlers.py` interceptan
 | `adapters/repositories/` | ✅ 100% | 8 repositorios SQL |
 | `main.py` | ✅ 100% | Middlewares + exception handlers registrados |
 | `infra/init.sql` | ✅ 100% | 8 tablas + seed |
-| `frontend/src/` | ⭕ 5% | Solo placeholder — Fase 5 pendiente |
+| `frontend/src/` | ✅ 100% | Sprint 1-3 completos + UI Polish — Fase 5 completada |

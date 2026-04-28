@@ -12,11 +12,11 @@ No es un ERP ni sistema contable. Es control de stock: entradas, salidas, histor
 
 
 
-Branch activo: dev | Estado: Backend 100% ✅ — Frontend 100% (Sprint 1-3 + UI Polish) — MVP 100% ✅
+Branch activo: dev | Estado: Backend 100% ✅ — Frontend 100% (Sprint 1-3 + UI Polish) — MVP 100% ✅ (con 9 gaps de deuda técnica documentados)
 
 **UI POLISH COMPLETADO (28 abr)**: CSS Modules bug crítico resuelto (Button/Input sin estilos), Icon.tsx inline SVG, BrixoLogo rediseñado, AppShell/Sidebar con iconos SVG, MetricCard/AlertCard/Badge según spec, variables CSS normalizadas en Modal/BottomSheet/EmptyState.
 
-**SPRINT 3 COMPLETADO (27 abr)**: DashboardPage + InventoryPage + MovementModal + ProductModal funcionales con API real. Criterio MVP alcanzado.
+**SPRINT 3 COMPLETADO (27 abr)**: InventoryPage + MovementModal + ProductModal funcionales con API real. Criterio MVP alcanzado (usuario puede registrar empresa → ver inventario → registrar movimiento).
 
 
 
@@ -180,9 +180,11 @@ start http://localhost:8000/docs
 
 start http://localhost:3000
 
-Estado actual (23 de abril de 2026)
+Estado actual (28 de abril de 2026)
 
 ✅ Backend 100% completo
+
+**Audit profundo de código realizado en sesión 10 (28 abr)**: Identificadas 9 gaps de deuda técnica — 5 en frontend, 4 en backend. Documentadas en `docs/ARQUITECTURA.md` sección "Deuda técnica identificada en audit". MVP está funcional pero hay temas pendientes antes de producción.
 
 Infraestructura Docker (Fase 1):
 
@@ -228,70 +230,44 @@ RBAC activo en todos los endpoints protegidos
 
 POST /api/auth/refresh — renueva token sin re-login
 
-⚠️ Frontend Sprint 1-2 PARCIAL (Fase 5 — 20% de 18 tareas)
+✅ Frontend Sprint 1-3 + UI Polish COMPLETADOS (Fase 5 — 100%)
 
-**Realidad (auditoría 27 abr)**: 
-- ✅ 2 páginas reales (Register + Login) que llaman API
-- ⚠️ 1 página con UI pero sin lógica (Dashboard: mock con setTimeout)
-- ❌ 0 páginas Sprint 3 iniciadas (Inventory, Movements, Team, Audit son placeholders inline)
+**Estado real (28 abr — sesión 10)**: 
+- ✅ 5 páginas reales que llaman API (Register, Login, Dashboard*, Inventory, 2 modales)
+- ✅ Componentes completos: Modal, BottomSheet, EmptyState, Icon, etc.
+- ✅ Criterio MVP alcanzado (usuario puede registrar empresa → ver inventario → registrar movimiento)
 
 Stack: React 18 + TypeScript 6.0.3 + Vite 5 + Zustand 5 + React Router DOM 7 + Axios 1.15
 
+Páginas con API funcional (src/pages/):
 
+- RegisterPage.tsx — 4 campos, error 409 inline, llama POST /api/auth/register ✅
+- LoginPage.tsx — email + password, error 401 inline, llama POST /api/auth/login ✅  
+  ⚠️ Gap detectado: construye user con id:"temp", tenant_id:"temp" (falta GET /users/me)
+- DashboardPage.tsx — 4 KPIs, alertas stock, movimientos recientes, datos API real ✅  
+  ⚠️ Gap detectado: movimientos recientes simulados con Math.random() (no llama API real)
+- InventoryPage.tsx — tabla desktop + cards móvil, búsqueda, filtros, datos API real ✅
+- MovementModal.tsx — 3 pasos (ENTRADA/SALIDA/AJUSTE), registra contra API real ✅  
+  ⚠️ Gap detectado: isMobile siempre false, BottomSheet nunca se activa
+- ProductModal.tsx — crear productos, validación SKU 409, llama API real ✅
 
-Páginas reales (src/pages/):
+Páginas placeholder post-MVP (inline en App.tsx):
 
+/movements, /team, /audit → placeholders sin componentes en src/pages/
 
+Componentes completos con CSS Modules:
 
-RegisterPage.tsx — 4 campos, error 409 inline, llama POST /api/auth/register
-
-LoginPage.tsx — email + password, error 401 inline, llama POST /api/auth/login
-
-DashboardPage.tsx — saludo, 4 KPIs, alertas, movimientos recientes
-
-IMPORTANTE — estado real del Dashboard:
-
-
-
-La UI está completa y renderiza correctamente
-
-Los datos son simulados (setTimeout + valores hardcodeados)
-
-No llama al API real (GET /api/products/ ni otros endpoints)
-
-El botón "+ Registrar movimiento" muestra un toast "Próximamente"
-
-Páginas placeholder (inline en App.tsx, no en src/pages/):
-
-
-
-/inventory, /movements, /team, /audit → <div>texto - próximamente</div>
-
-Componentes completos:
-
-
-
-Sistema de tokens light/dark (theme/tokens.ts)
-
-Button, Input, BrixoLogo, Card, MetricCard, Badge, AlertCard, Toast, Skeleton
-
-AppShell responsivo (sidebar 240px desktop + bottom-nav móvil)
-
+Sistema de tokens light/dark (theme/tokens.ts) — índigo como marca
+Button, Input, BrixoLogo (geométrico rediseñado 28 abr), Card, MetricCard, Badge, AlertCard, Toast, Skeleton, Icon
+Modal, BottomSheet, EmptyState — con CSS vars kebab-case (fix 28 abr)
+AppShell responsivo (sidebar 240px desktop + bottom-nav móvil, iconos SVG)
 authStore Zustand + interceptor JWT + refresh automático
 
-⭕ Sprint 3 pendiente (para MVP completo)
+IMPORTANTE — 9 gaps de deuda técnica identificados en audit (sesión 10, 28 abr):
 
-14 → Modal + BottomSheet
-
-15 → EmptyState
-
-16 → InventoryPage — tabla real con datos del backend
-
-17 → MovementModal — ENTRADA / SALIDA / AJUSTE
-
-18 → ProductModal — nuevo producto
-
-El criterio MVP del ROADMAP ("ver inventario + registrar movimiento") requiere Sprint 3.
+Documentados completamente en docs/ARQUITECTURA.md sección "Deuda técnica identificada en audit (28 abr)"
+MVP está 100% funcional pero hay trabajo pendiente antes de producción.
+Impacto: movimientos simulados, user IDs temp, bug de rutas, etc. (ver sección de Deuda técnica)
 
 
 

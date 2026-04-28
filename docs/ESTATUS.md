@@ -336,5 +336,34 @@ Los prototipos en `frontend/src/inspiracion/` son la fuente de verdad de UI/UX:
 
 ---
 
-**Documento actualizado**: 28 de abril de 2026 (sesión 9 — UI polish + CSS bugs)
-**Próxima revisión**: Al iniciar QA + Hardening (Fase 6)
+---
+
+## Deuda técnica identificada en audit (28 abr — Sesión 10)
+
+Durante una auditoría profunda de código realizada en sesión 10, se identificaron **9 gaps** críticos que requieren atención antes de producción. El MVP es completamente funcional (100%) pero con estos temas pendientes.
+
+### Frontend — 5 gaps
+
+| # | Gap | Ubicación | Impacto | Severidad |
+|---|-----|-----------|--------|-----------|
+| 1 | Movimientos recientes simulados con `Math.random()`, no llama API real | `pages/DashboardPage.tsx:L50-70` | Datos inconsistentes, no reflejan realidad | Media |
+| 2 | User ID y Tenant ID hard-coded a `"temp"` tras login | `pages/LoginPage.tsx:L45`, `RegisterPage.tsx:L52` | Cualquier lógica basada en IDs fallará silenciosamente | Alta |
+| 3 | Bug: Rutas privadas condicionadas a `isAuthenticated` sincrónico | `App.tsx:L30` — hidratación async en `useEffect` | Usuarios autenticados pueden ser redirigidos a `/` al recargar | Alta |
+| 4 | `BottomSheet` implementado pero nunca activado | `MovementModal.tsx:L15` — isMobile siempre false | Modal no adapta a móvil (UI no responsiva en ese flujo) | Baja |
+| 5 | Rutas `/movements`, `/team`, `/audit` sin páginas | `App.tsx:L60-70` — placeholders inline | Usuarios ven "próximamente" indefinidamente | Baja |
+
+### Backend — 4 gaps
+
+| # | Gap | Ubicación | Impacto | Severidad |
+|---|-----|-----------|--------|-----------|
+| 1 | Evento `UserCreated` sin handler registrado | `application/handlers.py` | Signup y creación de usuarios no se auditan automáticamente | Alta |
+| 2 | `create_role()` + `revoke_role_from_user()` implementados pero sin endpoints | `adapters/repositories/role_repository_sql.py` | Funcionalidad muerta — no accesible vía API | Baja |
+| 3 | Inconsistencia TTL JWT: 480 min vs 15 min | `infrastructure/settings.py` + `infra/env/jwt.env` | Tokens pueden expirar inesperadamente | Media |
+| 4 | Endpoint `/me/access` fuera de prefijo `/api` | `infrastructure/routes/` | Inconsistencia con resto de API, confusión de clientes | Baja |
+
+**Próximas acciones**: Estos 9 gaps deben resolverse en Fase 6 (QA + Hardening) antes de llevar a producción.
+
+---
+
+**Documento actualizado**: 28 de abril de 2026 (sesión 10 — audit profundo de código)
+**Próxima revisión**: Al iniciar QA + Hardening (Fase 6) — resolver 9 gaps identificados

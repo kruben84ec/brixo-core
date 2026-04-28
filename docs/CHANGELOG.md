@@ -4,6 +4,39 @@ Historial de cambios ordenado por fecha descendente.
 
 ---
 
+## 2026-04-28 — Sesión 10: Audit profundo de código + documentación actualizada
+
+### Audit exhaustivo del estado real del código (frontend + backend)
+
+Se realizó un audit completo del proyecto tras UI Polish (sesión 9) con el objetivo de verificar estado real vs. documentación. Resultado: MVP es 100% funcional pero hay 9 gaps de deuda técnica.
+
+**Hallazgos**:
+
+**Frontend** (5 gaps):
+1. DashboardPage — "Movimientos recientes" son datos simulados con `Math.random()`, no llama API real
+2. LoginPage + RegisterPage — `user.id` y `user.tenant_id` hard-coded a `"temp"`, falta `GET /api/users/me`
+3. App.tsx — Bug: rutas privadas condicionadas a `isAuthenticated` sincrónico, `hydrate()` async puede redirigir usuarios válidos a `/`
+4. BottomSheet implementado pero nunca activado (isMobile siempre false)
+5. Rutas `/movements`, `/team`, `/audit` son placeholders sin páginas
+
+**Backend** (4 gaps):
+1. Evento `UserCreated` sin handler — signup no se audita automáticamente
+2. `create_role()` + `revoke_role_from_user()` sin endpoints HTTP
+3. Inconsistencia TTL JWT: 480 min vs 15 min en diferentes archivos
+4. `/me/access` fuera del prefijo `/api` (inconsistencia)
+
+**Acciones tomadas**:
+- ✅ docs/ARQUITECTURA.md: actualizada fecha, frontend 5%→100%, añadida sección "Deuda técnica identificada en audit"
+- ✅ CLAUDE.md: actualizado estado actual, eliminado bloque Sprint 3 pendiente, documentados 3 gaps críticos
+- ✅ docs/ESTATUS.md: añadida sección "Deuda técnica identificada en audit" con tabla de 9 gaps, severidad e impacto
+- ✅ docs/CHECKLIST.md: añadida subsección "Deuda técnica a resolver" bajo Fase 6 con time estimates
+- ✅ docs/ROADMAP.md: actualizada fecha y estado
+- ✅ docs/CHANGELOG.md: agregada entrada sesión 10
+
+**Conclusión**: MVP está 100% listo para uso pero necesita estas 9 correcciones antes de llevar a producción.
+
+---
+
 ## 2026-04-28 — Sesión 9: UI Polish — diseño alineado al spec + bugs CSS críticos resueltos
 
 ### fix: CSS Modules completamente rotos en Button e Input — aplicados desde cero

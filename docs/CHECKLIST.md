@@ -180,7 +180,9 @@
 
 ---
 
-## QA + Hardening — 0% ⭕ (bloqueado por Sprint 3)
+## QA + Hardening — 0% ⭕ (Sprint 3 completado, 9 gaps de deuda técnica identificados)
+
+### Tareas QA + Hardening originales
 
 | Ítem | Tipo | Estado |
 |------|------|--------|
@@ -191,6 +193,20 @@
 | Cabeceras de seguridad HTTP | Seguridad | ⭕ |
 | `request_id` en HTTPLoggingMiddleware | Observabilidad | ⭕ |
 | `docker-compose.prod.yml` | Infra | ⭕ |
+
+### Deuda técnica a resolver (post-MVP, identificada en audit sesión 10)
+
+| # | Ítem | Severidad | Tiempo est. |
+|---|------|-----------|-------------|
+| 1 | DashboardPage: conectar movimientos reales (GET `/api/products/{id}/movements`) | Media | 30 min |
+| 2 | LoginPage/RegisterPage: llamar `GET /api/users/me` post-login, guardar user_id + tenant_id reales | Alta | 20 min |
+| 3 | App.tsx: fijar bug rutas privadas (hidratación async, aplicar loading state correcto) | Alta | 25 min |
+| 4 | MovementModal: pasar `isMobile` correcto desde DashboardPage, activar BottomSheet en móvil | Baja | 15 min |
+| 5 | Crear páginas `/movements`, `/team`, `/audit` (post-MVP, puede esperar) | Baja | 120 min |
+| 6 | Registrar handler para evento `UserCreated` en backend | Alta | 15 min |
+| 7 | Crear endpoints para `create_role()` + `revoke_role_from_user()` | Baja | 30 min |
+| 8 | Backend: sincronizar TTL JWT (decidir entre 480 min o 15 min) | Media | 10 min |
+| 9 | Backend: mover `/me/access` a `/api/me/access` para consistencia | Baja | 5 min |
 
 ---
 
