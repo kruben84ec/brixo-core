@@ -21,7 +21,7 @@ export const Sidebar: React.FC<{ activeItem?: string }> = ({
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/");
   };
 
   const initials =

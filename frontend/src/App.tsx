@@ -9,6 +9,7 @@ import { LoginPage } from "@/pages/LoginPage";
 import { RegisterPage } from "@/pages/RegisterPage";
 import { DashboardPage } from "@/pages/DashboardPage";
 import { InventoryPage } from "@/pages/InventoryPage";
+import { LandingPage } from "@/pages/LandingPage";
 import { useAuthStore } from "@/stores/authStore";
 import { useEffect } from "react";
 
@@ -42,6 +43,9 @@ function App() {
       <ThemeProvider>
         <ToastProvider>
           <Routes>
+            {/* Landing page — pública para todos */}
+            <Route path="/" element={<LandingPage />} />
+
             {/* Rutas públicas */}
             <Route
               path="/login"
@@ -116,11 +120,8 @@ function App() {
               </>
             )}
 
-            {/* Ruta por defecto */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-
             {/* 404 */}
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </ToastProvider>
       </ThemeProvider>
