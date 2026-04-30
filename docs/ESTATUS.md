@@ -1,5 +1,9 @@
 # ESTATUS DEL PROYECTO BRIXO — MVP
 
+> **% Avance global**: MVP 100% ✅ — Fase 6 (QA + Hardening) 0% ⭕ — 9 gaps de deuda técnica documentados en `docs/backlog.md`
+> **Última actualización**: 2026-04-29
+> **Cross-check**: validado contra `docs/ROADMAP.md` (sin desfase).
+
 **Fecha**: 28 de abril de 2026 (Sesión 9 — UI polish + CSS bugs)
 **Rama activa**: `dev`
 **Estado general**: Backend 100% ✅ · Frontend Sprint 1-3 (100% — 18/18) · UI Polish ✅ · MVP 100% ✅

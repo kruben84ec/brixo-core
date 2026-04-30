@@ -1,97 +1,55 @@
-# Histórico de Documentación — Brixo Core
+# Histórico — Bitácora del agente
 
-## 📅 Estado al 29 de Abril de 2026
+Carpeta para registro operativo del trabajo en Brixo.
 
-Extracción completa de todas las secciones del CLAUDE.md documentadas por fecha.
+## Tipos de archivo
 
-## 📋 Índice de Secciones
+### `YYYY-MM-DD_daily.md`
 
-### 1️⃣ [Proyecto](2026-04-29_Proyecto.md)
-Descripción general de Brixo, estado del MVP y hitos recientes.
-- Estado del backend, frontend y MVP
-- UI Polish completado
-- Sprint 3 completado
+Bitácora scrum diaria. Tres secciones fijas: Hecho · Hoy · Bloqueos.
+Si ya existe el archivo del día, se **edita**, no se crea uno nuevo.
+Máximo 30 líneas. Bullets ≤ 1 línea.
 
-### 2️⃣ [Stack Tecnológico](2026-04-29_Stack.md)
-Tecnologías utilizadas en cada capa del proyecto.
-- Backend: Python 3.12, FastAPI, Pydantic v2
-- Frontend: React 18, Vite, TypeScript
-- Infraestructura: Docker Compose, PostgreSQL, Redis
+```markdown
+# Daily — YYYY-MM-DD
 
-### 3️⃣ [Estructura del Repositorio](2026-04-29_Estructura-repositorio.md)
-Organización completa de directorios y archivos.
-- Estructura de carpetas brixo-core
-- Descripción de cada capa
-- Ubicación de componentes clave
+## Hecho ayer / sesión anterior
+- (bullets ≤ 1 línea)
 
-### 4️⃣ [Arquitectura](2026-04-29_Arquitectura.md)
-Patrón Hexagonal - Puertos y Adaptadores.
-- Flujo de dependencias
-- Matriz de permisos de importación
-- Ejemplos de buenas y malas prácticas
+## Hoy / esta sesión
+- (bullets ≤ 1 línea)
 
-### 5️⃣ [Convenciones de Código](2026-04-29_Convenciones-codigo.md)
-Normas y patrones de desarrollo del proyecto.
-- Nombres de funciones específicos
-- Estructura de casos de uso
-- Dataclasses inmutables
-- Routers como factory functions
-
-### 6️⃣ [Comandos Frecuentes](2026-04-29_Comandos-frecuentes.md)
-Comandos Docker y utilidades para desarrollo.
-- Levantar servicios
-- Ver logs
-- Acceso a base de datos
-- URLs de desarrollo
-
-### 7️⃣ [Estado Actual](2026-04-29_Estado-actual.md)
-Descripción detallada del estado en sesión 10 (28 abr).
-- Backend 100% completado
-- Frontend Sprint 1-3 + UI Polish completados
-- Páginas con API funcional
-- Componentes completados
-- 9 gaps de deuda técnica identificados
-
-### 8️⃣ [Flujo de Seguridad](2026-04-29_Flujo-seguridad.md)
-Arquitectura de autenticación y autorización.
-- Diagrama de flujo completo
-- Componentes clave (CORS, JWT, RBAC)
-- Almacenamiento en Redis
-- Auditoría
-
-### 9️⃣ [Reglas No Negociables](2026-04-29_Reglas-no-negociables.md)
-Principios arquitecturales fundamentales del proyecto.
-- Dominio nunca importa infraestructura
-- Nombres descriptivos
-- Sin sobre-ingeniería
-- Evaluación previa antes de implementar
-- Multi-tenant siempre
-
-### 🔟 [Documentación de Referencia](2026-04-29_Documentacion-referencia.md)
-Mapeo a documentos externos y cómo usarlos.
-- Links a ROADMAP, ESTATUS, CHECKLIST, ARQUITECTURA, CHANGELOG
-- Guía de cómo usar cada documento
-- Referencias a deuda técnica
+## Bloqueos
+- (Si no hay: escribir explícitamente "Ninguno". No omitir.)
 
 ---
+*Actualizado: YYYY-MM-DD HH:MM*
+```
 
-## 🎯 Cómo Usar Este Histórico
+### `YYYY-MM-DD_<slug>.md`
 
-Cada archivo contiene una sección completa del CLAUDE.md con:
-- Fecha del estado (2026-04-29)
-- Contenido estructurado y limpio
-- Referencias cruzadas cuando es relevante
-- Ejemplos de código
+Snapshot por tarea grande (>1h o multi-archivo).
+Slug en kebab-case, ≤ 5 palabras. Cuatro secciones:
 
-## 📌 Deuda Técnica Identificada
+```markdown
+# Snapshot — <título>
+**Fecha**: YYYY-MM-DD  **Tarea**: <descripción corta>
 
-**9 gaps documentados** (5 frontend, 4 backend):
-- Ubicación: `docs/ARQUITECTURA.md`
-- Sección: "Deuda técnica identificada en audit (28 abr)"
+## Qué se pidió
+## Qué se decidió
+## Qué se cambió
+## Qué quedó pendiente
+```
 
-Ver [Estado-actual.md](2026-04-29_Estado-actual.md) para detalles.
+## No se guarda aquí
 
-## 🔄 Próximas Actualizaciones
+- Cambios pequeños sueltos → `daily.md` basta.
+- Notas de release o hitos formales → `docs/CHANGELOG.md`.
+- Documentación técnica viva → `docs/developer/`.
 
-Este histórico se actualiza con cada estado significativo del proyecto.
-La próxima actualización debería incluir el progreso en los gaps de deuda técnica.
+## Convención
+
+El agente edita esta carpeta solo en estos casos:
+- Inicio/cierre de día → `daily.md`.
+- Cierre de tarea grande → `<slug>.md`.
+- Petición explícita "guarda esto" → `<slug>.md`.
