@@ -4,6 +4,22 @@ Historial de cambios ordenado por fecha descendente.
 
 ---
 
+## 2026-04-29 — Reorganización de docs/ y CLAUDE.md como memoria operativa del agente
+
+**Tipo**: refactor · docs
+
+**Cambios**:
+- Reescrito `CLAUDE.md` raíz: 145 líneas, 10 secciones, skill mapping D-lite (12 filas), protocolo por archivo (6 filas), reglas no negociables actualizadas.
+- Eliminados 6 duplicados de `docs/` raíz (ARQUITECTURA, CHECKLIST, CLAUDE, DISEÑO_BRIXO, DesignFronted, OBSERVABILIDAD) y 10 extractos obsoletos de `historico/`.
+- Movido `AUDIT_27_ABRIL_2026.md` → `historico/2026-04-27_audit-codigo.md`.
+- Creados: `docs/backlog.md` (22 items), `docs/developer/SKILLS.md`, `docs/specs/` con design + plan.
+- `docs/historico/README.md` reescrito con formato de bitácora (daily + snapshot).
+- `docs/ESTATUS.md`: encabezado con % avance global añadido.
+
+**Commit**: `899acfa` — "docs: reorganizar docs/ y CLAUDE.md raíz como memoria operativa del agente"
+
+---
+
 ## 2026-04-28 — Sesión 10: Audit profundo de código + documentación actualizada
 
 ### Audit exhaustivo del estado real del código (frontend + backend)
