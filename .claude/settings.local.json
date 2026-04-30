@@ -10,7 +10,8 @@
       "PowerShell(powershell -Command \"npx ctx7 setup\")",
       "Bash(awk '{print $NF}')",
       "Bash(grep -v \"^$\")",
-      "Bash(git mv *)"
+      "Bash(git mv *)",
+      "Bash(git commit *)"
     ]
   },
   "enabledPlugins": {

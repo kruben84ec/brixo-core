@@ -9,24 +9,24 @@
 
 ## Estado actual
 - Fase: Fase 6 — QA + Hardening
-- % avance: MVP 100% ✅ · Fase 6 0% ⭕ · 9 gaps de deuda técnica pendientes
+- % avance: MVP 100% ✅ · Fase 6 ~15% · 3 gaps alta resueltos · 6 gaps pendientes
 - Estado general: Estable
 
 ## Prioridades activas
-1. **[Alta]** Fix `App.tsx` — bug hidratación async en rutas privadas (reload redirige usuarios autenticados a `/`) — 25 min
-2. **[Alta]** `LoginPage` + `RegisterPage` — llamar `GET /api/users/me` post-login, guardar `user_id` + `tenant_id` reales — 20 min
-3. **[Alta]** Backend — registrar handler para evento `UserCreated` (signup sin auditoría automática) — 15 min
+1. **[Alta]** Testing manual flujo completo (register → login → inventario → movimiento) — Fase 6 tarea 1
+2. **[Alta]** Fix bugs encontrados en testing manual — Fase 6 tarea 2 (depende de tarea 1)
+3. **[Media]** DashboardPage: conectar movimientos reales via `GET /api/products/{id}/movements` — 30 min
 
 ## Riesgos clave
-- `user_id` y `tenant_id` hard-coded a `"temp"` → lógica multi-tenant falla silenciosamente
+- Sin testing manual ejecutado aún — bugs en flujo real desconocidos
 - TTL JWT inconsistente: 480 min en `settings.py` vs 15 min en `jwt.env`
-- Sin testing manual del flujo completo ejecutado aún
+- `UserCreated` sin `created_by_user_id` — auditoría incorrecta cuando admin crea usuarios
 
 ## Último avance relevante
-- 2026-04-29 (sesión 11): reorganización completa de `docs/`, reescritura de CLAUDE.md v3.0, 9 gaps documentados en backlog
+- 2026-04-30 (sesión 12): 3 gaps alta resueltos — isHydrated fix, IDs reales post-login, handler UserCreated. Commit f632a20.
 
 ## Siguiente objetivo
-- Resolver los 3 gaps de alta prioridad (~60 min) → luego testing manual flujo completo (Fase 6 tarea 1)
+- Testing manual del flujo completo con docker-compose levantado
 
 ---
 
