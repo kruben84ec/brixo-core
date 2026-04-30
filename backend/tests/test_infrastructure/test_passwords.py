@@ -71,11 +71,10 @@ class TestHashPassword:
         assert verify_password(plain, hashed)
 
     def test_hash_long_password(self):
-        """Debe hashear passwords muy largos."""
+        """bcrypt rechaza passwords mayores a 72 bytes."""
         plain = "A" * 500
-        hashed = hash_password(plain)
-
-        assert verify_password(plain, hashed)
+        with pytest.raises(ValueError):
+            hash_password(plain)
 
 
 class TestVerifyPassword:

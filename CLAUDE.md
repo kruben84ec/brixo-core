@@ -9,24 +9,24 @@
 
 ## Estado actual
 - Fase: Fase 6 — QA + Hardening
-- % avance: MVP 100% ✅ · Fase 6 ~15% · 3 gaps alta resueltos · 6 gaps pendientes
-- Estado general: Estable
+- % avance: MVP 100% ✅ · Fase 6 ~25% · Suites de tests agregadas · 18 fallos pendientes
+- Estado general: Riesgo (tests fallando, no commiteable)
 
 ## Prioridades activas
-1. **[Alta]** Testing manual flujo completo (register → login → inventario → movimiento) — Fase 6 tarea 1
-2. **[Alta]** Fix bugs encontrados en testing manual — Fase 6 tarea 2 (depende de tarea 1)
+1. **[Bloqueante]** Corregir 14 fallos backend — Mock.__name__ (11), UUID version (1), bcrypt 72b (1), handler count (1)
+2. **[Bloqueante]** Corregir 4 fallos frontend — require() ESM (2), Card onClick query (1), Input password role (1)
 3. **[Media]** DashboardPage: conectar movimientos reales via `GET /api/products/{id}/movements` — 30 min
 
 ## Riesgos clave
-- Sin testing manual ejecutado aún — bugs en flujo real desconocidos
+- Suites de tests con 18 fallos — QA rechazó merge hasta 0 fallos
+- `TEST_SUMMARY.md` y `FRONTEND_TEST_SUMMARY.md` usan sintaxis Python (`"""`) en archivos .md
 - TTL JWT inconsistente: 480 min en `settings.py` vs 15 min en `jwt.env`
-- `UserCreated` sin `created_by_user_id` — auditoría incorrecta cuando admin crea usuarios
 
 ## Último avance relevante
-- 2026-04-30 (sesión 12): 3 gaps alta resueltos — isHydrated fix, IDs reales post-login, handler UserCreated. Commit f632a20.
+- 2026-04-30 (sesión 13): suites de tests agregadas — 185+ backend (pytest) + 73+ frontend (Vitest). QA ejecutado: 103/117 backend ✅, 68/71 frontend ✅. 18 fallos identificados y clasificados.
 
 ## Siguiente objetivo
-- Testing manual del flujo completo con docker-compose levantado
+- Corregir los 18 fallos de tests → QA re-valida → commit de la suite completa
 
 ---
 

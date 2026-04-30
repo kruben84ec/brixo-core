@@ -3,17 +3,14 @@ import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import { PrivateRoute } from '@/components/layout/PrivateRoute'
 import { PublicOnlyRoute } from '@/components/layout/PublicOnlyRoute'
-import React from 'react'
+import { useAuthStore } from '@/stores/authStore'
 
-// Mock the auth store
 vi.mock('@/stores/authStore', () => ({
   useAuthStore: vi.fn(),
 }))
 
-const { useAuthStore } = require('@/stores/authStore')
-
-const mockComponent = () => <div>Protected Component</div>
-const mockPublicComponent = () => <div>Public Component</div>
+const MockComponent = () => <div>Protected Component</div>
+const MockPublicComponent = () => <div>Public Component</div>
 
 describe('PrivateRoute Component', () => {
   beforeEach(() => {
@@ -21,14 +18,13 @@ describe('PrivateRoute Component', () => {
   })
 
   it('renders component when authenticated', () => {
-    useAuthStore.mockReturnValue(true)
+    vi.mocked(useAuthStore).mockReturnValue({ isAuthenticated: true } as any)
 
     render(
       <BrowserRouter>
-        <PrivateRoute
-          element={React.createElement(mockComponent)}
-          isAuthenticated={true}
-        />
+        <PrivateRoute>
+          <MockComponent />
+        </PrivateRoute>
       </BrowserRouter>
     )
 
@@ -36,41 +32,39 @@ describe('PrivateRoute Component', () => {
   })
 
   it('redirects to login when not authenticated', () => {
-    useAuthStore.mockReturnValue(false)
+    vi.mocked(useAuthStore).mockReturnValue({ isAuthenticated: false } as any)
 
-    const { container } = render(
+    render(
       <BrowserRouter>
-        <PrivateRoute
-          element={React.createElement(mockComponent)}
-          isAuthenticated={false}
-        />
+        <PrivateRoute>
+          <MockComponent />
+        </PrivateRoute>
       </BrowserRouter>
     )
 
-    // Should not render the protected component
     expect(screen.queryByText('Protected Component')).not.toBeInTheDocument()
   })
 
   it('checks authentication state', () => {
-    useAuthStore.mockReturnValue(true)
+    vi.mocked(useAuthStore).mockReturnValue({ isAuthenticated: true } as any)
 
     const { rerender } = render(
       <BrowserRouter>
-        <PrivateRoute
-          element={React.createElement(mockComponent)}
-          isAuthenticated={true}
-        />
+        <PrivateRoute>
+          <MockComponent />
+        </PrivateRoute>
       </BrowserRouter>
     )
 
     expect(screen.getByText('Protected Component')).toBeInTheDocument()
 
+    vi.mocked(useAuthStore).mockReturnValue({ isAuthenticated: false } as any)
+
     rerender(
       <BrowserRouter>
-        <PrivateRoute
-          element={React.createElement(mockComponent)}
-          isAuthenticated={false}
-        />
+        <PrivateRoute>
+          <MockComponent />
+        </PrivateRoute>
       </BrowserRouter>
     )
 
@@ -84,14 +78,13 @@ describe('PublicOnlyRoute Component', () => {
   })
 
   it('renders public component when not authenticated', () => {
-    useAuthStore.mockReturnValue(false)
+    vi.mocked(useAuthStore).mockReturnValue({ isAuthenticated: false } as any)
 
     render(
       <BrowserRouter>
-        <PublicOnlyRoute
-          element={React.createElement(mockPublicComponent)}
-          isAuthenticated={false}
-        />
+        <PublicOnlyRoute>
+          <MockPublicComponent />
+        </PublicOnlyRoute>
       </BrowserRouter>
     )
 
@@ -99,41 +92,39 @@ describe('PublicOnlyRoute Component', () => {
   })
 
   it('redirects when authenticated', () => {
-    useAuthStore.mockReturnValue(true)
+    vi.mocked(useAuthStore).mockReturnValue({ isAuthenticated: true } as any)
 
-    const { container } = render(
+    render(
       <BrowserRouter>
-        <PublicOnlyRoute
-          element={React.createElement(mockPublicComponent)}
-          isAuthenticated={true}
-        />
+        <PublicOnlyRoute>
+          <MockPublicComponent />
+        </PublicOnlyRoute>
       </BrowserRouter>
     )
 
-    // Should not render the public component
     expect(screen.queryByText('Public Component')).not.toBeInTheDocument()
   })
 
   it('respects authentication state changes', () => {
-    useAuthStore.mockReturnValue(false)
+    vi.mocked(useAuthStore).mockReturnValue({ isAuthenticated: false } as any)
 
     const { rerender } = render(
       <BrowserRouter>
-        <PublicOnlyRoute
-          element={React.createElement(mockPublicComponent)}
-          isAuthenticated={false}
-        />
+        <PublicOnlyRoute>
+          <MockPublicComponent />
+        </PublicOnlyRoute>
       </BrowserRouter>
     )
 
     expect(screen.getByText('Public Component')).toBeInTheDocument()
 
+    vi.mocked(useAuthStore).mockReturnValue({ isAuthenticated: true } as any)
+
     rerender(
       <BrowserRouter>
-        <PublicOnlyRoute
-          element={React.createElement(mockPublicComponent)}
-          isAuthenticated={true}
-        />
+        <PublicOnlyRoute>
+          <MockPublicComponent />
+        </PublicOnlyRoute>
       </BrowserRouter>
     )
 

@@ -26,6 +26,7 @@ class TestEventBus:
     def test_subscribe_single_handler(self, event_bus):
         """Debe registrar un handler para un evento."""
         handler = Mock()
+        handler.__name__ = "mock_handler"
         event_bus.subscribe(UserLoggedIn, handler)
 
         # Verificar que el handler está registrado
@@ -35,7 +36,9 @@ class TestEventBus:
     def test_subscribe_multiple_handlers_same_event(self, event_bus):
         """Debe permitir múltiples handlers para el mismo evento."""
         handler1 = Mock()
+        handler1.__name__ = "mock_handler"
         handler2 = Mock()
+        handler2.__name__ = "mock_handler"
 
         event_bus.subscribe(UserLoggedIn, handler1)
         event_bus.subscribe(UserLoggedIn, handler2)
@@ -47,7 +50,9 @@ class TestEventBus:
     def test_subscribe_handlers_different_events(self, event_bus):
         """Debe registrar handlers para diferentes eventos."""
         handler1 = Mock()
+        handler1.__name__ = "mock_handler"
         handler2 = Mock()
+        handler2.__name__ = "mock_handler"
 
         event_bus.subscribe(UserLoggedIn, handler1)
         event_bus.subscribe(UserLoginFailed, handler2)
@@ -58,6 +63,7 @@ class TestEventBus:
     def test_publish_event_calls_handlers(self, event_bus):
         """Debe llamar a los handlers cuando se publica un evento."""
         handler = Mock()
+        handler.__name__ = "mock_handler"
         event_bus.subscribe(UserLoggedIn, handler)
 
         event = UserLoggedIn(
@@ -73,7 +79,9 @@ class TestEventBus:
     def test_publish_calls_multiple_handlers(self, event_bus):
         """Debe llamar a múltiples handlers para un evento."""
         handler1 = Mock()
+        handler1.__name__ = "mock_handler"
         handler2 = Mock()
+        handler2.__name__ = "mock_handler"
 
         event_bus.subscribe(UserLoggedIn, handler1)
         event_bus.subscribe(UserLoggedIn, handler2)
@@ -92,7 +100,9 @@ class TestEventBus:
     def test_publish_only_relevant_handlers(self, event_bus):
         """Solo debe llamar a handlers del tipo de evento publicado."""
         handler_logged_in = Mock()
+        handler_logged_in.__name__ = "mock_handler"
         handler_login_failed = Mock()
+        handler_login_failed.__name__ = "mock_handler"
 
         event_bus.subscribe(UserLoggedIn, handler_logged_in)
         event_bus.subscribe(UserLoginFailed, handler_login_failed)
@@ -122,7 +132,9 @@ class TestEventBus:
     def test_handler_exception_handling(self, event_bus):
         """Debe continuar con otros handlers si uno falla."""
         handler1 = Mock(side_effect=Exception("Test error"))
+        handler1.__name__ = "mock_handler"
         handler2 = Mock()
+        handler2.__name__ = "mock_handler"
 
         event_bus.subscribe(UserLoggedIn, handler1)
         event_bus.subscribe(UserLoggedIn, handler2)
@@ -159,6 +171,7 @@ class TestEventBus:
     def test_handler_receives_correct_event(self, event_bus):
         """El handler debe recibir exactamente el evento publicado."""
         handler = Mock()
+        handler.__name__ = "mock_handler"
         event_bus.subscribe(UserLoggedIn, handler)
 
         tenant_id = str(uuid4())

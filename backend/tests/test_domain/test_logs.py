@@ -226,7 +226,7 @@ class TestSystemConstants:
     def test_system_user_id_is_valid_uuid(self):
         """SYSTEM_USER_ID debe ser un UUID válido."""
         uuid_obj = UUID(SYSTEM_USER_ID)
-        assert uuid_obj.version == 0  # Nil UUID
+        assert uuid_obj.version is None  # Nil UUID has no version
 
     def test_system_actor(self):
         """SYSTEM_ACTOR debe ser un Actor válido."""

@@ -9,18 +9,6 @@ describe('API Service', () => {
     vi.clearAllMocks()
   })
 
-  it('exports correct types', () => {
-    // These are just type checks - they don't execute at runtime
-    // but we can verify the module exports them
-    const apiModule = require('@/services/api')
-
-    expect(apiModule.AuthResponse).toBeDefined()
-    expect(apiModule.RegisterResponse).toBeDefined()
-    expect(apiModule.LoginRequest).toBeDefined()
-    expect(apiModule.User).toBeDefined()
-    expect(apiModule.Product).toBeDefined()
-  })
-
   describe('AuthResponse type', () => {
     it('has required fields', () => {
       // Type validation - verify TypeScript types are correctly defined

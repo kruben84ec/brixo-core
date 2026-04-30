@@ -63,6 +63,7 @@ class TestLoginUser:
 
         # Crear handler para verificar evento
         handler = Mock()
+        handler.__name__ = "mock_handler"
         event_bus.subscribe(UserLoggedIn, handler)
 
         # Execute
@@ -97,6 +98,7 @@ class TestLoginUser:
 
         # Crear handler para capturar evento
         handler = Mock()
+        handler.__name__ = "mock_handler"
         event_bus.subscribe(UserLoggedIn, handler)
 
         # Execute
@@ -179,6 +181,7 @@ class TestLoginUser:
 
         # Capturar evento de fallo
         handler = Mock()
+        handler.__name__ = "mock_handler"
         event_bus.subscribe(UserLoginFailed, handler)
 
         login_user = LoginUser(mock_auth_repository, event_bus)
@@ -201,6 +204,7 @@ class TestLoginUser:
         mock_auth_repository.get_user_by_email.return_value = None
 
         handler = Mock()
+        handler.__name__ = "mock_handler"
         event_bus.subscribe(UserLoginFailed, handler)
 
         login_user = LoginUser(mock_auth_repository, event_bus)

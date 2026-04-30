@@ -87,13 +87,14 @@ describe('Input Component', () => {
   })
 
   it('renders with different input types', () => {
-    const { rerender } = render(<Input type="email" />)
+    const { container, rerender } = render(<Input type="email" />)
     let input = screen.getByRole('textbox') as HTMLInputElement
     expect(input.type).toBe('email')
 
     rerender(<Input type="password" />)
-    input = screen.getByRole('textbox') as HTMLInputElement
-    expect(input.type).toBe('password')
+    const passwordInput = container.querySelector('input[type="password"]') as HTMLInputElement
+    expect(passwordInput).not.toBeNull()
+    expect(passwordInput.type).toBe('password')
   })
 
   it('handles disabled state', () => {

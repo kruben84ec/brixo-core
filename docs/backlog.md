@@ -1,7 +1,7 @@
 # Backlog — Brixo Core
 
-**Última actualización**: 2026-04-29
-**Estado MVP**: 100% ✅ — 9 gaps de deuda técnica pendientes antes de producción
+**Última actualización**: 2026-04-30
+**Estado MVP**: 100% ✅ — Fase 6 activa: suites de tests con 18 fallos pendientes
 
 ---
 
@@ -13,7 +13,21 @@
 - [x] **Alta** — App.tsx: fijar bug rutas privadas (hidratación async, `isHydrated` flag) — resuelto 2026-04-30
 - [x] **Alta** — Backend: registrar handler para evento `UserCreated` — resuelto 2026-04-30
 
-### Deuda técnica nueva (identificada en sesión 12 — 2026-04-30)
+### Fallos de tests (sesión 13 — QA rechazado, 2026-04-30)
+
+**Backend — 14 fallos**
+- [ ] **Bloqueante** — `Mock().__name__` inexistente (11 tests en `test_event_bus.py` + `test_login_user.py`) — agregar `handler.__name__ = "mock_handler"` a mocks o usar `MagicMock(spec=...)` — `backend/tests/`
+- [ ] **Alta** — `test_system_user_id_is_valid_uuid`: `uuid.version == 0` incorrecto en Python (devuelve `None`). Cambiar aserción a `assert uuid_obj.version is None` — `backend/tests/test_domain/test_logs.py:229`
+- [ ] **Alta** — `test_hash_long_password`: bcrypt rechaza passwords >72 bytes. Decidir si `hash_password()` debe truncar o si la validación va en use case — `backend/tests/test_infrastructure/test_passwords.py`
+- [ ] **Media** — `test_register_handlers_count`: verificar que el conteo esperado sea 3 (UserLoggedIn + UserLoginFailed + UserCreated) — `backend/tests/test_application/test_handlers.py`
+
+**Frontend — 4 fallos**
+- [ ] **Bloqueante** — `PrivateRoute.test.tsx`: usa `require()` en módulo ESM — reemplazar con import estático ESM — `frontend/src/components/layout/PrivateRoute.test.tsx:13`
+- [ ] **Alta** — `api.test.ts`: usa `require()` en ESM + tests de TypeScript types sin valor runtime — refactorizar con imports ESM y remover assertions de tipos inexistentes en runtime — `frontend/src/services/api.test.ts`
+- [ ] **Alta** — `Card.test.tsx > handles click events`: query `.parentElement` sube demasiado — cambiar a query directa `screen.getByText('...')` o `container.querySelector('div')` — `frontend/src/components/feedback/Card.test.tsx:35`
+- [ ] **Alta** — `Input.test.tsx > renders with different input types`: `input[type="password"]` no tiene role "textbox" — usar `document.querySelector('input[type="password"]')` — `frontend/src/components/primitives/Input.test.tsx:94`
+
+**Deuda técnica nueva (identificada en sesión 12 — 2026-04-30)**
 
 - [ ] **Media** — `UserCreated` evento no incluye `created_by_user_id` — cuando un admin crea usuarios via `CreateUserUseCase`, el handler de auditoría registra al usuario creado como actor en lugar de quien lo creó. Requiere extender el dominio: agregar `created_by_user_id: str | None` a `UserCreated` y actualizar el use case — `domain/events/user.py`, `application/use_cases/create_user.py`, `application/handlers.py`
 

@@ -32,8 +32,8 @@ describe('Card Component', () => {
 
     render(<Card onClick={handleClick}>Clickable card</Card>)
 
-    const card = screen.getByText('Clickable card').parentElement
-    await user.click(card!)
+    const card = screen.getByText('Clickable card')
+    await user.click(card)
 
     expect(handleClick).toHaveBeenCalledOnce()
   })
