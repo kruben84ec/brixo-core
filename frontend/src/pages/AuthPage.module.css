@@ -1,41 +1,51 @@
-/**
- * Estilos compartidos para AuthPage (Login y Register)
- */
-
 .authPage {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100dvh;
   background-color: var(--bg-canvas, #fafafa);
-  padding: var(--spacing-4, 16px);
+  padding: 24px;
 }
 
 [data-theme="dark"] .authPage {
   background-color: var(--bg-canvas, #09090b);
 }
 
-.container {
+/* Card — centered on desktop, full-screen on mobile */
+.card {
   width: 100%;
   max-width: 420px;
+  background-color: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border, #e4e4e7);
+  border-radius: 16px;
+  padding: 40px 32px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-6, 24px);
+  gap: 24px;
 }
 
+[data-theme="dark"] .card {
+  background-color: var(--bg-surface, #18181b);
+  border-color: var(--border, #27272a);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Header */
 .header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-4, 16px);
+  gap: 12px;
   text-align: center;
 }
 
 .title {
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 24px;
+  font-weight: 600;
   color: var(--text-primary, #18181b);
   margin: 0;
+  letter-spacing: -0.02em;
 }
 
 [data-theme="dark"] .title {
@@ -43,85 +53,117 @@
 }
 
 .subtitle {
-  font-size: 14px;
+  font-size: 15px;
   color: var(--text-secondary, #52525b);
   margin: 0;
+  line-height: 1.5;
 }
 
 [data-theme="dark"] .subtitle {
   color: var(--text-secondary, #a1a1aa);
 }
 
-.callout {
-  padding: var(--spacing-4, 16px);
-  background-color: var(--brand-soft, #eef2ff);
-  border-radius: var(--radius-md, 8px);
-  border-left: 4px solid var(--brand, #4f46e5);
-}
-
-[data-theme="dark"] .callout {
-  background-color: rgba(99, 102, 241, 0.15);
-  border-left-color: var(--brand, #818cf8);
-}
-
-.callout p {
-  margin: 0;
-  font-size: 14px;
-  color: var(--brand-soft-text, #3730a3);
-  line-height: 1.5;
-}
-
-[data-theme="dark"] .callout p {
-  color: var(--brand-soft-text, #c7d2fe);
-}
-
+/* Form */
 .form {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-4, 16px);
+  gap: 16px;
 }
 
-.grid2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-4, 16px);
-}
-
-@media (max-width: 480px) {
-  .grid2 {
-    grid-template-columns: 1fr;
-  }
-}
-
+/* Password toggle */
 .passwordField {
   position: relative;
 }
 
 .togglePassword {
   position: absolute;
-  right: var(--spacing-3, 12px);
-  top: 32px;
+  right: 12px;
+  bottom: 12px;
   background: none;
   border: none;
   color: var(--brand, #4f46e5);
   cursor: pointer;
   font-size: 12px;
   font-weight: 600;
+  font-family: inherit;
   padding: 0;
-  z-index: 10;
+  z-index: 1;
 }
 
 .togglePassword:hover {
   text-decoration: underline;
 }
 
+[data-theme="dark"] .togglePassword {
+  color: var(--brand, #818cf8);
+}
+
+/* Forgot password row */
+.forgotRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -8px;
+}
+
+.forgotLink {
+  font-size: 13px;
+  color: var(--brand, #4f46e5);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.forgotLink:hover {
+  text-decoration: underline;
+}
+
+[data-theme="dark"] .forgotLink {
+  color: var(--brand, #818cf8);
+}
+
+/* Callout */
+.callout {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  background-color: var(--brand-soft, #eef2ff);
+  border-radius: 12px;
+}
+
+[data-theme="dark"] .callout {
+  background-color: rgba(99, 102, 241, 0.15);
+}
+
+.calloutIcon {
+  color: var(--brand, #4f46e5);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+[data-theme="dark"] .calloutIcon {
+  color: var(--brand, #818cf8);
+}
+
+.callout p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--brand-soft-text, #3730a3);
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+[data-theme="dark"] .callout p {
+  color: var(--brand-soft-text, #c7d2fe);
+}
+
+/* Error inline */
 .errorInline {
-  padding: var(--spacing-3, 12px);
+  padding: 12px;
   background-color: var(--danger-soft, #fef2f2);
-  border-radius: var(--radius-md, 8px);
+  border-radius: 8px;
   color: var(--danger-text, #b91c1c);
   font-size: 14px;
-  border-left: 4px solid var(--danger, #dc2626);
+  border-left: 3px solid var(--danger, #dc2626);
 }
 
 [data-theme="dark"] .errorInline {
@@ -130,11 +172,13 @@
   color: var(--danger-text, #fca5a5);
 }
 
+/* Submit button */
 .submitButton {
-  margin-top: var(--spacing-2, 8px);
   width: 100%;
+  margin-top: 4px;
 }
 
+/* Switch link */
 .switch {
   text-align: center;
   font-size: 14px;
@@ -150,10 +194,29 @@
   color: var(--brand, #4f46e5);
   text-decoration: none;
   font-weight: 600;
-  transition: color 200ms ease-out;
 }
 
 .link:hover {
-  color: var(--brand-hover, #4338ca);
   text-decoration: underline;
+}
+
+[data-theme="dark"] .link {
+  color: var(--brand, #818cf8);
+}
+
+/* Mobile — full screen card */
+@media (max-width: 480px) {
+  .authPage {
+    padding: 0;
+    align-items: flex-start;
+  }
+
+  .card {
+    max-width: none;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    min-height: 100dvh;
+    padding: 48px 24px 32px;
+  }
 }

@@ -27,11 +27,18 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
-        className={`button button--${variant} button--${size} ${className || ""}`}
+        className={[
+          styles.button,
+          styles[variant],
+          styles[size],
+          className,
+        ]
+          .filter(Boolean)
+          .join(" ")}
         disabled={disabled || loading}
         {...props}
       >
-        {loading ? <span className="button__spinner">⋯</span> : children}
+        {loading ? <span className={styles.spinner} aria-hidden="true" /> : children}
       </button>
     );
   }

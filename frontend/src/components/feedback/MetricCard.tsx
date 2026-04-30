@@ -1,43 +1,34 @@
 import React from "react";
 import styles from "./MetricCard.module.css";
 
+type SemanticColor = "success" | "danger" | "warning" | "info";
+
 interface MetricCardProps {
   label: string;
   value: string | number;
-  trend?: "up" | "down" | "stable";
-  trendValue?: string;
-  icon?: React.ReactNode;
-  color?: "success" | "danger" | "warning" | "info";
+  delta?: string;
+  deltaColor?: SemanticColor;
+  valueColor?: SemanticColor;
 }
 
-/**
- * Card para métricas y KPIs
- * - Valor grande destacado
- * - Trend opcional (↑ verde, ↓ rojo)
- * - Icono decorativo
- */
 export const MetricCard: React.FC<MetricCardProps> = ({
   label,
   value,
-  trend,
-  trendValue,
-  icon,
-  color = "info",
+  delta,
+  deltaColor,
+  valueColor,
 }) => {
   return (
-    <div className={`${styles.metric} ${styles[`metric${color}`]}`}>
-      {icon && <div className={styles.icon}>{icon}</div>}
-      <div className={styles.content}>
-        <p className={styles.label}>{label}</p>
-        <div className={styles.valueContainer}>
-          <span className={styles.value}>{value}</span>
-          {trend && trendValue && (
-            <span className={`${styles.trend} ${styles[`trend${trend}`]}`}>
-              {trend === "up" ? "↑" : trend === "down" ? "↓" : "→"} {trendValue}
-            </span>
-          )}
-        </div>
-      </div>
+    <div className={styles.metric}>
+      <p className={styles.label}>{label}</p>
+      <p className={`${styles.value} ${valueColor ? styles[valueColor] : ""}`}>
+        {value}
+      </p>
+      {delta && (
+        <p className={`${styles.delta} ${deltaColor ? styles[`delta_${deltaColor}`] : ""}`}>
+          {delta}
+        </p>
+      )}
     </div>
   );
 };

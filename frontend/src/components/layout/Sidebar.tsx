@@ -1,14 +1,17 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
+import { Icon } from "@/components/Icon";
 import styles from "./Sidebar.module.css";
 
-/**
- * Sidebar de la aplicación
- * - 5 ítems: Panel, Inventario, Movimientos, Equipo, Auditoría
- * - Avatar con iniciales en el pie
- * - Ítem activo coloreado
- */
+const items = [
+  { id: "dashboard", icon: "home", label: "Panel", href: "/dashboard" },
+  { id: "inventory", icon: "box", label: "Inventario", href: "/inventory" },
+  { id: "movements", icon: "swap", label: "Movimientos", href: "/movements" },
+  { id: "team", icon: "users", label: "Equipo", href: "/team" },
+  { id: "audit", icon: "list", label: "Auditoría", href: "/audit" },
+];
+
 export const Sidebar: React.FC<{ activeItem?: string }> = ({
   activeItem = "dashboard",
 }) => {
@@ -16,24 +19,17 @@ export const Sidebar: React.FC<{ activeItem?: string }> = ({
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
 
-  const items = [
-    { id: "dashboard", icon: "📊", label: "Panel", href: "/dashboard" },
-    { id: "inventory", icon: "📦", label: "Inventario", href: "/inventory" },
-    { id: "movements", icon: "↔️", label: "Movimientos", href: "/movements" },
-    { id: "team", icon: "👥", label: "Equipo", href: "/team" },
-    { id: "audit", icon: "📋", label: "Auditoría", href: "/audit" },
-  ];
-
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/");
   };
 
-  const initials = user?.name
-    ?.split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase() || "?";
+  const initials =
+    user?.name
+      ?.split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase() || "?";
 
   return (
     <nav className={styles.sidebar}>
@@ -44,7 +40,11 @@ export const Sidebar: React.FC<{ activeItem?: string }> = ({
             href={item.href}
             className={`${styles.item} ${activeItem === item.id ? styles.active : ""}`}
           >
-            <span className={styles.icon}>{item.icon}</span>
+            <Icon
+              name={item.icon}
+              size={18}
+              strokeWidth={activeItem === item.id ? 2.2 : 1.8}
+            />
             <span className={styles.label}>{item.label}</span>
           </a>
         ))}
@@ -59,6 +59,7 @@ export const Sidebar: React.FC<{ activeItem?: string }> = ({
           </div>
         </div>
         <button className={styles.logoutBtn} onClick={handleLogout}>
+          <Icon name="logout" size={14} strokeWidth={2} />
           Salir
         </button>
       </div>

@@ -1,12 +1,3 @@
-/**
- * Página de Login
- * - Email + contraseña
- * - Toggle para mostrar/ocultar contraseña
- * - Error 401 en línea
- * - Dark mode nativo
- * - Botón CTA: "Iniciar sesión"
- */
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BrixoLogo } from "@/components/BrixoLogo";
@@ -20,10 +11,7 @@ export function LoginPage() {
   const navigate = useNavigate();
   const setAuth = useAuthStore((s) => s.setAuth);
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -31,14 +19,12 @@ export function LoginPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.currentTarget;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Limpiar error cuando empieza a escribir
     if (error) setError("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
       const response = await api.login(formData as LoginRequest);
       const user = {
@@ -52,12 +38,11 @@ export function LoginPage() {
       setAuth(response.access_token, user);
       navigate("/dashboard");
     } catch (err: any) {
-      const message = err.response?.data?.message || "Email o contraseña inválidos";
-      if (err.response?.status === 401) {
-        setError("Email o contraseña inválidos");
-      } else {
-        setError(message);
-      }
+      setError(
+        err.response?.status === 401
+          ? "Email o contraseña inválidos"
+          : err.response?.data?.message || "Error al iniciar sesión"
+      );
     } finally {
       setLoading(false);
     }
@@ -65,34 +50,31 @@ export function LoginPage() {
 
   return (
     <div className={styles.authPage}>
-      <div className={styles.container}>
-        {/* Logo y título */}
+      <div className={styles.card}>
         <div className={styles.header}>
-          <BrixoLogo size="md" />
-          <h1 className={styles.title}>Iniciar sesión</h1>
-          <p className={styles.subtitle}>
-            Accede a tu inventario desde cualquier lugar
-          </p>
+          <BrixoLogo size="lg" />
+          <h1 className={styles.title}>Entrar a Brixo</h1>
+          <p className={styles.subtitle}>Control simple de tu inventario.</p>
         </div>
 
-        {/* Formulario */}
         <form onSubmit={handleSubmit} className={styles.form}>
           <Input
-            label="Email"
+            label="Correo"
             name="email"
             type="email"
+            icon="mail"
             value={formData.email}
             onChange={handleChange}
-            placeholder="tu@email.com"
+            placeholder="tu@empresa.com"
             required
           />
 
-          {/* Contraseña con toggle */}
           <div className={styles.passwordField}>
             <Input
               label="Contraseña"
               name="password"
               type={showPassword ? "text" : "password"}
+              icon="lock"
               value={formData.password}
               onChange={handleChange}
               placeholder="Tu contraseña"
@@ -107,25 +89,28 @@ export function LoginPage() {
             </button>
           </div>
 
-          {/* Error inline */}
+          <div className={styles.forgotRow}>
+            <a href="#" className={styles.forgotLink}>
+              ¿Olvidaste tu contraseña?
+            </a>
+          </div>
+
           {error && <div className={styles.errorInline}>{error}</div>}
 
-          {/* Botón primario */}
           <Button
             type="submit"
             variant="primary"
-            size="md"
+            size="lg"
             loading={loading}
             className={styles.submitButton}
           >
             Iniciar sesión
           </Button>
 
-          {/* Link a registro */}
           <p className={styles.switch}>
             ¿No tienes cuenta?{" "}
             <a href="/register" className={styles.link}>
-              Registrate gratis
+              Crea una empresa
             </a>
           </p>
         </form>

@@ -8,26 +8,25 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { LoginPage } from "@/pages/LoginPage";
 import { RegisterPage } from "@/pages/RegisterPage";
 import { DashboardPage } from "@/pages/DashboardPage";
+import { InventoryPage } from "@/pages/InventoryPage";
+import { LandingPage } from "@/pages/LandingPage";
 import { useAuthStore } from "@/stores/authStore";
 import { useEffect } from "react";
 
 /**
- * Placeholders para rutas del Sprint 3+
+ * Placeholders para rutas post-MVP
  */
-function InventoryPage() {
-  return <div style={{ padding: "2rem" }}>📦 Inventario - próximamente</div>;
+
+function MovementsPagePlaceholder() {
+  return <div style={{ padding: "2rem", color: "var(--text-secondary)" }}>Movimientos — próximamente</div>;
 }
 
-function MovementsPage() {
-  return <div style={{ padding: "2rem" }}>↔️ Movimientos - próximamente</div>;
+function TeamPagePlaceholder() {
+  return <div style={{ padding: "2rem", color: "var(--text-secondary)" }}>Equipo — próximamente</div>;
 }
 
-function TeamPage() {
-  return <div style={{ padding: "2rem" }}>👥 Equipo - próximamente</div>;
-}
-
-function AuditPage() {
-  return <div style={{ padding: "2rem" }}>📋 Auditoría - próximamente</div>;
+function AuditPagePlaceholder() {
+  return <div style={{ padding: "2rem", color: "var(--text-secondary)" }}>Auditoría — próximamente</div>;
 }
 
 function App() {
@@ -44,6 +43,9 @@ function App() {
       <ThemeProvider>
         <ToastProvider>
           <Routes>
+            {/* Landing page — pública para todos */}
+            <Route path="/" element={<LandingPage />} />
+
             {/* Rutas públicas */}
             <Route
               path="/login"
@@ -90,7 +92,7 @@ function App() {
                   element={
                     <PrivateRoute>
                       <AppShell sidebarContent={<Sidebar activeItem="movements" />}>
-                        <MovementsPage />
+                        <MovementsPagePlaceholder />
                       </AppShell>
                     </PrivateRoute>
                   }
@@ -100,7 +102,7 @@ function App() {
                   element={
                     <PrivateRoute>
                       <AppShell sidebarContent={<Sidebar activeItem="team" />}>
-                        <TeamPage />
+                        <TeamPagePlaceholder />
                       </AppShell>
                     </PrivateRoute>
                   }
@@ -110,7 +112,7 @@ function App() {
                   element={
                     <PrivateRoute>
                       <AppShell sidebarContent={<Sidebar activeItem="audit" />}>
-                        <AuditPage />
+                        <AuditPagePlaceholder />
                       </AppShell>
                     </PrivateRoute>
                   }
@@ -118,11 +120,8 @@ function App() {
               </>
             )}
 
-            {/* Ruta por defecto */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-
             {/* 404 */}
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </ToastProvider>
       </ThemeProvider>

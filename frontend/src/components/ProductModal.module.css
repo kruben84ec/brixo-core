@@ -1,0 +1,14 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.error {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--danger-text);
+  background: var(--danger-soft);
+  padding: 0.75rem;
+  border-radius: 10px;
+}

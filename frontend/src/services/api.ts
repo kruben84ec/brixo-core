@@ -45,6 +45,26 @@ export interface Product {
   created_at: string;
 }
 
+export interface InventoryMovement {
+  id: string;
+  product_id: string;
+  product_name: string;
+  type: "ENTRADA" | "SALIDA" | "AJUSTE";
+  quantity: number;
+  created_at: string;
+}
+
+export interface CreateProductRequest {
+  name: string;
+  sku: string;
+  minimum_stock: number;
+}
+
+export interface RegisterMovementRequest {
+  type: "ENTRADA" | "SALIDA" | "AJUSTE";
+  quantity: number;
+}
+
 export interface ErrorResponse {
   error: string;
   message: string;
@@ -116,6 +136,28 @@ class ApiClient {
   // User endpoints
   async getMe(): Promise<User> {
     const response = await this.instance.get<User>("/users/me");
+    return response.data;
+  }
+
+  // Product endpoints
+  async getProducts(): Promise<Product[]> {
+    const response = await this.instance.get<Product[]>("/products");
+    return response.data;
+  }
+
+  async createProduct(data: CreateProductRequest): Promise<Product> {
+    const response = await this.instance.post<Product>("/products", data);
+    return response.data;
+  }
+
+  async registerMovement(
+    productId: string,
+    data: RegisterMovementRequest
+  ): Promise<InventoryMovement> {
+    const response = await this.instance.post<InventoryMovement>(
+      `/products/${productId}/movements`,
+      data
+    );
     return response.data;
   }
 

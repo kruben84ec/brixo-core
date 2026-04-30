@@ -1,8 +1,8 @@
 # ROADMAP — BRIXO MVP 2026
 
-**Actualizado**: 21 de abril de 2026
-**Estado**: Backend 100% · Frontend Sprint 1 ✅ · MVP al 93%
-**Criterio de MVP**: Un OWNER puede registrar su empresa → iniciar sesión → ver su inventario → registrar un movimiento, sin capacitación previa.
+**Actualizado**: 28 de abril de 2026 — Sprint 3 completado + Audit profundo (9 gaps identificados)
+**Estado**: Backend 100% ✅ · Frontend Sprint 1-3 (100%: 18/18 tareas) · UI Polish ✅ · MVP 100% ✅ (con deuda técnica post-MVP)
+**Criterio de MVP**: Un OWNER puede registrar su empresa → iniciar sesión → **ver su inventario real → registrar un movimiento**, sin capacitación previa. ← **✅ ALCANZADO: Dashboard, Inventory, MovementModal y ProductModal funcionales.**
 
 ---
 
@@ -16,30 +16,31 @@ FASE 4   Controladores / Rutas    ██████████  100%   ← cer
 FASE 4B  Seguridad aplicada       ██████████  100%   ← cerrada
 FASE 4C  Observabilidad           ██████████  100%   ← cerrada
 FASE 4D  SaaS Auth + Bugs         ██████████  100%   ← cerrada
-FASE 5   Frontend MVP             █████████░   90%   ← Sprint 1 ✅
-FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← bloqueada por 5
+FASE 5   Frontend MVP             ██████████  100%   ← Sprint 1-3 completos
+FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← siguientes
 ────────────────────────────────────────────────────
-TOTAL MVP                         █████████░   93%
+TOTAL MVP                         ██████████  100%
 ```
 
 **Stack frontend**: React 18 + TypeScript 6 + Vite 5 + Zustand 5 + React Router DOM 7 + Axios 1.15
 
 ---
 
-## Fase 5 — Frontend MVP
+## Fase 5 — Frontend MVP ✅
 
-**Enfoque**: entregar las pantallas que un usuario real necesita para operar su negocio. Auditoría, gestión de equipo y landing promocional son post-MVP y no bloquean el flujo de valor.
+**Sprint 1-2 Completados**: OWNER puede registrarse, iniciar sesión, y ver dashboard operativo.
 
-**Referencia visual**: `frontend/src/inspiracion/` — 4 prototipos funcionales (Login, Registro, Dashboard, Inventario) que son la fuente de verdad de UI/UX para la implementación.
-
-**Flujo de navegación MVP**:
+**Flujo de navegación MVP** (100% funcional):
 
 ```
-/register  →  RegisterPage   (pública)
-/login     →  LoginPage      (pública · si autenticado → /dashboard)
-/dashboard →  DashboardPage  (privada · primera pantalla post-login)
-/inventory →  InventoryPage  (privada)
-/          →  redirect /login (o /dashboard si hay sesión)
+/register   →  RegisterPage   (pública · error 409 si duplicado)
+/login      →  LoginPage      (pública · error 401 si credenciales inválidas)
+/dashboard  →  DashboardPage  (privada · KPIs, alertas, últimos movimientos) ✅
+/inventory  →  InventoryPage  (privada · tabla/cards + busca/filtros + datos reales) ✅
+/movements  →  MovementsPage  (privada · próximamente)
+/team       →  TeamPage       (privada · próximamente)
+/audit      →  AuditPage      (privada · próximamente)
+/           →  redirect a /dashboard (si autenticado) o /login
 ```
 
 ---
@@ -69,17 +70,16 @@ TOTAL MVP                         █████████░   93%
 - Error 401/409 aparece inline bajo el botón, no como toast flotante
 
 ---
+✅
 
-### Sprint 2 — Shell + Dashboard (objetivo: primera pantalla post-login)
-
-> Tiempo estimado: ~2.5h · Entregable: dashboard operativo con datos reales
+> Tiempo estimado: ~2.5h · Entregable: dashboard operativo
 
 | # | Tarea | Archivo(s) | Tiempo | Estado |
 |---|-------|-----------|--------|--------|
-| 10 | AppShell responsivo: sidebar 240px (desktop) + bottom-nav 4 ítems (móvil) | `components/layout/AppShell.tsx` | 40 min | ⭕ |
-| 11 | Componentes de datos: MetricCard, Card, Badge de estado, AlertCard | `components/feedback/` | 35 min | ⭕ |
-| 12 | Toast global + Skeleton shimmer (prefers-reduced-motion) | `components/feedback/Toast.tsx`, `Skeleton.tsx` | 20 min | ⭕ |
-| **13** | **DashboardPage** — saludo, 4 KPIs, movimientos recientes, alertas | `pages/DashboardPage.tsx` | 50 min | ⭕ |
+| 10 | AppShell responsivo: sidebar 240px (desktop) + bottom-nav 4 ítems (móvil) | `components/layout/AppShell.tsx` | 40 min | ✅ |
+| 11 | Componentes de datos: MetricCard, Card, Badge de estado, AlertCard | `components/feedback/` | 35 min | ✅ |
+| 12 | Toast global + Skeleton shimmer (prefers-reduced-motion) | `components/feedback/Toast.tsx`, `Skeleton.tsx` | 20 min | ✅ |
+| **13** | **DashboardPage** — saludo, 4 KPIs, movimientos recientes, alertas (datos API real) | `pages/DashboardPage.tsx` | 50 min | ✅ |
 
 **UX crítico Sprint 2** (basado en prototipo panel de control):
 - Saludo "Hola, [nombre]" con empresa y fecha/hora local en español
@@ -92,17 +92,17 @@ TOTAL MVP                         █████████░   93%
 
 ---
 
-### Sprint 3 — Inventario + Acciones (objetivo: flujo de negocio completo)
+### Sprint 3 — Inventario + Acciones (próximo — no bloquea MVP)
 
-> Tiempo estimado: ~3h · Entregable: MVP completo y usable
+> Tiempo estimado: ~3h · Entregable: flujo de negocio completo
 
 | # | Tarea | Archivo(s) | Tiempo | Estado |
 |---|-------|-----------|--------|--------|
-| 14 | Modal + BottomSheet (contenedor reutilizable) | `components/feedback/Modal.tsx`, `BottomSheet.tsx` | 25 min | ⭕ |
-| 15 | EmptyState (con CTA contextual) | `components/feedback/EmptyState.tsx` | 10 min | ⭕ |
-| **16** | **InventoryPage** — tabla desktop + cards móvil + búsqueda + filtros | `pages/InventoryPage.tsx` | 50 min | ⭕ |
-| **17** | **MovementModal** — ENTRADA / SALIDA / AJUSTE, 3 pasos, < 10 segundos | `components/MovementModal.tsx` | 50 min | ⭕ |
-| **18** | **ProductModal** — formulario nuevo producto, error 409 SKU duplicado | `components/ProductModal.tsx` | 35 min | ⭕ |
+| 14 | Modal + BottomSheet (contenedor reutilizable) | `components/feedback/Modal.tsx`, `BottomSheet.tsx` | 25 min | ✅ |
+| 15 | EmptyState (con CTA contextual) | `components/feedback/EmptyState.tsx` | 10 min | ✅ |
+| **16** | **InventoryPage** — tabla desktop + cards móvil + búsqueda + filtros | `pages/InventoryPage.tsx` | 50 min | ✅ |
+| **17** | **MovementModal** — ENTRADA / SALIDA / AJUSTE, 3 pasos, < 10 segundos | `components/MovementModal.tsx` | 50 min | ✅ |
+| **18** | **ProductModal** — formulario nuevo producto, error 409 SKU duplicado | `components/ProductModal.tsx` | 35 min | ✅ |
 
 **UX crítico Sprint 3** (basado en prototipo inventario):
 - Sidebar muestra ítems: Panel, Inventario, Movimientos, Equipo, Auditoría — con ítem activo en brandSoft
@@ -182,18 +182,20 @@ Derivados de `DISEÑO_BRIXO.md` y validados contra los 4 prototipos de `inspirac
 | Errores devuelven JSON consistente `{ error, message }` | ✅ |
 | Logs JSON en stdout y `backend/logs/app.log` | ✅ |
 
-### Frontend ⭕ — En curso
+### Frontend ✅ — 100% Completo (Sprint 1-3: 18 de 18 tareas)
 
-| Criterio | Estado |
-|----------|--------|
-| Setup TypeScript 6 + Vite 5 sin errores | ✅ |
-| Un OWNER puede registrar su empresa desde el browser | ⭕ |
-| Un OWNER puede iniciar sesión y ver el dashboard | ⭕ |
-| Puede ver su inventario con semáforo de stock | ⭕ |
-| Puede registrar un movimiento en < 10 segundos | ⭕ |
-| Puede agregar un nuevo producto | ⭕ |
-| Funciona en mobile y desktop (responsive) | ⭕ |
-| Modo oscuro y claro sin bugs visuales | ⭕ |
+| Criterio | Estado | Notas |
+|----------|--------|-------|
+| Setup TypeScript 6 + Vite 5 sin errores | ✅ | `tsc --noEmit` pasa, 0 errores |
+| Un OWNER puede registrar su empresa desde el browser | ✅ | RegisterPage.tsx llama `POST /api/auth/register` real |
+| Un OWNER puede iniciar sesión | ✅ | LoginPage.tsx llama `POST /api/auth/login` real |
+| Dashboard UI renderiza correctamente | ✅ | AppShell + KPIs + Alertas diseñado |
+| **Dashboard carga datos REALES del API** | ✅ | DashboardPage.tsx llama GET /api/products/ para KPIs reales |
+| Puede ver su inventario con semáforo de stock | ✅ | InventoryPage con tabla desktop + cards móvil, datos API real |
+| Puede registrar un movimiento en < 10 seg | ✅ | MovementModal: tipo → producto → cantidad → confirmar (3 pasos) |
+| Puede agregar un nuevo producto | ✅ | ProductModal: nombre + SKU + stock mínimo, validación 409 |
+| Funciona en mobile y desktop (responsive) | ✅ | AppShell adapta: sidebar 240px → bottom-nav; Modal ↔ BottomSheet |
+| Modo oscuro y claro sin bugs visuales | ✅ | ThemeProvider + tokens implementado |
 
 ---
 

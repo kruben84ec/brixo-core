@@ -7,7 +7,7 @@ Brixo is a production-grade, multi-tenant inventory platform engineered for smal
 [![Backend](https://img.shields.io/badge/Backend-FastAPI%20%7C%20Python%203.12-009688?style=flat-square)](https://fastapi.tiangolo.com)
 [![Auth](https://img.shields.io/badge/Auth-JWT%20RS256%20%7C%20RBAC-4A90D9?style=flat-square)](#seguridad)
 [![Infra](https://img.shields.io/badge/Infra-Docker%20Compose-2496ED?style=flat-square)](https://docs.docker.com/compose)
-[![Estado](https://img.shields.io/badge/MVP-80%25%20completado-brightgreen?style=flat-square)](docs/ESTATUS.md)
+[![Estado](https://img.shields.io/badge/MVP-Sprint%201--2%20completados-blue?style=flat-square)](docs/ESTATUS.md)
 
 ---
 
@@ -115,6 +115,7 @@ curl http://localhost:8000/api/products/ \
 
 | Método | Ruta | Permiso | Descripción |
 |--------|------|---------|-------------|
+| `POST` | `/api/auth/register` | — | Registro — crea empresa + OWNER + retorna JWT |
 | `POST` | `/api/auth/login` | — | Login — retorna JWT RS256 |
 | `POST` | `/api/auth/refresh` | auth | Renueva token sin re-login |
 | `GET` | `/api/products/` | `INVENTORY_READ` | Lista productos con stock actual |
@@ -188,10 +189,10 @@ FASE 2   Data Access Layer   ██████████  100%  ✅
 FASE 3   Casos de uso        ██████████  100%  ✅
 FASE 4   API REST + RBAC     ██████████  100%  ✅
 FASE 4C  Observabilidad      ██████████  100%  ✅
-FASE 5   Frontend React      █░░░░░░░░░    5%  ← en curso
-FASE 6   QA + Hardening      ░░░░░░░░░░    0%
+FASE 5   Frontend MVP        ███████░░░   72%  ← Sprint 1-2 ✅ · Sprint 3 ⭕
+FASE 6   QA + Hardening      ░░░░░░░░░░    0%  ← bloqueada
 ──────────────────────────────────────────────
-MVP total                    ████████░░   80%
+MVP total                    ████████░░   78%
 ```
 
 Detalle por fase: [ROADMAP.md](docs/ROADMAP.md) — Estado actual: [ESTATUS.md](docs/ESTATUS.md)

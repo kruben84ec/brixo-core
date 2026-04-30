@@ -3,7 +3,24 @@
     "allow": [
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(npx skills *)",
+      "Bash(npx ctx7 *)",
+      "PowerShell(npx ctx7 setup)",
+      "PowerShell(powershell -Command \"npx ctx7 setup\")",
+      "Bash(awk '{print $NF}')",
+      "Bash(grep -v \"^$\")",
+      "Bash(git mv *)"
     ]
+  },
+  "enabledPlugins": {
+    "context7@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true,
+    "claude-code-setup@claude-plugins-official": true,
+    "firebase@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "telegram@claude-plugins-official": true
   }
 }
