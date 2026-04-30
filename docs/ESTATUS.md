@@ -1,12 +1,12 @@
 # ESTATUS DEL PROYECTO BRIXO — MVP
 
-> **% Avance global**: MVP 100% ✅ — Fase 6 (QA + Hardening) 0% ⭕ — 9 gaps de deuda técnica documentados en `docs/backlog.md`
-> **Última actualización**: 2026-04-29
+> **% Avance global**: MVP 100% ✅ — Fase 6 (QA + Hardening) 15% 🟡 — 6 gaps documentados en `docs/backlog.md`
+> **Última actualización**: 2026-04-30
 > **Cross-check**: validado contra `docs/ROADMAP.md` (sin desfase).
 
-**Fecha**: 28 de abril de 2026 (Sesión 9 — UI polish + CSS bugs)
+**Fecha**: 30 de abril de 2026 (Sesión 13 — Testing Frontend)
 **Rama activa**: `dev`
-**Estado general**: Backend 100% ✅ · Frontend Sprint 1-3 (100% — 18/18) · UI Polish ✅ · MVP 100% ✅
+**Estado general**: Backend 100% ✅ · Frontend 100% ✅ · Testing Backend 100% ✅ · Testing Frontend 35% 🟡 · MVP 100% ✅
 
 ---
 
@@ -21,9 +21,12 @@ FASE 4B  Seguridad aplicada       ██████████  100%   ← cer
 FASE 4C  Observabilidad           ██████████  100%   ← cerrada
 FASE 4D  SaaS Auth + Bugs         ██████████  100%   ← cerrada
 FASE 5   Frontend MVP             ██████████  100%   ← Sprint 1-3 completos
-FASE 6   QA + Hardening           ░░░░░░░░░░    0%   ← siguientes
+FASE 6A  Testing Backend          ██████████  100%   ← 185+ tests ✅
+FASE 6B  Testing Frontend         ███░░░░░░░   35%   ← 73+ tests, continúa
+FASE 6C  Integration & E2E        ░░░░░░░░░░    0%   ← próxima
 ────────────────────────────────────────────────────
 TOTAL MVP                         ██████████  100%
+TESTING                           ███░░░░░░░   35%
 ```
 
 **NOVEDAD (28 abr 2026 — Sesión 9)**: UI polish completo + bugs CSS críticos resueltos:
