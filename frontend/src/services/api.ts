@@ -14,9 +14,19 @@ export interface AuthResponse {
   expires_in: number;
 }
 
+export interface RegisterResponse {
+  access_token: string;
+  token_type: string;
+  user_id: string;
+  tenant_id: string;
+  username: string;
+  email: string;
+  authority_level: "OWNER" | "ADMIN" | "MANAGER" | "OPERATOR";
+}
+
 export interface RegisterRequest {
   company_name: string;
-  name: string;
+  username: string;
   email: string;
   password: string;
 }
@@ -30,7 +40,7 @@ export interface User {
   id: string;
   tenant_id: string;
   email: string;
-  name: string;
+  username: string;
   authority_level: "OWNER" | "ADMIN" | "MANAGER" | "OPERATOR";
   created_at: string;
 }
@@ -112,8 +122,8 @@ class ApiClient {
   }
 
   // Auth endpoints
-  async register(data: RegisterRequest): Promise<AuthResponse> {
-    const response = await this.instance.post<AuthResponse>(
+  async register(data: RegisterRequest): Promise<RegisterResponse> {
+    const response = await this.instance.post<RegisterResponse>(
       "/auth/register",
       data
     );

@@ -51,6 +51,21 @@ def create_user_router(event_bus: EventBus) -> APIRouter:
     create_user_uc = CreateUserUseCase(user_repo, event_bus)
     assign_role_uc = AssignRoleToUserUseCase(user_repo, role_repo, event_bus)
 
+    @router.get("/me", response_model=UserResponse)
+    async def get_me(request: Request):
+        user_id: str = request.state.user_id
+        user = user_repo.get_user_by_id(user_id)
+        if user is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        return UserResponse(
+            id=user.id,
+            tenant_id=user.tenant_id,
+            username=user.username,
+            email=user.email,
+            authority_level=user.authority_level,
+            is_active=user.is_active,
+        )
+
     @router.get("/", response_model=list[UserResponse], dependencies=[require_permission("USERS_READ")])
     async def list_users(request: Request):
         tenant_id: str = request.state.tenant_id

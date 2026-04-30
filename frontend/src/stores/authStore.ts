@@ -7,13 +7,14 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { User, AuthResponse } from "@/services/api";
+import type { User } from "@/services/api";
 
 interface AuthState {
   token: string | null;
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isHydrated: boolean;
 
   setAuth: (token: string, user: User) => void;
   logout: () => void;
@@ -28,6 +29,7 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       isAuthenticated: false,
       isLoading: false,
+      isHydrated: false,
 
       setAuth: (token: string, user: User) => {
         localStorage.setItem("access_token", token);
@@ -62,12 +64,16 @@ export const useAuthStore = create<AuthState>()(
               token,
               user,
               isAuthenticated: true,
+              isHydrated: true,
             });
           } catch {
             // localStorage corrupted
             localStorage.removeItem("access_token");
             localStorage.removeItem("user");
+            set({ isHydrated: true });
           }
+        } else {
+          set({ isHydrated: true });
         }
       },
     }),

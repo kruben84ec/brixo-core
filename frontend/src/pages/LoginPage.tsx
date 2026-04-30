@@ -27,13 +27,16 @@ export function LoginPage() {
     setLoading(true);
     try {
       const response = await api.login(formData as LoginRequest);
+      // Store token first so the interceptor includes it in the next request
+      localStorage.setItem("access_token", response.access_token);
+      const me = await api.getMe();
       const user = {
-        id: "temp",
-        tenant_id: "temp",
-        email: formData.email,
-        name: "Usuario",
-        authority_level: "OWNER" as const,
-        created_at: new Date().toISOString(),
+        id: me.id,
+        tenant_id: me.tenant_id,
+        email: me.email,
+        username: me.username,
+        authority_level: me.authority_level,
+        created_at: me.created_at,
       };
       setAuth(response.access_token, user);
       navigate("/dashboard");

@@ -8,23 +8,25 @@
 # 🔷 RESUMEN EJECUTIVO (AUTO-ACTUALIZADO)
 
 ## Estado actual
-- Fase:
-- % avance:
-- Estado general: (Estable / Riesgo / Bloqueado)
+- Fase: Fase 6 — QA + Hardening
+- % avance: MVP 100% ✅ · Fase 6 0% ⭕ · 9 gaps de deuda técnica pendientes
+- Estado general: Estable
 
 ## Prioridades activas
-1.
-2.
-3.
+1. **[Alta]** Fix `App.tsx` — bug hidratación async en rutas privadas (reload redirige usuarios autenticados a `/`) — 25 min
+2. **[Alta]** `LoginPage` + `RegisterPage` — llamar `GET /api/users/me` post-login, guardar `user_id` + `tenant_id` reales — 20 min
+3. **[Alta]** Backend — registrar handler para evento `UserCreated` (signup sin auditoría automática) — 15 min
 
 ## Riesgos clave
--
+- `user_id` y `tenant_id` hard-coded a `"temp"` → lógica multi-tenant falla silenciosamente
+- TTL JWT inconsistente: 480 min en `settings.py` vs 15 min en `jwt.env`
+- Sin testing manual del flujo completo ejecutado aún
 
 ## Último avance relevante
--
+- 2026-04-29 (sesión 11): reorganización completa de `docs/`, reescritura de CLAUDE.md v3.0, 9 gaps documentados en backlog
 
 ## Siguiente objetivo
--
+- Resolver los 3 gaps de alta prioridad (~60 min) → luego testing manual flujo completo (Fase 6 tarea 1)
 
 ---
 

@@ -25,9 +25,9 @@ export const Sidebar: React.FC<{ activeItem?: string }> = ({
   };
 
   const initials =
-    user?.name
+    user?.username
       ?.split(" ")
-      .map((n) => n[0])
+      .map((n: string) => n[0])
       .join("")
       .toUpperCase() || "?";
 
@@ -54,7 +54,7 @@ export const Sidebar: React.FC<{ activeItem?: string }> = ({
         <div className={styles.user}>
           <div className={styles.avatar}>{initials}</div>
           <div className={styles.userInfo}>
-            <div className={styles.userName}>{user?.name || "Usuario"}</div>
+            <div className={styles.userName}>{user?.username || "Usuario"}</div>
             <div className={styles.userRole}>Propietaria</div>
           </div>
         </div>

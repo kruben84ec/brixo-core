@@ -32,11 +32,14 @@ function AuditPagePlaceholder() {
 function App() {
   const hydrate = useAuthStore((s) => s.hydrate);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const isHydrated = useAuthStore((s) => s.isHydrated);
 
   // Hidratar estado de autenticación desde localStorage al montar
   useEffect(() => {
     hydrate();
   }, [hydrate]);
+
+  if (!isHydrated) return null;
 
   return (
     <Router>

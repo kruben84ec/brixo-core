@@ -9,9 +9,13 @@
 
 ### Alta prioridad
 
-- [ ] **Alta** — LoginPage/RegisterPage: llamar `GET /api/users/me` post-login, guardar `user_id` + `tenant_id` reales — `LoginPage.tsx:L45`, `RegisterPage.tsx:L52` — 20 min
-- [ ] **Alta** — App.tsx: fijar bug rutas privadas (hidratación async, aplicar loading state correcto) — `App.tsx:L30` — 25 min
-- [ ] **Alta** — Backend: registrar handler para evento `UserCreated` (signup no se audita) — `application/handlers.py` — 15 min
+- [x] **Alta** — LoginPage/RegisterPage: llamar `GET /api/users/me` post-login, guardar `user_id` + `tenant_id` reales — resuelto 2026-04-30
+- [x] **Alta** — App.tsx: fijar bug rutas privadas (hidratación async, `isHydrated` flag) — resuelto 2026-04-30
+- [x] **Alta** — Backend: registrar handler para evento `UserCreated` — resuelto 2026-04-30
+
+### Deuda técnica nueva (identificada en sesión 12 — 2026-04-30)
+
+- [ ] **Media** — `UserCreated` evento no incluye `created_by_user_id` — cuando un admin crea usuarios via `CreateUserUseCase`, el handler de auditoría registra al usuario creado como actor en lugar de quien lo creó. Requiere extender el dominio: agregar `created_by_user_id: str | None` a `UserCreated` y actualizar el use case — `domain/events/user.py`, `application/use_cases/create_user.py`, `application/handlers.py`
 
 ### Media prioridad
 

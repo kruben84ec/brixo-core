@@ -120,7 +120,7 @@ export function DashboardPage() {
       {/* Header */}
       <div className={styles.header}>
         <div className={styles.greeting}>
-          <h1>Hola, {user?.name?.split(" ")[0] || "usuario"}</h1>
+          <h1>Hola, {user?.username?.split(" ")[0] || "usuario"}</h1>
           <p>
             {now.toLocaleDateString("es-CO", { weekday: "long", day: "numeric", month: "long" })} · {timeStr}
           </p>

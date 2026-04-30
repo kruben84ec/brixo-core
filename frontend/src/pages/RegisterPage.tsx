@@ -14,7 +14,7 @@ export function RegisterPage() {
 
   const [formData, setFormData] = useState({
     tenant_name: "",
-    name: "",
+    username: "",
     email: "",
     password: "",
   });
@@ -40,16 +40,16 @@ export function RegisterPage() {
     try {
       const response = await api.register({
         company_name: formData.tenant_name,
-        name: formData.name,
+        username: formData.username,
         email: formData.email,
         password: formData.password,
       } as RegisterRequest);
       const user = {
-        id: "temp",
-        tenant_id: "temp",
-        email: formData.email,
-        name: formData.name,
-        authority_level: "OWNER" as const,
+        id: response.user_id,
+        tenant_id: response.tenant_id,
+        email: response.email,
+        username: response.username,
+        authority_level: response.authority_level,
         created_at: new Date().toISOString(),
       };
       setAuth(response.access_token, user);
@@ -91,9 +91,9 @@ export function RegisterPage() {
           />
           <Input
             label="Tu nombre"
-            name="name"
+            name="username"
             icon="user"
-            value={formData.name}
+            value={formData.username}
             onChange={handleChange}
             placeholder="Ej: Laura Jaramillo"
             required
